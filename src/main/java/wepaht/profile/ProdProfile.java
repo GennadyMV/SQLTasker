@@ -15,7 +15,7 @@ public class ProdProfile {
     @Autowired
     private UserRepository userRepository;
 
-    @PostConstruct
+    
     public void init() {
         User admin = new User();
         admin.setRole("ADMIN");
