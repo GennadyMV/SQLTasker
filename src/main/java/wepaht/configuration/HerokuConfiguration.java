@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Profile;
  * @author mcsieni
  */
 @Configuration
-@Profile("pred")
+@Profile("prod")
 public class HerokuConfiguration {
     @Bean
     @Primary
