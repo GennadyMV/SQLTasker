@@ -6,17 +6,18 @@
 package wepaht.configuration;
 
 import javax.sql.DataSource;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 /**
  *
  * @author mcsieni
  */
 @Configuration
+@Profile("pred")
 public class HerokuConfiguration {
     @Bean
     @Primary
