@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Table;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.UserRepository;
 import wepaht.service.PointService;
 import wepaht.service.UserService;

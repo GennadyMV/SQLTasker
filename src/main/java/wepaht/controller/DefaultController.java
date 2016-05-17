@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.UserRepository;
 import wepaht.service.UserService;
 
@@ -28,7 +28,7 @@ public class DefaultController {
     public String hello(Model model){
         
         if (userRepository.findAll().isEmpty()) {
-            User firstUser = new User();
+            Account firstUser = new Account();
             firstUser.setUsername("admin");
             firstUser.setPassword("admin");
             firstUser.setRole("ADMIN");

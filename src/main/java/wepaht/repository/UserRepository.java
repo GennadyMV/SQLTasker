@@ -4,11 +4,11 @@ package wepaht.repository;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 
 @RestResource(exported = false)
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<Account, Long>{
 
-    User findByUsername(String username);
+    Account findByUsername(String username);
     List findByRole(String role);
 }

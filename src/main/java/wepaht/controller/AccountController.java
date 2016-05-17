@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.UserRepository;
 import wepaht.service.PastQueryService;
 import wepaht.service.PointService;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class UserController {
+public class AccountController {
 
     private String[] roles = {"STUDENT", "TEACHER", "ADMIN"};
 
@@ -49,7 +49,7 @@ public class UserController {
     @Secured("ROLE_TEACHER")
     @RequestMapping(value = "users/{id}", method = RequestMethod.GET)
     public String getUser(Model model, @PathVariable Long id) {
-        User editedUser = userRepository.findOne(id);
+        Account editedUser = userRepository.findOne(id);
         model.addAttribute("editedUser", editedUser);
         model.addAttribute("roles", roles);
         model.addAttribute("points", pointService.getPointsByUsername(editedUser.getUsername()));
@@ -58,7 +58,7 @@ public class UserController {
 
     @RequestMapping(value = "profile", method = RequestMethod.GET)
     public String getProfile(Model model) {
-        User user = userService.getAuthenticatedUser();
+        Account user = userService.getAuthenticatedUser();
         model.addAttribute("editedUser", user);
         model.addAttribute("roles", roles);
         model.addAttribute("user", user);
@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String create(@Valid @ModelAttribute User newUser, RedirectAttributes redirectAttributes, BindingResult bindingResult) {
+    public String create(@Valid @ModelAttribute Account newUser, RedirectAttributes redirectAttributes, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addAttribute("messages", bindingResult.getAllErrors());
             return "redirect:/register";
@@ -87,7 +87,7 @@ public class UserController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "users/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        User user = userService.getAuthenticatedUser();
+        Account user = userService.getAuthenticatedUser();
         if (user.getId() == id) {
             redirectAttributes.addFlashAttribute("messages", "Admin users cannot delete themselves.");
             return "redirect:/users";
@@ -115,8 +115,8 @@ public class UserController {
             return redirectAddress;
         }
 
-        User loggedUser = userService.getAuthenticatedUser();
-        User userToBeEdited = userRepository.getOne(id);
+        Account loggedUser = userService.getAuthenticatedUser();
+        Account userToBeEdited = userRepository.getOne(id);
 
         String loggedRole = loggedUser.getRole();
 

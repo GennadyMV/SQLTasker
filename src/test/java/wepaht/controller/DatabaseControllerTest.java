@@ -13,7 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
 import wepaht.domain.Database;
 import wepaht.domain.Table;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 import wepaht.repository.UserRepository;

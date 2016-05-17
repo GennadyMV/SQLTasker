@@ -110,7 +110,7 @@ public class TaskController {
             }
         }
 
-        User user = userService.getAuthenticatedUser();
+        Account user = userService.getAuthenticatedUser();
         if (user.getRole().equals("STUDENT")||user.getRole().equals("TEACHER")) {
             task.setDescription(task.getDescription()+" SUGGESTED BY "+user.getUsername());
             task.setName("SUGGESTION: " + task.getName());

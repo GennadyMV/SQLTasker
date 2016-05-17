@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.PastQuery;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.TaskRepository;
 import wepaht.repository.UserRepository;
 import wepaht.service.PastQueryService;

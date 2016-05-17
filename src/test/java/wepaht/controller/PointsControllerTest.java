@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.UserRepository;
 
 import static junit.framework.TestCase.assertTrue;
@@ -52,7 +52,7 @@ public class PointsControllerTest {
     PointsController testingObject;
 
     private MockMvc mockMvc = null;
-    private User teacher = null;
+    private Account teacher = null;
 
     @Before
     public void setUp() {
@@ -61,7 +61,7 @@ public class PointsControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
         pastQueryService.deleteAllPastQueries();
         userRepository.deleteAll();
-        teacher = new User();
+        teacher = new Account();
         teacher.setRole("TEACHER");
         teacher.setUsername("user");
         teacher.setPassword("test");

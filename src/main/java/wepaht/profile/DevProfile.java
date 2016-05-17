@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import wepaht.domain.Category;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.domain.Task;
 import wepaht.repository.CategoryRepository;
 import wepaht.repository.UserRepository;
@@ -73,17 +73,17 @@ public class DevProfile {
             categoryService.setCategoryToTask(category.getId(), task);
         }        
         
-        User student = new User();
+        Account student = new Account();
         student.setUsername("0123456789");
         student.setPassword("opiskelija");
         student.setRole("STUDENT");
 
-        User teacher = new User();
+        Account teacher = new Account();
         teacher.setUsername("avihavai");
         teacher.setPassword("vihainen");
         teacher.setRole("ADMIN");
 
-        User assistant = new User();
+        Account assistant = new Account();
         assistant.setUsername("assistant");
         assistant.setPassword("iassist");
         assistant.setRole("TEACHER");

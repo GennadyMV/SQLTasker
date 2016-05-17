@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class JpaAuthenticationProvider implements AuthenticationProvider{
         String username = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
 
-        User user = userRepository.findByUsername(username);
+        Account user = userRepository.findByUsername(username);
 
         if (user == null || !BCrypt.hashpw(password, user.getSalt()).equals(user.getPassword())) {
             throw new AuthenticationException("Unable to authenticate user " + username){};

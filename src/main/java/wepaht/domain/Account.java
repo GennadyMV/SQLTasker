@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 @Entity
-public class User extends AbstractPersistable<Long> {
+public class Account extends AbstractPersistable<Long> {
 
     @Column(unique = true)
     @NotEmpty

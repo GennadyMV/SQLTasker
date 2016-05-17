@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import wepaht.Application;
 import wepaht.domain.Database;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.PastQueryRepository;
 import wepaht.repository.TaskRepository;
@@ -78,7 +78,7 @@ public class PastQueryControllerTest {
     private MockMvc mockMvc = null;
     private PastQuery pastQuery = null;
     private Database database = null;
-    private User student = null;
+    private Account student = null;
 
     @Before
     public void setUp() {
@@ -95,7 +95,7 @@ public class PastQueryControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
         database = databaseRepository.findByName("testDatabase4").get(0);
-        student = new User();
+        student = new Account();
         student.setUsername("stud");
         student.setPassword("test");
         student.setRole("STUDENT");

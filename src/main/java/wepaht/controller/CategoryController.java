@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Category;
 import wepaht.domain.Task;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.CategoryRepository;
 import wepaht.repository.TaskRepository;
 import wepaht.service.UserService;
@@ -39,7 +39,7 @@ public class CategoryController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String getCategories(Model model) {
-        User user = userService.getAuthenticatedUser();
+        Account user = userService.getAuthenticatedUser();
         if (user.getRole().equals("TEACHER") ||user.getRole().equals("ADMIN")  ) {
             model.addAttribute("categories", categoryRepository.findAll());
         } else {
@@ -140,7 +140,7 @@ public class CategoryController {
                                   @PathVariable Long taskId,
                                   Model model, RedirectAttributes redirectAttributes) {
         Category category = categoryRepository.findOne(id);
-        User user = userService.getAuthenticatedUser();
+        Account user = userService.getAuthenticatedUser();
         if(category.getStartDate().before(new Date()) || category.getStartDate().equals(new Date()) || user.getRole().equals("TEACHER") ||user.getRole().equals("ADMIN")) {
             model.addAttribute("task", taskRepository.findOne(taskId));
             model.addAttribute("category", category);

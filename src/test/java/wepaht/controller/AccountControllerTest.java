@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.UserRepository;
 
 import static junit.framework.TestCase.assertTrue;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-public class UserControllerTest {
+public class AccountControllerTest {
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -46,7 +46,7 @@ public class UserControllerTest {
                     .andExpect(flash().attribute("messages", "User created succesfully, please log in."))
                     .andReturn();
 
-        User testUser = userRepository.findByUsername("test1");
+        Account testUser = userRepository.findByUsername("test1");
 
         assertTrue(testUser != null);
     }
@@ -58,7 +58,7 @@ public class UserControllerTest {
                 .andExpect(flash().attribute("messages", "User created succesfully, please log in."))
                 .andReturn();
 
-        User testUser = userRepository.findByUsername("test2");
+        Account testUser = userRepository.findByUsername("test2");
         assertTrue(testUser.getRole().equals("STUDENT"));
     }
 }

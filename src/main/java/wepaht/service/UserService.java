@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import wepaht.domain.AuthenticationToken;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.AuthenticationTokenRepository;
 import wepaht.repository.UserRepository;
 
@@ -21,7 +21,7 @@ public class UserService {
     @Autowired
     private AuthenticationTokenRepository tokenRepository;
 
-    public User getAuthenticatedUser() {
+    public Account getAuthenticatedUser() {
         return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
@@ -30,7 +30,7 @@ public class UserService {
     }
 
     public void createToken() {
-        User user = getAuthenticatedUser();
+        Account user = getAuthenticatedUser();
         AuthenticationToken token = tokenRepository.findByUser(user);
 
         if (token == null) {
@@ -45,7 +45,7 @@ public class UserService {
     }
 
     public AuthenticationToken getToken() {
-        User user = getAuthenticatedUser();
+        Account user = getAuthenticatedUser();
         if (user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
             return tokenRepository.findByUser(user);
         }

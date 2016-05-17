@@ -21,7 +21,7 @@ import wepaht.Application;
 import wepaht.domain.Category;
 import wepaht.domain.Database;
 import wepaht.domain.Task;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.CategoryRepository;
 import wepaht.repository.TaskRepository;
 import wepaht.repository.UserRepository;
@@ -76,7 +76,7 @@ public class CategoryControllerTest {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Database database;
     private MockMvc mockMvc;
-    private User student;
+    private Account student;
 
     @Before
     public void setUp() {
@@ -93,7 +93,7 @@ public class CategoryControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
 
-        student = new User();
+        student = new Account();
         student.setUsername("stud");
         student.setPassword("test");
         student.setRole("STUDENT");

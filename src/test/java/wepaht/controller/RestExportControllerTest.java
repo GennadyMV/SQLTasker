@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
 import wepaht.domain.AuthenticationToken;
-import wepaht.domain.User;
+import wepaht.domain.Account;
 import wepaht.repository.AuthenticationTokenRepository;
 import wepaht.repository.PastQueryRepository;
 import wepaht.repository.UserRepository;
@@ -88,7 +88,7 @@ public class RestExportControllerTest {
         pastQueryService.saveNewPastQueryForTests(name2, 1l, null, true);
 
         userRepository.deleteAll();
-        User user = new User();
+        Account user = new Account();
         user.setRole("ADMIN");
         user.setPassword("testi");
         user.setUsername("admiini");

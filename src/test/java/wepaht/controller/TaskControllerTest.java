@@ -81,7 +81,7 @@ public class TaskControllerTest {
 
     private MockMvc mockMvc = null;
     private Database database = null;
-    private User admin = null;
+    private Account admin = null;
 
     @Before
     public void setUp() {
@@ -98,7 +98,7 @@ public class TaskControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
         database = databaseRepository.findByName("testDatabase4").get(0);
-        admin = new User();
+        admin = new Account();
         admin.setUsername("test");
         admin.setPassword("test");
         admin.setRole("ADMIN");
@@ -159,7 +159,7 @@ public class TaskControllerTest {
     
     @Test
     public void studentCanSuggestTask() throws Exception {
-        User student = new User();
+        Account student = new Account();
         student.setUsername("student");
         student.setPassword("student");
         student.setRole("STUDENT");
