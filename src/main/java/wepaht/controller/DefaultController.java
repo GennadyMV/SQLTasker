@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import wepaht.domain.User;
+import wepaht.repository.UserRepository;
 import wepaht.service.UserService;
 
 @Controller
@@ -19,9 +21,20 @@ public class DefaultController {
     @Autowired
     UserService userService;
     
+    @Autowired
+    UserRepository userRepository;
+    
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String hello(Model model){
         model.addAttribute("user", userService.getAuthenticatedUser());
+        
+        if (userRepository.findAll().isEmpty()) {
+            User firstUser = new User();
+            firstUser.setUsername("admin");
+            firstUser.setPassword("admin");
+            firstUser.setRole("ADMIN");
+        }
+        
         return "index";
     }
 }
