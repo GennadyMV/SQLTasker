@@ -21,8 +21,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Profile(value = "prod")
 public class ProdProfile {
 
-    @Autowired
-    private UserRepository userRepository;
+//    @Autowired
+//    private UserRepository userRepository;
 
     @Bean
     public PlatformTransactionManager transactionManager() throws URISyntaxException {
@@ -65,13 +65,13 @@ public class ProdProfile {
         return factory;
     }
 
-    public void init() {
-        if (userRepository.findAll().isEmpty()) {
-            User admin = new User();
-            admin.setRole("ADMIN");
-            admin.setUsername("admin");
-            admin.setPassword("admin");
-            userRepository.save(admin);
-        }
-    }
+//    public void init() {
+//        if (userRepository.findAll().isEmpty()) {
+//            User admin = new User();
+//            admin.setRole("ADMIN");
+//            admin.setUsername("admin");
+//            admin.setPassword("admin");
+//            userRepository.save(admin);
+//        }
+//    }
 }
