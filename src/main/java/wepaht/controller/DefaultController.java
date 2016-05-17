@@ -27,13 +27,6 @@ public class DefaultController {
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String hello(Model model){
         
-        if (userRepository.findAll().isEmpty()) {
-            Account firstUser = new Account();
-            firstUser.setUsername("admin");
-            firstUser.setPassword("admin");
-            firstUser.setRole("ADMIN");
-        }
-        
         model.addAttribute("user", userService.getAuthenticatedUser());
         
         return "index";
