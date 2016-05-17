@@ -22,8 +22,7 @@ public class UserService {
     private AuthenticationTokenRepository tokenRepository;
 
     public User getAuthenticatedUser() {
-        //return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        return null;
+        return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     public void customLogout() {

@@ -44,6 +44,10 @@ public class ProdProfile {
         basicDataSource.setUrl(dbUrl);
         basicDataSource.setUsername(username);
         basicDataSource.setPassword(password);
+        basicDataSource.setTestOnBorrow(true);
+        basicDataSource.setTestWhileIdle(true);
+        basicDataSource.setTestOnReturn(true);
+        basicDataSource.setValidationQuery("SELECT 1");
 
         return basicDataSource;
     }
