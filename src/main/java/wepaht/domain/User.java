@@ -1,6 +1,6 @@
 package wepaht.domain;
 
-import org.hibernate.validator.constraints.Length;
+
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -8,12 +8,12 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 @Entity
 public class User extends AbstractPersistable<Long> {
 
     @Column(unique = true)
-
     @NotEmpty
     @Length(min = 4, max = 30)
     private String username;
