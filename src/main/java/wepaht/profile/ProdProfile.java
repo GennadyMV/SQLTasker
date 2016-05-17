@@ -15,12 +15,13 @@ public class ProdProfile {
     @Autowired
     private UserRepository userRepository;
 
-    
     public void init() {
-        User admin = new User();
-        admin.setRole("ADMIN");
-        admin.setUsername("admin");
-        admin.setPassword("admin");
-        userRepository.save(admin);
+        if (userRepository.findAll().isEmpty()) {
+            User admin = new User();
+            admin.setRole("ADMIN");
+            admin.setUsername("admin");
+            admin.setPassword("admin");
+            userRepository.save(admin);
+        }
     }
 }
