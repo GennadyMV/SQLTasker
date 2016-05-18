@@ -199,7 +199,7 @@ public class TaskController {
         queries.put(id, query);
         redirectAttributes.addFlashAttribute("messages", "Query sent.");
 
-        if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
+        if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryResult(task, query)) {
             RedirectAttributes messages = redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
             pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, true, categoryId);
         } else {

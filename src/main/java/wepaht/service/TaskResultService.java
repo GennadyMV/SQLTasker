@@ -21,15 +21,15 @@ public class TaskResultService {
     @Autowired
     private DatabaseService databaseService;
     
-    public boolean evaluateSubmittedQueryStrictly(Task task, String query){
+    public boolean evaluateSubmittedQueryResult(Task task, String query){
         Database database = task.getDatabase();
         Map<String, Table> queryResult = databaseService.performQuery(database.getId(), query);
         Map<String, Table> correctResult = databaseService.performQuery(database.getId(), task.getSolution());
     
-        boolean isCorrectColumns = compareColumns(queryResult, correctResult);
-        boolean isCorrectRows = compareRows(queryResult, correctResult);
+        boolean isCorrectColumnsInResult = compareColumns(queryResult, correctResult);
+        boolean isCorrectRowsInResult = compareRows(queryResult, correctResult);
 
-        return isCorrectColumns && isCorrectRows;
+        return isCorrectColumnsInResult && isCorrectRowsInResult;
     }
 
     private boolean compareColumns(Map<String, Table> query, Map<String, Table> correctAnswer) {
