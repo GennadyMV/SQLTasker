@@ -4,10 +4,12 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 public class Database extends AbstractPersistable<Long> {
 
+    @NotEmpty
     private String name;
 
     @Lob

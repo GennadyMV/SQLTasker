@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -100,5 +100,39 @@ public class DatabaseControllerTest {
                 .andReturn();
     }
 
+    @Test
+    public void createdDatabaseNameIsNotEmpty() throws Exception{
+        String dbName = "";
+        String dbSchema = "CREATE TABLE NOTEMPTYTEST(id integer);" +
+                            "INSERT INTO NOTEMPTYTEST (id) VALUES (7);";
 
+        mockMvc.perform(post(API_URI)
+                .param("name", dbName)
+                .param("databaseSchema", dbSchema)
+                .with(user("user").roles("ADMIN")).with(csrf()))
+//                .andExpect(status().is3xxRedirection())
+//                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
+
+        List<Database> databases = dbRepository.findAll();
+
+        assertFalse(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
+    }
+    
+    @Test
+    public void createdDatabaseNameIsNotNull() throws Exception{
+        String dbSchema = "CREATE TABLE NOTNULLTEST(id integer);" +
+                            "INSERT INTO NOTNULLTEST (id) VALUES (7);";
+
+        mockMvc.perform(post(API_URI)
+                .param("databaseSchema", dbSchema)
+                .with(user("user").roles("ADMIN")).with(csrf()))
+//                .andExpect(status().is3xxRedirection())
+//                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
+
+        List<Database> databases = dbRepository.findAll();
+
+        assertFalse(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
+    }
 }
