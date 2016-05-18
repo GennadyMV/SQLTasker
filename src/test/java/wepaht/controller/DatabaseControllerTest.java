@@ -135,4 +135,20 @@ public class DatabaseControllerTest {
 
         assertFalse(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
     }
+    
+    @Test
+    public void testAnyoneCanCreateDatabase() throws Exception {
+        String dbName = "suchDB";
+        String dbSchema = "CREATE TABLE WOW(id integer);" +
+                            "INSERT INTO WOW (id) VALUES (7);";
+
+        mockMvc.perform(post(API_URI).param("name", dbName).param("databaseSchema", dbSchema).with(user("user").roles("ADMIN")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
+
+        List<Database> databases = dbRepository.findByName(dbName);
+
+        assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
+    }
 }
