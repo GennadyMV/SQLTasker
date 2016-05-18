@@ -288,6 +288,7 @@ public class TaskControllerTest {
         assertTrue(tags.stream().filter(tag -> tag.getName().equals(tagName)).findFirst().isPresent());
     }
 
+    @Test
     public void teacherCanDeleteTag() throws Exception {
         Task task = randomTask();
         task = taskRepository.save(task);
@@ -305,5 +306,41 @@ public class TaskControllerTest {
         List<Tag> tags = tagRepository.findAll();
 
         assertFalse(tags.stream().filter(t -> t.getName().equals(tagName)).findFirst().isPresent());
+    }
+    
+    @Test
+    public void createdTaskNameIsNotEmpty() throws Exception {
+        String taskName = "";
+        Long databaseId = database.getId();
+        mockMvc.perform(post(API_URI).param("name", taskName)
+                    .param("description", "Name is not empty")
+                    .param("solution", "select * from persons;")
+                    .param("databaseId", databaseId.toString())
+                    .with(user("test").roles("ADMIN")).with(csrf()))
+//                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        List<Task> tasks = taskRepository.findAll();
+
+        assertFalse(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
+    }
+    
+    @Test
+    public void createdTaskNameIsNotNull() throws Exception {
+        Long databaseId = database.getId();
+        
+        String description = "Name is not null";
+        
+        mockMvc.perform(post(API_URI)
+                    .param("description", description)
+                    .param("solution", "select * from persons;")
+                    .param("databaseId", databaseId.toString())
+                    .with(user("test").roles("ADMIN")).with(csrf()))
+//                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        List<Task> tasks = taskRepository.findAll();
+
+        assertFalse(tasks.stream().filter(task -> task.getDescription().equals(description)).findFirst().isPresent());
     }
 }
