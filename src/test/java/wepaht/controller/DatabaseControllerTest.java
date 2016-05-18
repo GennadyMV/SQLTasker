@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -31,6 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import wepaht.service.UserService;
 
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -51,12 +56,20 @@ public class DatabaseControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Mock
+    UserService userServiceMock;
+    
+    @InjectMocks
+    DatabaseController databaseController;
 
     private MockMvc mockMvc;
     private Database testdatabase = null;
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
         dbService.createDatabase("testDatabase4", "CREATE TABLE Persons"
@@ -134,5 +147,28 @@ public class DatabaseControllerTest {
         List<Database> databases = dbRepository.findAll();
 
         assertFalse(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
+    }
+    
+    @Test
+    public void testAnyAuthenticatedCanCreateDatabase() throws Exception {
+        String dbName = "otherDB";
+        String dbSchema = "CREATE TABLE Hii(id integer);" +
+                            "INSERT INTO Hii (id) VALUES (7);";
+        
+//        Account student = new Account();
+//        student.setUsername("student");
+//        student.setPassword("student");
+//        student.setRole("STUDENT");
+//        student = userRepository.save(student);
+//        when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
+
+        mockMvc.perform(post(API_URI).param("name", dbName).param("databaseSchema", dbSchema).with(user("student").roles("STUDENT")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
+
+        List<Database> databases = dbRepository.findByName(dbName);
+
+        assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
     }
 }

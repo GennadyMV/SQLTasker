@@ -77,6 +77,7 @@ public class DatabaseService {
      * DatabaseController.
      *
      * @param databaseId ID of selected database
+     * @param updateQuery teehee
      * @return A map in which String-object indicates the name of certain table, and Table contains its' columns
      * and rows in separate lists. In case of broken database, the only returned table name is "ERROR".
      */
@@ -286,7 +287,13 @@ public class DatabaseService {
         Connection conn = DriverManager.getConnection(url, user, pwds);
 
         Statement statement = conn.createStatement();
-        int result = statement.executeUpdate(sql);
+        try {
+            int result = statement.executeUpdate(sql);
+        } catch (Exception e) {
+            conn.close();
+            return null;
+        }
+        
 
         return conn;
     }
