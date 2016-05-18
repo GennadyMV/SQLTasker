@@ -14,7 +14,7 @@ and open the template in the editor.
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div class="get-in-touch" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="get-in-touch" sec:authorize="!hasRole('ROLE_ADMIN')">
             <h2>Create new Database</h2>
             <form method="POST" th:action="@{/databases}">
                 <div class="get-in-touch-text-boxs">
