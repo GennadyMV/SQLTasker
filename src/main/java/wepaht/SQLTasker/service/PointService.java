@@ -2,14 +2,11 @@ package wepaht.SQLTasker.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Table;
 
 import java.util.*;
-import javax.annotation.PostConstruct;
 
 import wepaht.SQLTasker.domain.PastQuery;
-import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.PastQueryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 

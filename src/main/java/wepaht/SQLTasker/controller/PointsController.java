@@ -2,15 +2,11 @@ package wepaht.SQLTasker.controller;
 
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Table;
-import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.repository.UserRepository;
 import wepaht.SQLTasker.service.PointService;
 import wepaht.SQLTasker.service.UserService;
 
@@ -29,8 +25,9 @@ public class PointsController {
         if(userService.getAuthenticatedUser().getRole().equals("STUDENT")){
             return "redirect:/points/student";
         }
-        if (!pointService.getAllPoints().getRows().isEmpty()) {
-            Table pointsTable = pointService.getAllPoints();
+        
+        Table pointsTable = pointService.getAllPoints();
+        if (pointsTable.getRows()!= null) {
             Map<String, Table> tables = new HashMap<>();
             tables.put("Points of all users", pointsTable);
             model.addAttribute("tables", tables);
