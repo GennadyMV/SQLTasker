@@ -83,6 +83,7 @@ public class CategoryController {
             System.out.println("**********************************");
             category.setDescription(description);
             category.setTaskList(tasks);
+            System.out.println("Saving....");
             categoryRepository.save(category);
         } catch (Exception e) {
             return redirectMessage("Category creation failed!", redirectAttributes);            
