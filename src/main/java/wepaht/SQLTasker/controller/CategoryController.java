@@ -75,7 +75,7 @@ public class CategoryController {
         try {
             Category category = new Category();
             category.setName(name);
-            category.setStartDate(LocalDate.parse(startDate));
+            category.setStarts(LocalDate.parse(startDate));
             System.out.println("**********************************");
             System.out.println(startDate);
             category.setExpires(LocalDate.parse(expiredDate));
@@ -121,7 +121,7 @@ public class CategoryController {
         oldCategory.setName(name);
         oldCategory.setDescription(description);
         oldCategory.setExpires(LocalDate.parse(expiredDate));
-        oldCategory.setStartDate(LocalDate.parse(startDate));
+        oldCategory.setStarts(LocalDate.parse(startDate));
         List<Task> tasks = new ArrayList<>();
         if (taskIds != null) {
             for (Long taskId : taskIds) {
@@ -156,7 +156,7 @@ public class CategoryController {
             Model model, RedirectAttributes redirectAttributes) {
         Category category = categoryRepository.findOne(id);
         Account user = userService.getAuthenticatedUser();
-        if (category.getStartDate().isBefore(LocalDate.now()) || category.getStartDate().equals(LocalDate.now()) || user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
+        if (category.getStarts().isBefore(LocalDate.now()) || category.getStarts().equals(LocalDate.now()) || user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
             model.addAttribute("task", taskRepository.findOne(taskId));
             model.addAttribute("category", category);
             return "task";

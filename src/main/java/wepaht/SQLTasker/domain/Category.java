@@ -63,7 +63,7 @@ public class Category extends AbstractPersistable<Long> {
      *
      * @return date when user can do tasks on category.
      */
-    public LocalDate getStartDate() {
+    public LocalDate getStarts() {
         return starts;
     }
 
@@ -71,7 +71,7 @@ public class Category extends AbstractPersistable<Long> {
      *
      * @param startDate set date when user can do tasks on category.
      */
-    public void setStartDate(LocalDate startDate) {
+    public void setStarts(LocalDate startDate) {
         this.starts = startDate;
     }
 

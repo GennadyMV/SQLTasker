@@ -64,7 +64,7 @@ public class DevProfile {
         Category category = new Category();
         category.setName("first week");
         category.setDescription("easybeasy");
-        category.setStartDate(LocalDate.now());
+        category.setStarts(LocalDate.now());
         category.setExpires(LocalDate.MAX);
         categoryRepository.save(category);
 
