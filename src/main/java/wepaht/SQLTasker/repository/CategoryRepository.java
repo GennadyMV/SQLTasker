@@ -9,8 +9,8 @@ import java.util.List;
 @RestResource(exported = false)
 public interface CategoryRepository extends JpaRepository<Category, Long>{
 
-    List<Category> findByStartDateBefore(LocalDate date);
+    List<Category> findByStartsBefore(LocalDate date);
 
-    List<Category> findByStartDate(LocalDate date);
+    List<Category> findByStarts(LocalDate date);
 
 }

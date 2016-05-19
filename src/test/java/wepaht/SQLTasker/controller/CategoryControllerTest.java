@@ -122,7 +122,7 @@ public class CategoryControllerTest {
         category.setDescription("test");
         category.setTaskList(new ArrayList<>());
         category.setStartDate(LocalDate.now());
-        category.setExpiredDate(LocalDate.MAX);
+        category.setExpires(LocalDate.MAX);
 
         return category;
     }
@@ -161,7 +161,7 @@ public class CategoryControllerTest {
                     .param("name", category.getName())
                     .param("description", category.getDescription())
                     .param("startDate", category.getStartDate().toString())
-                    .param("expiredDate", category.getExpiredDate().toString())
+                    .param("expiredDate", category.getExpires().toString())
                     .with(user("teacher").roles("TEACHER")).with(csrf()))
                 .andExpect(status().isForbidden())
                 .andReturn();
@@ -180,7 +180,7 @@ public class CategoryControllerTest {
                     .param("name", "editing is possible")
                     .param("description", category.getDescription())
                     .param("startDate", category.getStartDate().toString())
-                    .param("expiredDate", category.getExpiredDate().toString())
+                    .param("expiredDate", category.getExpires().toString())
                     .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Category modified!"))
@@ -202,7 +202,7 @@ public class CategoryControllerTest {
                     .param("name", category.getName())
                     .param("description", category.getDescription())
                     .param("startDate", category.getStartDate().toString())
-                    .param("expiredDate", category.getExpiredDate().toString())
+                    .param("expiredDate", category.getExpires().toString())
                     .param("taskIds", task1.getId().toString())
                     .param("taskIds", task2.getId().toString())
                     .param("taskIds", task3.getId().toString())
@@ -223,7 +223,7 @@ public class CategoryControllerTest {
         Category futureCategory = createCategory();
         String name = "future";
         futureCategory.setName("future");
-        futureCategory.setStartDate(futureCategory.getExpiredDate());
+        futureCategory.setStartDate(futureCategory.getExpires());
 
         MvcResult result = mockMvc.perform(get(URI).with(user("stud").roles("STUDENT")))
                 .andExpect(model().attributeExists("categories"))
@@ -249,7 +249,7 @@ public class CategoryControllerTest {
                 .param("name", "First Category")
                 .param("description", category1.getDescription())
                 .param("startDate", category1.getStartDate().toString())
-                .param("expiredDate", category1.getExpiredDate().toString())
+                .param("expiredDate", category1.getExpires().toString())
                 .param("taskIds", task.getId().toString())
                 .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -260,7 +260,7 @@ public class CategoryControllerTest {
                 .param("name", "Second Category")
                 .param("description", category2.getDescription())
                 .param("startDate", category2.getStartDate().toString())
-                .param("expiredDate", category2.getExpiredDate().toString())
+                .param("expiredDate", category2.getExpires().toString())
                 .param("taskIds", task.getId().toString())
                 .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())

@@ -37,8 +37,8 @@ public class CategoryController {
         if (user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
             model.addAttribute("categories", categoryRepository.findAll());
         } else {
-            List<Category> categoryList = categoryRepository.findByStartDateBefore(LocalDate.now());
-            categoryList.addAll(categoryRepository.findByStartDate(LocalDate.now()));
+            List<Category> categoryList = categoryRepository.findByStartsBefore(LocalDate.now());
+            categoryList.addAll(categoryRepository.findByStarts(LocalDate.now()));
             model.addAttribute("categories", categoryList);
         }
 
@@ -78,7 +78,7 @@ public class CategoryController {
             category.setStartDate(LocalDate.parse(startDate));
             System.out.println("**********************************");
             System.out.println(startDate);
-            category.setExpiredDate(LocalDate.parse(expiredDate));
+            category.setExpires(LocalDate.parse(expiredDate));
             System.out.println(expiredDate);
             System.out.println("**********************************");
             category.setDescription(description);
@@ -120,7 +120,7 @@ public class CategoryController {
         Category oldCategory = categoryRepository.findOne(id);
         oldCategory.setName(name);
         oldCategory.setDescription(description);
-        oldCategory.setExpiredDate(LocalDate.parse(expiredDate));
+        oldCategory.setExpires(LocalDate.parse(expiredDate));
         oldCategory.setStartDate(LocalDate.parse(startDate));
         List<Task> tasks = new ArrayList<>();
         if (taskIds != null) {

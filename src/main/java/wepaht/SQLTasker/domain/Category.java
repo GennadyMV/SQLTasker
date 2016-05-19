@@ -20,10 +20,10 @@ public class Category extends AbstractPersistable<Long> {
     private List<Task> taskList;    
     
     @NotNull
-    private LocalDate startDate;
+    private LocalDate starts;
 
     @NotNull
-    private LocalDate expiredDate;
+    private LocalDate expires;
 
     private String description;
 
@@ -64,7 +64,7 @@ public class Category extends AbstractPersistable<Long> {
      * @return date when user can do tasks on category.
      */
     public LocalDate getStartDate() {
-        return startDate;
+        return starts;
     }
 
     /**
@@ -72,23 +72,23 @@ public class Category extends AbstractPersistable<Long> {
      * @param startDate set date when user can do tasks on category.
      */
     public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+        this.starts = startDate;
     }
 
     /**
      *
      * @return get the date when user can't get point from task which are in category.
      */
-    public LocalDate getExpiredDate() {
-        return expiredDate;
+    public LocalDate getExpires() {
+        return expires;
     }
 
     /**
      *
-     * @param expiredDate date when user can't get point from tasks which are in category.
+     * @param expires date when user can't get point from tasks which are in category.
      */
-    public void setExpiredDate(LocalDate expiredDate) {
-        this.expiredDate = expiredDate;
+    public void setExpires(LocalDate expires) {
+        this.expires = expires;
     }
 
     /**

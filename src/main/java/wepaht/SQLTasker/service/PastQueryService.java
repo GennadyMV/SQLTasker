@@ -29,7 +29,7 @@ public class PastQueryService {
         pastQuery.setTaskId(taskId);
         pastQuery.setCorrectness(correctness);
         pastQuery.setDate(new Date());
-        pastQuery.setCanGetPoint(compareExpirationDate(categoryRepository.findOne(categoryId).getExpiredDate()));
+        pastQuery.setCanGetPoint(compareExpirationDate(categoryRepository.findOne(categoryId).getExpires()));
         pastQueryRepository.save(pastQuery);
 
     }
