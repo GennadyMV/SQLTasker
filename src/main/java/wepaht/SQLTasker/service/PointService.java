@@ -26,7 +26,7 @@ public class PointService {
 
     public Integer getPointsByUsername(String username) {
 
-        List<PastQuery> pastQueries = pastQueryRepository.findByCorrectnessAndUsernameAndCanGetPoint(true, username, true);
+        List<PastQuery> pastQueries = pastQueryRepository.findByCorrectAndUsernameAndAwarded(true, username, true);
         if (pastQueries.isEmpty()) {
             return 0;
         }

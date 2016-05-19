@@ -19,15 +19,15 @@ public class PastQuery extends AbstractPersistable<Long> {
     private Long taskId;
 
     @Lob
-    private String pastQuery;
+    private String query;
 
-    private boolean canGetPoint;
+    private boolean awarded;
 
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    private boolean correctness;
+    private boolean correct;
 
     /**
      *
@@ -65,16 +65,16 @@ public class PastQuery extends AbstractPersistable<Long> {
      *
      * @return user's query.
      */
-    public String getPastQuery() {
-        return pastQuery;
+    public String getQuery() {
+        return query;
     }
 
     /**
      *
-     * @param pastQuery set user's query.
+     * @param query set user's query.
      */
-    public void setPastQuery(String pastQuery) {
-        this.pastQuery = pastQuery;
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     /**
@@ -82,7 +82,7 @@ public class PastQuery extends AbstractPersistable<Long> {
      * @return if query is correct.
      */
     public boolean getCorrectness() {
-        return correctness;
+        return correct;
     }
 
     /**
@@ -103,18 +103,18 @@ public class PastQuery extends AbstractPersistable<Long> {
 
     /**
      *
-     * @param correctness set if query is right.
+     * @param correct set if query is right.
      */
-    public void setCorrectness(boolean correctness) {
-        this.correctness = correctness;
+    public void setCorrect(boolean correct) {
+        this.correct = correct;
     }
 
     /**
      * Sets if user  can get points from query he or she made.
      * @param canGet set true if user made query between tasks expire date and start date.
      */
-    public void setCanGetPoint(boolean canGet) {
-        this.canGetPoint = canGet;
+    public void setAwarded(boolean canGet) {
+        this.awarded = canGet;
     }
 
     /**
@@ -122,6 +122,6 @@ public class PastQuery extends AbstractPersistable<Long> {
      * @return true if user can get points from query, false if not.
      */
     public boolean getCanGetPoint() {
-        return canGetPoint;
+        return awarded;
     }
 }

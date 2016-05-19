@@ -24,12 +24,12 @@ public class PastQueryService {
 
     public void saveNewPastQuery(String username, Long taskId, String query, boolean correctness, Long categoryId) {
         PastQuery pastQuery = new PastQuery();
-        pastQuery.setPastQuery(query);
+        pastQuery.setQuery(query);
         pastQuery.setUsername(username);
         pastQuery.setTaskId(taskId);
-        pastQuery.setCorrectness(correctness);
+        pastQuery.setCorrect(correctness);
         pastQuery.setDate(new Date());
-        pastQuery.setCanGetPoint(compareExpirationDate(categoryRepository.findOne(categoryId).getExpires()));
+        pastQuery.setAwarded(compareExpirationDate(categoryRepository.findOne(categoryId).getExpires()));
         pastQueryRepository.save(pastQuery);
 
     }
@@ -48,11 +48,11 @@ public class PastQueryService {
     public List returnQuery(String username, Long taskId, String isCorrect) {
 
         if (taskId != null && !isCorrect.equals("allAnswers") && !username.equals("allUsers")) {
-            return pastQueryRepository.findByTaskIdAndCorrectnessAndUsername(taskId, correctnessChecker(isCorrect), username);
+            return pastQueryRepository.findByTaskIdAndCorrectAndUsername(taskId, correctnessChecker(isCorrect), username);
         }
 
         if (taskId != null && !isCorrect.equals("allAnswers")) {
-            return pastQueryRepository.findByTaskIdAndCorrectness(taskId, correctnessChecker(isCorrect));
+            return pastQueryRepository.findByTaskIdAndCorrect(taskId, correctnessChecker(isCorrect));
         }
 
         if (taskId != null && !username.equals("allUsers")) {
@@ -60,11 +60,11 @@ public class PastQueryService {
         }
 
         if (!username.equals("allUsers") && !isCorrect.equals("allAnswers")) {
-            return pastQueryRepository.findByCorrectnessAndUsername(correctnessChecker(isCorrect), username);
+            return pastQueryRepository.findByCorrectAndUsername(correctnessChecker(isCorrect), username);
         }
 
         if (!isCorrect.equals("allAnswers")) {
-            return pastQueryRepository.findByCorrectness(correctnessChecker(isCorrect));
+            return pastQueryRepository.findByCorrect(correctnessChecker(isCorrect));
         }
 
         if (!username.equals("allUsers")) {
@@ -123,18 +123,22 @@ public class PastQueryService {
      */
     public void saveNewPastQueryForTests(String username, long taskId, String query, boolean correctness) {
         PastQuery pastQuery = new PastQuery();
-        pastQuery.setPastQuery(query);
+        pastQuery.setQuery(query);
         pastQuery.setUsername(username);
         pastQuery.setTaskId(taskId);
-        pastQuery.setCorrectness(correctness);
+        pastQuery.setCorrect(correctness);
         pastQuery.setDate(new Date());
 
         if(correctness){
-            pastQuery.setCanGetPoint(true);
+            pastQuery.setAwarded(true);
         }else{
-            pastQuery.setCanGetPoint(false);
+            pastQuery.setAwarded(false);
         }
         pastQueryRepository.save(pastQuery);
+    }
+    
+    public List getPoints() {
+        return pastQueryRepository.getPoints();
     }
 }
 

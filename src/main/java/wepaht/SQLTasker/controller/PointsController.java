@@ -27,7 +27,7 @@ public class PointsController {
         }
         
         Table pointsTable = pointService.getAllPoints();
-        if (pointsTable.getRows()!= null) {
+        if (!pointsTable.getRows().isEmpty()) {
             Map<String, Table> tables = new HashMap<>();
             tables.put("Points of all users", pointsTable);
             model.addAttribute("tables", tables);
