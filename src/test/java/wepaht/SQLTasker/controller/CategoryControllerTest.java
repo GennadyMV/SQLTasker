@@ -129,7 +129,7 @@ public class CategoryControllerTest {
 
     @Test
     public void statusIsOk() throws Exception{
-        mockMvc.perform(get(URI).with(user("stud")))
+        mockMvc.perform(get(URI).with(user("stud").roles("STUDENT")))
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -225,7 +225,7 @@ public class CategoryControllerTest {
         futureCategory.setName("future");
         futureCategory.setStartDate(futureCategory.getExpiredDate());
 
-        MvcResult result = mockMvc.perform(get(URI).with(user("stud")))
+        MvcResult result = mockMvc.perform(get(URI).with(user("stud").roles("STUDENT")))
                 .andExpect(model().attributeExists("categories"))
                 .andExpect(status().isOk())
                 .andReturn();

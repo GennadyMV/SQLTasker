@@ -19,11 +19,9 @@ public class Category extends AbstractPersistable<Long> {
     @ManyToMany(fetch=FetchType.EAGER)
     private List<Task> taskList;    
     
-//    @Temporal(TemporalType.DATE)
     @NotNull
     private LocalDate startDate;
 
-//    @Temporal(TemporalType.DATE)
     @NotNull
     private LocalDate expiredDate;
 

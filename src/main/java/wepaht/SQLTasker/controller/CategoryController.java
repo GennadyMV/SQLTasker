@@ -2,12 +2,9 @@ package wepaht.SQLTasker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Category;
@@ -17,12 +14,8 @@ import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.UserService;
 
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -83,7 +76,11 @@ public class CategoryController {
             Category category = new Category();
             category.setName(name);
             category.setStartDate(LocalDate.parse(startDate));
+            System.out.println("**********************************");
+            System.out.println(startDate);
             category.setExpiredDate(LocalDate.parse(expiredDate));
+            System.out.println(expiredDate);
+            System.out.println("**********************************");
             category.setDescription(description);
             category.setTaskList(tasks);
             categoryRepository.save(category);
