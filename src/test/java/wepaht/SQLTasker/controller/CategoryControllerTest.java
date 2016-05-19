@@ -30,6 +30,7 @@ import wepaht.SQLTasker.service.DatabaseService;
 import wepaht.SQLTasker.service.UserService;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -116,15 +117,12 @@ public class CategoryControllerTest {
     }
 
     private Category createCategory() throws Exception{
-        Date today = new Date();
-
         Category category = new Category();
         category.setName("create new category");
         category.setDescription("test");
         category.setTaskList(new ArrayList<>());
-        category.setStartDate(sdf.parse("" + today.getYear() + "-" + today.getMonth() + "-" + today.getDay()));
-        int nextYear = today.getYear() + 1;
-        category.setExpiredDate(sdf.parse("" + nextYear + "-" + today.getMonth() + "-" + today.getDay()));
+        category.setStartDate(LocalDate.now());
+        category.setExpiredDate(LocalDate.MAX);
 
         return category;
     }
@@ -143,8 +141,8 @@ public class CategoryControllerTest {
         mockMvc.perform(post(URI)
                     .param("name", category.getName())
                     .param("description", category.getDescription())
-                    .param("startDate", sdf.format((Date) category.getStartDate()))
-                    .param("expiredDate", sdf.format((Date) category.getExpiredDate()))
+                    .param("startDate", LocalDate.now().toString())
+                    .param("expiredDate", LocalDate.MAX.toString())
                     .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Category has been created!"))
@@ -162,8 +160,8 @@ public class CategoryControllerTest {
         mockMvc.perform(post(URI)
                     .param("name", category.getName())
                     .param("description", category.getDescription())
-                    .param("startDate", sdf.format((Date) category.getStartDate()))
-                    .param("expiredDate", sdf.format((Date) category.getExpiredDate()))
+                    .param("startDate", category.getStartDate().toString())
+                    .param("expiredDate", category.getExpiredDate().toString())
                     .with(user("teacher").roles("TEACHER")).with(csrf()))
                 .andExpect(status().isForbidden())
                 .andReturn();
@@ -181,8 +179,8 @@ public class CategoryControllerTest {
         mockMvc.perform(post(URI + "/" + category.getId() + "/edit")
                     .param("name", "editing is possible")
                     .param("description", category.getDescription())
-                    .param("startDate", sdf.format((Date) category.getStartDate()))
-                    .param("expiredDate", sdf.format((Date) category.getExpiredDate()))
+                    .param("startDate", category.getStartDate().toString())
+                    .param("expiredDate", category.getExpiredDate().toString())
                     .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Category modified!"))
@@ -203,8 +201,8 @@ public class CategoryControllerTest {
         mockMvc.perform(post(URI)
                     .param("name", category.getName())
                     .param("description", category.getDescription())
-                    .param("startDate", sdf.format((Date) category.getStartDate()))
-                    .param("expiredDate", sdf.format((Date) category.getExpiredDate()))
+                    .param("startDate", category.getStartDate().toString())
+                    .param("expiredDate", category.getExpiredDate().toString())
                     .param("taskIds", task1.getId().toString())
                     .param("taskIds", task2.getId().toString())
                     .param("taskIds", task3.getId().toString())
@@ -236,21 +234,22 @@ public class CategoryControllerTest {
 
         assertFalse(categories.stream().filter(cat -> cat.getName().equals(name)).findFirst().isPresent());
     }
-    @Transactional
+    
+    @Test
     public void taskCanBeInMultipleCategories() throws Exception{
         Category category1 = createCategory();
         category1.setName("First Category");
-        category1 = categoryRepository.save(createCategory());
+        category1 = categoryRepository.save(category1);
         Category category2 = createCategory();
         category2.setName("Second Category");
-        category2 = categoryRepository.save(createCategory());
+        category2 = categoryRepository.save(category2);
         Task task = randomTask();
 
         mockMvc.perform(post(URI + "/" + category1.getId() + "/edit")
                 .param("name", "First Category")
                 .param("description", category1.getDescription())
-                .param("startDate", sdf.format((Date) category1.getStartDate()))
-                .param("expiredDate", sdf.format((Date) category1.getExpiredDate()))
+                .param("startDate", category1.getStartDate().toString())
+                .param("expiredDate", category1.getExpiredDate().toString())
                 .param("taskIds", task.getId().toString())
                 .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -260,14 +259,16 @@ public class CategoryControllerTest {
         mockMvc.perform(post(URI + "/" + category2.getId() + "/edit")
                 .param("name", "Second Category")
                 .param("description", category2.getDescription())
-                .param("startDate", sdf.format((Date) category2.getStartDate()))
-                .param("expiredDate", sdf.format((Date) category2.getExpiredDate()))
+                .param("startDate", category2.getStartDate().toString())
+                .param("expiredDate", category2.getExpiredDate().toString())
                 .param("taskIds", task.getId().toString())
                 .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Category modified!"))
                 .andReturn();
 
+        category1 = categoryRepository.findOne(category1.getId());
+        category2 = categoryRepository.findOne(category2.getId());
         assertTrue(category1.getTaskList().contains(task) && category2.getTaskList().contains(task));
     }
 }

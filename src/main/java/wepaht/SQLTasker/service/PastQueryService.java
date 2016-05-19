@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.service;
 
+import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +34,8 @@ public class PastQueryService {
 
     }
 
-    private boolean compareExpirationDate(Date expiredDate) {
-        return expiredDate.after(new Date());
+    private boolean compareExpirationDate(LocalDate expiredDate) {
+        return expiredDate.isAfter(LocalDate.now());
     }
 
     /**

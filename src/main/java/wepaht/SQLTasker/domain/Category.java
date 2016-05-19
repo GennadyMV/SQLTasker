@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.domain;
 
+import java.time.LocalDate;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -15,16 +16,16 @@ public class Category extends AbstractPersistable<Long> {
     @NotBlank
     private String name;
 
-    @ManyToMany
-    private List<Task> taskList;
-
-    @Temporal(TemporalType.DATE)
+    @ManyToMany(fetch=FetchType.EAGER)
+    private List<Task> taskList;    
+    
+//    @Temporal(TemporalType.DATE)
     @NotNull
-    private Date startDate;
+    private LocalDate startDate;
 
-    @Temporal(TemporalType.DATE)
+//    @Temporal(TemporalType.DATE)
     @NotNull
-    private Date expiredDate;
+    private LocalDate expiredDate;
 
     private String description;
 
@@ -33,7 +34,7 @@ public class Category extends AbstractPersistable<Long> {
      * @return get name of the category.
      */
     public String getName() {
-        return name;
+        return name;        
     }
 
     /**
@@ -64,7 +65,7 @@ public class Category extends AbstractPersistable<Long> {
      *
      * @return date when user can do tasks on category.
      */
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
@@ -72,7 +73,7 @@ public class Category extends AbstractPersistable<Long> {
      *
      * @param startDate set date when user can do tasks on category.
      */
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
@@ -80,7 +81,7 @@ public class Category extends AbstractPersistable<Long> {
      *
      * @return get the date when user can't get point from task which are in category.
      */
-    public Date getExpiredDate() {
+    public LocalDate getExpiredDate() {
         return expiredDate;
     }
 
@@ -88,7 +89,7 @@ public class Category extends AbstractPersistable<Long> {
      *
      * @param expiredDate date when user can't get point from tasks which are in category.
      */
-    public void setExpiredDate(Date expiredDate) {
+    public void setExpiredDate(LocalDate expiredDate) {
         this.expiredDate = expiredDate;
     }
 

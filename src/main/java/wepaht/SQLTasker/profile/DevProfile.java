@@ -5,6 +5,7 @@
  */
 package wepaht.SQLTasker.profile;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.*;
 import javax.annotation.PostConstruct;
@@ -63,8 +64,8 @@ public class DevProfile {
         Category category = new Category();
         category.setName("first week");
         category.setDescription("easybeasy");
-        category.setStartDate(new Date());
-        category.setExpiredDate(new Date("22/22/2222"));
+        category.setStartDate(LocalDate.now());
+        category.setExpiredDate(LocalDate.MAX);
         categoryRepository.save(category);
 
         for (int i = 0; i < 10; i++) {
