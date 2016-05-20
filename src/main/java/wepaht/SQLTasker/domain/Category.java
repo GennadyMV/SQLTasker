@@ -6,7 +6,9 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
+import wepaht.SQLTasker.converter.LocalDatePersistenceConverter;
 
 
 @Entity
@@ -19,9 +21,11 @@ public class Category extends AbstractPersistable<Long> {
     private List<Task> taskList;    
     
     @NotNull
+    @Convert(converter = LocalDatePersistenceConverter.class)
     private LocalDate starts;
 
     @NotNull
+    @Convert(converter = LocalDatePersistenceConverter.class)
     private LocalDate expires;
 
     private String description;
