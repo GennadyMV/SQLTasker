@@ -83,7 +83,6 @@ public class CategoryController {
         return "redirect:/categories";
     }
 
-    @Transactional
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String getCategory(@PathVariable Long id,
             Model model) throws Exception {
