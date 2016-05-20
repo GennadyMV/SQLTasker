@@ -71,7 +71,7 @@ public class TaskController {
 
     @PostConstruct
     public void init() {
-        queries = new HashMap<>();
+        queries = new HashMap();
     }
 
     @RequestMapping(method = RequestMethod.GET)

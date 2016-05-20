@@ -60,7 +60,7 @@ public class CategoryController {
             return redirectMessage("Error! Start date is after expiridation date!", redirectAttributes);            
         }
 
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = new ArrayList();
         if (taskIds != null) {
             for (Long taskId : taskIds) {
                 tasks.add(taskRepository.findOne(taskId));

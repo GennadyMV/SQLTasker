@@ -32,7 +32,6 @@ public class CategoryService {
         if (!taskList.contains(task)) {
             taskList.add(task);
             category.setTaskList(taskList);
-            taskRepository.save(task);
         }
     }
 

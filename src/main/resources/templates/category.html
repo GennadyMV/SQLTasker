@@ -38,7 +38,7 @@
         <div class="get-in-touch" th:if="${category.taskList}">
             <h3>Task list</h3>
             <div th:each="task : ${taskList}">
-                <h4 th:text="${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</h4>
+                <h4><a th:text="${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</h4>
             </div>
         </div>
 
