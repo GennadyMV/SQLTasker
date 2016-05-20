@@ -1,8 +1,6 @@
 package wepaht.SQLTasker.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import wepaht.SQLTasker.domain.AuthenticationToken;
@@ -10,7 +8,6 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
 import wepaht.SQLTasker.repository.UserRepository;
 
-import javax.transaction.Transactional;
 
 @Service
 public class UserService {

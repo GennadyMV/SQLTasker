@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.PastQuery;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.PastQueryRepository;

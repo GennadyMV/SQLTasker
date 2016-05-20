@@ -23,7 +23,7 @@ public class Category extends AbstractPersistable<Long> {
 //             inverseJoinColumns = { @JoinColumn(name = "USER_PROFILE_ID") })
     
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Task> taskList;    
     
     @NotNull

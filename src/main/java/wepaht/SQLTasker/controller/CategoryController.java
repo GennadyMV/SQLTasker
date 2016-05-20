@@ -17,7 +17,7 @@ import wepaht.SQLTasker.service.UserService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 @RequestMapping("categories")
@@ -33,6 +33,7 @@ public class CategoryController {
     private UserService userService;
 
     @RequestMapping(method = RequestMethod.GET)
+    @Transactional
     public String getCategories(Model model) {
         Account user = userService.getAuthenticatedUser();
         if (user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
