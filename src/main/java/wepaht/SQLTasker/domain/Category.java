@@ -17,6 +17,7 @@ public class Category extends AbstractPersistable<Long> {
     @NotBlank
     private String name;
 
+    @Lob
     @ManyToMany//(fetch=FetchType.EAGER)
     private List<Task> taskList;    
     
