@@ -49,17 +49,12 @@ public class CategoryController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(
-//            BindingResult result,
             RedirectAttributes redirectAttributes,            
             @RequestParam String name,
             @RequestParam String starts,
             @RequestParam String expires,
             @RequestParam String description,
             @RequestParam(required = false) List<Long> taskIds) {
-
-//        if (result.hasErrors()) {
-//            return redirectMessage(result.toString(), redirectAttributes);            
-//        }
 
         if (LocalDate.parse(starts).isAfter(LocalDate.parse(expires))) {
             return redirectMessage("Error! Start date is after expiridation date!", redirectAttributes);            
@@ -76,14 +71,9 @@ public class CategoryController {
             Category category = new Category();
             category.setName(name);
             category.setStarts(LocalDate.parse(starts));
-            System.out.println("**********************************");
-            System.out.println(starts);
             category.setExpires(LocalDate.parse(expires));
-            System.out.println(expires);
-            System.out.println("**********************************");
             category.setDescription(description);
             category.setTaskList(tasks);
-            System.out.println("Saving....");
             categoryRepository.save(category);
         } catch (Exception e) {
             return redirectMessage("Category creation failed!", redirectAttributes);            
@@ -133,7 +123,7 @@ public class CategoryController {
         try {
             categoryRepository.save(oldCategory);
         } catch (Exception e) {
-            redirectMessage("Category update failed", redirectAttributes);
+            return redirectMessage("Category update failed", redirectAttributes);
         }
         
         
@@ -170,11 +160,4 @@ public class CategoryController {
         ra.addFlashAttribute("messages", message);
         return "redirect:/categories/";
     }
-
-//    @InitBinder
-//    public void initBinder(WebDataBinder binder) {
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        sdf.setLenient(true);
-//        binder.registerCustomEditor(LocalDate.class, new CustomDateEditor(sdf, true));
-//    }
 }

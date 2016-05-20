@@ -13,4 +13,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long>{
 
     List<Category> findByStarts(LocalDate date);
 
+    List<Category> findByStartsBeforeAndExpiresAfter(LocalDate date1, LocalDate date2);
 }
