@@ -37,8 +37,7 @@ public class CategoryController {
         if (user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
             model.addAttribute("categories", categoryRepository.findAll());
         } else {
-            List<Category> categoryList = categoryRepository.findByStartsBefore(LocalDate.now());
-            categoryList.addAll(categoryRepository.findByStarts(LocalDate.now()));
+            List<Category> categoryList = categoryRepository.getActiveCategories(LocalDate.now());
             model.addAttribute("categories", categoryList);
         }
 
