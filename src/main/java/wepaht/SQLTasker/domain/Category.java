@@ -17,6 +17,12 @@ public class Category extends AbstractPersistable<Long> {
     @NotBlank
     private String name;
 
+    
+//    @JoinTable(name = "APP_USER_USER_PROFILE", 
+//             joinColumns = { @JoinColumn(name = "USER_ID") }, 
+//             inverseJoinColumns = { @JoinColumn(name = "USER_PROFILE_ID") })
+    
+    
     @ManyToMany
     private List<Task> taskList;    
     

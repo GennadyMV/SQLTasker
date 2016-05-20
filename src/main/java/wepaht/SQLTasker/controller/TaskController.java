@@ -108,7 +108,6 @@ public class TaskController {
 
         Database db = databaseRepository.findOne(databaseId);
         task.setDatabase(db);
-        task.setCategoryList(new ArrayList<Category>());
         if(categoryIds!=null) {
             categoryService.setTaskToCategories(task, categoryIds);
         }
@@ -165,10 +164,16 @@ public class TaskController {
     }
 
     @Secured("ROLE_ADMIN")
+    @Transactional
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
 
-        categoryService.removeTaskFromCategory(taskRepository.findOne(id));
+        Task removing = taskRepository.findOne(id);
+        
+        removing.getCategories().stream().forEach((cat) -> {
+            cat.getTaskList().remove(removing);
+        });
+        
         taskRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "Task deleted!");
         return "redirect:/tasks";

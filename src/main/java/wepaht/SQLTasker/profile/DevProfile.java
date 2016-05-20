@@ -6,7 +6,6 @@
 package wepaht.SQLTasker.profile;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.*;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -100,7 +99,6 @@ public class DevProfile {
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
         task.setDatabase(databaseRepository.findAll().get(0));
         task.setSolution("select address from persons");
-        task.setCategoryList(new ArrayList<>());
         return task;
     }
 }

@@ -17,6 +17,8 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 public class Task extends AbstractPersistable<Long> {
+    @ManyToMany(mappedBy = "taskList")
+    private List<Category> categories;
 
     @NotBlank
     @NotNull
@@ -27,9 +29,6 @@ public class Task extends AbstractPersistable<Long> {
 
     @ManyToOne
     private Database database;
-
-    @ManyToMany
-    private List<Category> categoryList;
 
     /**
      * @return the name
@@ -81,14 +80,13 @@ public class Task extends AbstractPersistable<Long> {
         this.solution = solution;
     }
 
-    public void setCategoryList(List<Category> categoryList){
-        this.categoryList=categoryList;
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    public void addCategoryToList(Category category){
-        this.categoryList.add(category);
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
-    public List<Category> getCategoryList(){
-        return categoryList;
-    }
+    
+    
 }
