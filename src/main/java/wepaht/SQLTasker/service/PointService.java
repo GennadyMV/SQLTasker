@@ -82,43 +82,13 @@ public class PointService {
     }
 
     public Table getAllPoints() {
-
-        List<PastQuery> pastQueries = pastQueryService.returnQuery("allUsers", null, "true");
-        if (pastQueries.isEmpty()) {
-            return new Table("empty");
-        }
-
         pointsTable = new Table("points");
         List<String> columns = new ArrayList<>();
         columns.add("username");
         columns.add("points");
         pointsTable.setColumns(columns);
-        pointsTable.setRows(new ArrayList<>());
-
-        Map<String, List> userData = new HashMap<>();
-
-        for (PastQuery query : pastQueries) {
-
-            String username = query.getUsername();
-            if (!userData.containsKey(username)) {
-                List<Long> tasksCompleted = new ArrayList<>();
-                userData.put(username, tasksCompleted);
-            }
-            List<Long> tasksCompleted = userData.get(username);
-            Long taskId = query.getTaskId();
-
-            if (!tasksCompleted.contains(taskId)) {
-                tasksCompleted.add(taskId);
-            }
-        }
-
-        Set<String> usernames = userData.keySet();
-        for (String username : usernames) {
-            List<String> row = new ArrayList<>();
-            row.add(username);
-            row.add("" + userData.get(username).size());
-            pointsTable.getRows().add(row);
-        }
+        pointsTable.setRows(pastQueryService.getPoints());
+    
         return pointsTable;
     }
 
