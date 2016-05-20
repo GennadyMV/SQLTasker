@@ -52,8 +52,8 @@ public class CategoryController {
 //            BindingResult result,
             RedirectAttributes redirectAttributes,            
             @RequestParam String name,
-            @RequestParam String startDate,
-            @RequestParam String expiredDate,
+            @RequestParam String starts,
+            @RequestParam String expires,
             @RequestParam String description,
             @RequestParam(required = false) List<Long> taskIds) {
 
@@ -61,7 +61,7 @@ public class CategoryController {
 //            return redirectMessage(result.toString(), redirectAttributes);            
 //        }
 
-        if (LocalDate.parse(startDate).isAfter(LocalDate.parse(expiredDate))) {
+        if (LocalDate.parse(starts).isAfter(LocalDate.parse(expires))) {
             return redirectMessage("Error! Start date is after expiridation date!", redirectAttributes);            
         }
 
@@ -75,11 +75,11 @@ public class CategoryController {
         try {
             Category category = new Category();
             category.setName(name);
-            category.setStarts(LocalDate.parse(startDate));
+            category.setStarts(LocalDate.parse(starts));
             System.out.println("**********************************");
-            System.out.println(startDate);
-            category.setExpires(LocalDate.parse(expiredDate));
-            System.out.println(expiredDate);
+            System.out.println(starts);
+            category.setExpires(LocalDate.parse(expires));
+            System.out.println(expires);
             System.out.println("**********************************");
             category.setDescription(description);
             category.setTaskList(tasks);
