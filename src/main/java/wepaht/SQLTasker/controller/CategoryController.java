@@ -88,7 +88,9 @@ public class CategoryController {
     public String getCategory(@PathVariable Long id,
             Model model) throws Exception {
         Category category = categoryRepository.findOne(id);
+        List<Task> taskList = category.getTaskList();
         model.addAttribute("category", category);
+        model.addAttribute("taskList", taskList);
         return "category";
     }
 
