@@ -17,6 +17,7 @@ import wepaht.SQLTasker.service.UserService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
 
 @Controller
 @RequestMapping("categories")
@@ -82,10 +83,12 @@ public class CategoryController {
         return "redirect:/categories";
     }
 
+    @Transactional
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String getCategory(@PathVariable Long id,
             Model model) throws Exception {
-        model.addAttribute("category", categoryRepository.findOne(id));
+        Category category = categoryRepository.findOne(id);
+        model.addAttribute("category", category);
         return "category";
     }
 
