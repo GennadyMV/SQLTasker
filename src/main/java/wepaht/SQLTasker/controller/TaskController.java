@@ -22,7 +22,6 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.domain.Tag;
@@ -33,6 +32,7 @@ import wepaht.SQLTasker.service.CategoryService;
 import wepaht.SQLTasker.service.DatabaseService;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.TaskResultService;
+import wepaht.SQLTasker.service.TaskService;
 import wepaht.SQLTasker.service.UserService;
 
 @Controller
@@ -68,6 +68,9 @@ public class TaskController {
 
     @Autowired
     CategoryRepository categoryRepository;
+    
+    @Autowired
+    TaskService taskService;
 
     @PostConstruct
     public void init() {
@@ -168,13 +171,8 @@ public class TaskController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
 
-        Task removing = taskRepository.findOne(id);
+        taskService.removeTask(id);
         
-        removing.getCategories().stream().forEach((cat) -> {
-            cat.getTaskList().remove(removing);
-        });
-        
-        taskRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "Task deleted!");
         return "redirect:/tasks";
     }
@@ -215,9 +213,9 @@ public class TaskController {
 
         if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryResult(task, query)) {
             RedirectAttributes messages = redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, true, categoryId);
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task, query, true, categoryId);
         } else {
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, false, categoryId);
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task, query, false, categoryId);
         }
 
         Map<String, Table> queryResult = databaseService.performQuery(task.getDatabase().getId(), query);

@@ -25,14 +25,7 @@ public class RestExportController {
         List<PointHolder> points = new ArrayList<>();
 
         if (isValidToken(exportToken)) {
-            List<List<String>> rows = pointService.getAllPoints().getRows();
-            for (List<String> row : rows) {
-                PointHolder point = new PointHolder();
-                point.setUsername(row.get(0));
-                point.setPoints(Integer.valueOf(row.get(1)));
-
-                points.add(point);
-            }
+            points = pointService.exportAllPoints();
         }
 
         return points;
@@ -40,10 +33,9 @@ public class RestExportController {
 
     @RequestMapping(value = "/points/{username}", method = RequestMethod.POST)
     public PointHolder getPointsByUsername(@PathVariable String username, @RequestParam String exportToken) {
-        PointHolder points = new PointHolder();
+        PointHolder points = new PointHolder(null, null);
         if (isValidToken(exportToken)) {
-            points.setUsername(username);
-            points.setPoints(pointService.getPointsByUsername(username));
+            points = new PointHolder(username, pointService.getPointsByUsername(username).longValue());            
         }
 
         return points;

@@ -10,22 +10,27 @@ import wepaht.SQLTasker.repository.PastQueryRepository;
 
 import java.util.Date;
 import java.util.List;
+import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.repository.TaskRepository;
 
 
 @Service
 public class PastQueryService {
 
     @Autowired
-    PastQueryRepository pastQueryRepository;
+    private PastQueryRepository pastQueryRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
+    
+    @Autowired
+    private TaskRepository taskRepository;
 
-    public void saveNewPastQuery(String username, Long taskId, String query, boolean correctness, Long categoryId) {
+    public void saveNewPastQuery(String username, Task task, String query, boolean correctness, Long categoryId) {
         PastQuery pastQuery = new PastQuery();
         pastQuery.setQuery(query);
         pastQuery.setUsername(username);
-        pastQuery.setTaskId(taskId);
+        pastQuery.setTask(task);
         pastQuery.setCorrect(correctness);
         pastQuery.setDate(new Date());
         pastQuery.setAwarded(compareExpirationDate(categoryRepository.findOne(categoryId).getExpires()));
@@ -45,17 +50,23 @@ public class PastQueryService {
      * @return wanted list of queries.
      */
     public List returnQuery(String username, Long taskId, String isCorrect) {
+        
+        Task task = null;
+        
+        if (taskId != null) {
+            task = taskRepository.findOne(taskId);
+        }
 
         if (taskId != null && !isCorrect.equals("allAnswers") && !username.equals("allUsers")) {
-            return pastQueryRepository.findByTaskIdAndCorrectAndUsername(taskId, correctnessChecker(isCorrect), username);
+            return pastQueryRepository.findByTaskAndCorrectAndUsername(task, correctnessChecker(isCorrect), username);
         }
 
         if (taskId != null && !isCorrect.equals("allAnswers")) {
-            return pastQueryRepository.findByTaskIdAndCorrect(taskId, correctnessChecker(isCorrect));
+            return pastQueryRepository.findByTaskAndCorrect(task, correctnessChecker(isCorrect));
         }
 
         if (taskId != null && !username.equals("allUsers")) {
-            return pastQueryRepository.findByTaskIdAndUsername(taskId, username);
+            return pastQueryRepository.findByTaskAndUsername(task, username);
         }
 
         if (!username.equals("allUsers") && !isCorrect.equals("allAnswers")) {
@@ -70,7 +81,7 @@ public class PastQueryService {
             return pastQueryRepository.findByUsername(username);
         }
         if (taskId != null) {
-            return pastQueryRepository.findByTaskId(taskId);
+            return pastQueryRepository.findByTask(task);
         }
 
         return pastQueryRepository.findAll();
@@ -116,15 +127,15 @@ public class PastQueryService {
     /**
      * Used only in test
      * @param username
-     * @param taskId
+     * @param task
      * @param query
      * @param correctness
      */
-    public void saveNewPastQueryForTests(String username, long taskId, String query, boolean correctness) {
+    public void saveNewPastQueryForTests(String username, Task task, String query, boolean correctness) {
         PastQuery pastQuery = new PastQuery();
         pastQuery.setQuery(query);
         pastQuery.setUsername(username);
-        pastQuery.setTaskId(taskId);
+        pastQuery.setTask(task);
         pastQuery.setCorrect(correctness);
         pastQuery.setDate(new Date());
 
@@ -138,6 +149,10 @@ public class PastQueryService {
     
     public List getPoints() {
         return pastQueryRepository.getPoints();
+    }
+    
+    public List getExercisesAndAwardedByUsername(String username) {
+        return pastQueryRepository.getExercisesAndAwardedByUsername(username);
     }
 }
 

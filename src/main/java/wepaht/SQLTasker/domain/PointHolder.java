@@ -6,13 +6,18 @@ package wepaht.SQLTasker.domain;
 public class PointHolder {
 
     private String username;
-    private Integer points;
+    private Long points;
 
+    public PointHolder(String username, Long points) {
+        this.username = username;
+        this.points = points;
+    }
+    
     public String getUsername() {
         return username;
     }
 
-    public Integer getPoints() {
+    public Long getPoints() {
         return points;
     }
 
@@ -20,7 +25,7 @@ public class PointHolder {
         this.username = username;
     }
 
-    public void setPoints(Integer points) {
+    public void setPoints(Long points) {
         this.points = points;
     }
 }

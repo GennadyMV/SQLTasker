@@ -7,6 +7,7 @@ import wepaht.SQLTasker.domain.Table;
 import java.util.*;
 
 import wepaht.SQLTasker.domain.PastQuery;
+import wepaht.SQLTasker.domain.PointHolder;
 import wepaht.SQLTasker.repository.PastQueryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 
@@ -25,59 +26,17 @@ public class PointService {
     public Table pointsTable;
 
     public Integer getPointsByUsername(String username) {
-
-        List<PastQuery> pastQueries = pastQueryRepository.findByCorrectAndUsernameAndAwarded(true, username, true);
-        if (pastQueries.isEmpty()) {
-            return 0;
-        }
-
-        List<Long> tasksCompleted = new ArrayList<>();
-
-        for (PastQuery query : pastQueries) {
-            Long taskId = query.getTaskId();
-            if (!tasksCompleted.contains(taskId)) {
-                tasksCompleted.add(taskId);
-            }
-        }
-
-        return tasksCompleted.size();
+        return pastQueryRepository.getPointsByUsername(username);
     }
 
-    public Table getPointsAndExercisesByUsername(String username) {
-
-        List<PastQuery> pastQueries = pastQueryService.returnQuery(username, null, "allAnswers");
-        if (pastQueries.isEmpty()) {
-            return new Table("empty");
-        }
-
+    public Table getExercisesAndAwardedByUsername(String username) {
         pointsTable = new Table("points");
         List<String> columns = new ArrayList<>();
         columns.add("exercise");
         columns.add("points");
         pointsTable.setColumns(columns);
-        pointsTable.setRows(new ArrayList<>());
-        Map<Long, Boolean> tasksCompleted = new HashMap<>();
-
-        for (PastQuery query : pastQueries) {
-
-            Long taskId = query.getTaskId();
-
-            if (query.getCorrectness() && query.getCanGetPoint()) {
-                tasksCompleted.put(taskId, true);
-            } else {
-                tasksCompleted.put(taskId, false);
-            }
-        }
-        for (Long taskId : tasksCompleted.keySet()) {
-            List<String> row = new ArrayList<>();
-            row.add(taskRepository.findOne(taskId).getName());
-            if (tasksCompleted.get(taskId)) {
-                row.add("" + 1);
-            } else {
-                row.add("" + 0);
-            }
-            pointsTable.getRows().add(row);
-        }
+        pointsTable.setRows(pastQueryService.getExercisesAndAwardedByUsername(username));
+        
         return pointsTable;
     }
 
@@ -92,4 +51,7 @@ public class PointService {
         return pointsTable;
     }
 
+    public List<PointHolder> exportAllPoints() {
+        return pastQueryRepository.exportAllPoints();
+    }
 }

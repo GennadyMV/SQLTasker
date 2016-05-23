@@ -7,6 +7,7 @@ import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import javax.persistence.ManyToOne;
 
 /**
  * Users queries from tasks. Controls which tasks user can get points from.
@@ -16,7 +17,8 @@ public class PastQuery extends AbstractPersistable<Long> {
 
     private String username;
 
-    private Long taskId;
+    @ManyToOne
+    private Task task;
 
     @Lob
     private String query;
@@ -43,22 +45,6 @@ public class PastQuery extends AbstractPersistable<Long> {
      */
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    /**
-     *
-     * @return return id of the task which query is associated.
-     */
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    /**
-     *
-     * @param taskId set id of the task which query is associated.
-     */
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
     }
 
     /**
@@ -124,4 +110,14 @@ public class PastQuery extends AbstractPersistable<Long> {
     public boolean getCanGetPoint() {
         return awarded;
     }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+    
+    
 }

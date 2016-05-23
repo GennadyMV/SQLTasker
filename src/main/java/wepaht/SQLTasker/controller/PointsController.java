@@ -40,8 +40,8 @@ public class PointsController {
     @RequestMapping(value="/student",method = RequestMethod.GET)
     public String listPointsAndExercises(Model model, RedirectAttributes redirectAttributes) {
         String username = userService.getAuthenticatedUser().getUsername();
-        if (!pointService.getPointsAndExercisesByUsername(username).getRows().isEmpty()) {
-            Table pointsTable = pointService.getPointsAndExercisesByUsername(username);
+        if (!pointService.getExercisesAndAwardedByUsername(username).getRows().isEmpty()) {
+            Table pointsTable = pointService.getExercisesAndAwardedByUsername(username);
             Map<String, Table> tables = new HashMap<>();
             tables.put("Points from exercises:", pointsTable);
             model.addAttribute("tables", tables);

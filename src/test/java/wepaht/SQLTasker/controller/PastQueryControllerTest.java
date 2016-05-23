@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.controller;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import wepaht.SQLTasker.controller.PastQueryController;
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +38,9 @@ import wepaht.SQLTasker.service.DatabaseService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import wepaht.SQLTasker.domain.PastQuery;
+import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.service.PastQueryService;
+import wepaht.SQLTasker.service.TaskService;
 import wepaht.SQLTasker.service.UserService;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -47,6 +50,9 @@ public class PastQueryControllerTest {
 
     private final String API_URI = "/queries";
 
+    @Autowired
+    private TaskService taskService;
+    
     @Autowired
     private WebApplicationContext webAppContext;
 
@@ -78,6 +84,7 @@ public class PastQueryControllerTest {
     private PastQuery pastQuery = null;
     private Database database = null;
     private Account student = null;
+    private Task task = null;
 
     @Before
     public void setUp() {
@@ -100,13 +107,23 @@ public class PastQueryControllerTest {
         student.setRole("STUDENT");
         student = userRepository.save(student);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
+        task = taskRepository.save(randomTask());
     }
 
     @After
     public void tearDown() {
-        if (student != null) {
-            userRepository.delete(student);
+        userRepository.deleteAll();
+        for (Task task : taskRepository.findAll()) {
+            taskService.removeTask(task.getId());
         }
+    }
+    
+    private Task randomTask() {
+        Task task = new Task();
+        task.setName(RandomStringUtils.randomAlphanumeric(10));
+        task.setDescription(RandomStringUtils.randomAlphabetic(30));
+        task.setDatabase(database);
+        return task;
     }
 
     @Test
@@ -122,9 +139,9 @@ public class PastQueryControllerTest {
     
     @Test
     public void findsQueryByTaskId() throws Exception {
-        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", task, "select firstname from persons", true);
         
-        mockMvc.perform(post(API_URI).param("taskId", ""+1337l).param("username", "allUsers").param("isCorrect", "allAnswers")
+        mockMvc.perform(post(API_URI).param("taskId", "" + task.getId()).param("username", "allUsers").param("isCorrect", "allAnswers")
                     .with(user("teach").roles("TEACHER")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Here are queries:"))
@@ -134,7 +151,7 @@ public class PastQueryControllerTest {
     
     @Test
     public void findsQueryByUsername() throws Exception {
-        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", task, "select firstname from persons", true);
         
         mockMvc.perform(post(API_URI).param("username", "stud").param("isCorrect", "true")
                     .with(user("teach").roles("TEACHER")).with(csrf()))
@@ -146,7 +163,7 @@ public class PastQueryControllerTest {
      
     @Test
     public void findsQueryByIscorrect() throws Exception {
-        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", task, "select firstname from persons", true);
         
         mockMvc.perform(post(API_URI).param("username", "allUsers").param("isCorrect", "true")
                 .with(user("teach").roles("TEACHER")).with(csrf()))
@@ -157,9 +174,9 @@ public class PastQueryControllerTest {
     
     @Test 
     public void findsQueryByAllInfo() throws Exception { 
-        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", task, "select firstname from persons", true);
         
-        mockMvc.perform(post(API_URI).param("taskId", ""+1337l).param("username", "stud").param("isCorrect", "true")
+        mockMvc.perform(post(API_URI).param("taskId", ""+task.getId()).param("username", "stud").param("isCorrect", "true")
                 .with(user("teach").roles("TEACHER")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Here are queries:"))
@@ -180,7 +197,7 @@ public class PastQueryControllerTest {
 
     @Test
     public void studentFindsQuery() throws Exception {
-        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", task, "select firstname from persons", true);
 
         mockMvc.perform(post(API_URI+"/student")
                     .param("username", "stud")

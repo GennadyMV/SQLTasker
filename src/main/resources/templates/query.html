@@ -53,12 +53,12 @@
 
             <div class="get-in-touch">
                 <div th:each="qr : ${pastQueries}">
-                    <table>
+                    <table class=" table table-bordered">
                         <tr>
                             <div>
-                                <th th:text="${qr.taskId}">Column name</th>
+                                <th th:text="${qr.task.name}">Column name</th>
                                 <th th:text="${qr.username}">Column name</th>
-                                <th th:text="${qr.pastQuery}">Column name</th>
+                                <th th:text="${qr.query}">Column name</th>
                                 <th th:text="${qr.correctness}">Column name</th>
                                 <th th:text="${qr.date}">Column name</th>
                             </div>

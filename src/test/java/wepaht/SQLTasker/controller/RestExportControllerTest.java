@@ -35,6 +35,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.repository.TaskRepository;
+import wepaht.SQLTasker.service.TaskService;
 
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -53,6 +56,12 @@ public class RestExportControllerTest {
 
     @Autowired
     PastQueryRepository pastQueryRepository;
+    
+    @Autowired
+    TaskRepository taskRepository;
+    
+    @Autowired
+    TaskService taskService;
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     @Autowired
@@ -76,6 +85,8 @@ public class RestExportControllerTest {
     private final String name1 = "0123456789";
     private final String name2 = "0987654321";
     private String authToken;
+    private Task task1;
+    private Task task2;
 
     @Before
     public void setUp() {
@@ -83,9 +94,15 @@ public class RestExportControllerTest {
 
         pastQueryRepository.deleteAll();
 
-        pastQueryService.saveNewPastQueryForTests(name1, 1l, null, true);
-        pastQueryService.saveNewPastQueryForTests(name1, 2l, null, true);
-        pastQueryService.saveNewPastQueryForTests(name2, 1l, null, true);
+        task1 = new Task();
+        task1.setName("Export test 1");
+        task1 = taskRepository.save(task1);
+        task2 = new Task();
+        task2.setName("Export test 2");
+        task2 = taskRepository.save(task2);
+        pastQueryService.saveNewPastQueryForTests(name1, task1, null, true);
+        pastQueryService.saveNewPastQueryForTests(name1, task2, null, true);
+        pastQueryService.saveNewPastQueryForTests(name2, task1, null, true);
 
         userRepository.deleteAll();
         Account user = new Account();
@@ -107,6 +124,8 @@ public class RestExportControllerTest {
     @After
     public void tearDown() {
         tokenRepository.deleteAll();
+        taskService.removeTask(task1.getId());
+        taskService.removeTask(task2.getId());
     }
 
     @Test

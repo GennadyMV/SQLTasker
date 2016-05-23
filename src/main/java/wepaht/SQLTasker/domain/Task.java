@@ -7,6 +7,7 @@ package wepaht.SQLTasker.domain;
 
 import java.util.*;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 public class Task extends AbstractPersistable<Long> {
-    @ManyToMany(mappedBy = "taskList")
+    @ManyToMany(mappedBy = "taskList", fetch = FetchType.EAGER)
     private List<Category> categories;
 
     @NotBlank

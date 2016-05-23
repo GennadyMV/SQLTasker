@@ -19,6 +19,8 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.UserRepository;
 
 import static junit.framework.TestCase.assertTrue;
+import org.junit.After;
+import org.mockito.Mockito;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -29,7 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.PastQueryService;
+import wepaht.SQLTasker.service.TaskService;
 import wepaht.SQLTasker.service.UserService;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -45,6 +50,12 @@ public class PointsControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private TaskRepository taskRepository;
+    
+    @Autowired
+    private TaskService taskService;
 
     @Mock
     UserService userServiceMock;
@@ -54,6 +65,7 @@ public class PointsControllerTest {
 
     private MockMvc mockMvc = null;
     private Account teacher = null;
+    private Task task;
 
     @Before
     public void setUp() {
@@ -68,6 +80,15 @@ public class PointsControllerTest {
         teacher.setPassword("test");
         teacher = userRepository.save(teacher);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
+        
+        task = new Task();
+        task.setName("Points test");
+        task = taskRepository.save(task);
+    }
+    
+    @After
+    public void tearDown() {
+        taskService.removeTask(task.getId());
     }
 
     @Test
@@ -83,7 +104,7 @@ public class PointsControllerTest {
     public void returnsTable() throws Exception {
         when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
         for(Long l=0l; l<5; l++){
-        pastQueryService.saveNewPastQueryForTests("student", l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("student", task, "select firstname from persons", true);
         }
         mockMvc.perform(get("/points").with(user("user").roles("TEACHER")).with(csrf()))
                 .andExpect(view().name("points"))
