@@ -3,6 +3,7 @@ package wepaht.SQLTasker.controller;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -37,6 +38,7 @@ public class PointsController {
         return "points";
     } 
     
+    @Transactional
     @RequestMapping(value="/student",method = RequestMethod.GET)
     public String listPointsAndExercises(Model model, RedirectAttributes redirectAttributes) {
         String username = userService.getAuthenticatedUser().getUsername();
