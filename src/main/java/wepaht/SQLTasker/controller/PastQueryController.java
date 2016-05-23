@@ -17,6 +17,7 @@ import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.UserService;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 @RequestMapping("queries")
@@ -42,6 +43,7 @@ public class PastQueryController {
         return "query";
     }
 
+    @Transactional
     @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.POST)
     public String getPastQuery(RedirectAttributes redirectAttributes,
