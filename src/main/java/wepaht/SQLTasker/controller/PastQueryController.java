@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequestMapping("queries")
 public class PastQueryController {
 
-
     @Autowired
     TaskRepository taskRepository;
 
@@ -47,17 +46,18 @@ public class PastQueryController {
     @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.POST)
     public String getPastQuery(RedirectAttributes redirectAttributes,
-                               @RequestParam(required = false) Long taskId,
-                               @RequestParam String username,
-                               @RequestParam String isCorrect) {
+            @RequestParam(required = false) Long taskId,
+            @RequestParam String username,
+            @RequestParam String isCorrect) {
 
         List pastQueries = pastQueryService.returnQuery(username, taskId, isCorrect);
         if (pastQueries.isEmpty()) {
             redirectAttributes.addFlashAttribute("messages", "No queries!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Here are queries:");
-            redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
-        }        
+
+        }
+        redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
         return "redirect:/queries";
     }
 
@@ -71,8 +71,9 @@ public class PastQueryController {
             redirectAttributes.addFlashAttribute("messages", "You have no past queries!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Here are your queries:");
-            redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
+
         }
+        redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
         return "redirect:/queries";
     }
 
