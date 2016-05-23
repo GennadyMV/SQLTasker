@@ -54,7 +54,7 @@ public class PastQueryController {
             redirectAttributes.addFlashAttribute("messages", "No queries!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Here are queries:");
-            redirectAttributes.addAttribute("pastQueries", pastQueries);
+            redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
         }        
         return "redirect:/queries";
     }
@@ -69,7 +69,7 @@ public class PastQueryController {
             redirectAttributes.addFlashAttribute("messages", "You have no past queries!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Here are your queries:");
-            redirectAttributes.addAttribute("pastQueries", pastQueries);
+            redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
         }
         return "redirect:/queries";
     }

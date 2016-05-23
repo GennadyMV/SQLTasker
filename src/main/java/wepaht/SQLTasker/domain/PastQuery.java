@@ -7,6 +7,7 @@ import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 /**
@@ -17,7 +18,7 @@ public class PastQuery extends AbstractPersistable<Long> {
 
     private String username;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Task task;
 
     @Lob
