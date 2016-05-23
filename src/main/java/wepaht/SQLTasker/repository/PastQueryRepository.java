@@ -34,7 +34,7 @@ public interface PastQueryRepository extends JpaRepository<PastQuery, Long>{
     @Query("SELECT COUNT(*) FROM PastQuery WHERE :username=username AND awarded=true AND correct=true")
     Integer getPointsByUsername(@Param("username") String username);
     
-    @Query("SELECT p.task, p.awarded FROM PastQuery p WHERE :username=username")
+    @Query("SELECT p.task.name, p.awarded FROM PastQuery p WHERE :username=username")
     List<?> getExercisesAndAwardedByUsername(@Param("username")String username);
     
     @Query("SELECT new wepaht.SQLTasker.domain.PointHolder(q.username, COUNT(q)) FROM PastQuery q WHERE q.awarded=true AND q.correct=true GROUP BY q.username")
