@@ -14,15 +14,15 @@ import wepaht.SQLTasker.domain.Task;
 public interface PastQueryRepository extends JpaRepository<PastQuery, Long>{
 
 
-    List<PastQuery> findByTaskAndCorrectAndUsername(Task taskI, boolean correctness, String username);
+    List<PastQuery> findByTaskAndCorrectAndUsername(Task task, boolean correct, String username);
 
-    List<PastQuery> findByTaskAndCorrect(Task task, boolean correctness);
+    List<PastQuery> findByTaskAndCorrect(Task task, boolean correct);
 
     List<PastQuery> findByTaskAndUsername(Task task, String username);
 
-    List<PastQuery> findByCorrectAndUsername(boolean correctness, String username);
+    List<PastQuery> findByCorrectAndUsername(boolean correct, String username);
 
-    List<PastQuery> findByCorrectAndUsernameAndAwarded(boolean correctness, String username, boolean canGetPoint);
+    List<PastQuery> findByCorrectAndUsernameAndAwarded(boolean correct, String username, boolean awarded);
 
     List<PastQuery> findByCorrect(boolean correctness);
     List<PastQuery> findByTask(Task task);
