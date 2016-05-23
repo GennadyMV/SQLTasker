@@ -44,8 +44,7 @@ public class PastQueryController {
 
     @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.POST)
-    public String getPastQuery(Model model,
-                                RedirectAttributes redirectAttributes,
+    public String getPastQuery(RedirectAttributes redirectAttributes,
                                @RequestParam(required = false) Long taskId,
                                @RequestParam String username,
                                @RequestParam String isCorrect) {
@@ -55,15 +54,14 @@ public class PastQueryController {
             redirectAttributes.addFlashAttribute("messages", "No queries!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Here are queries:");
-            model.addAttribute("pastQueries", pastQueries);
+            redirectAttributes.addAttribute("pastQueries", pastQueries);
         }        
         return "redirect:/queries";
     }
 
     @Secured("ROLE_STUDENT")
     @RequestMapping(value = "/student", method = RequestMethod.POST)
-    public String getPastQueryByUsername(RedirectAttributes redirectAttributes, 
-            Model model) {
+    public String getPastQueryByUsername(RedirectAttributes redirectAttributes) {
         String loggedUsername = userService.getAuthenticatedUser().getUsername();
         List pastQueries = pastQueryService.returnQueryOnlyByUsername(loggedUsername);
 
@@ -71,7 +69,7 @@ public class PastQueryController {
             redirectAttributes.addFlashAttribute("messages", "You have no past queries!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Here are your queries:");
-            model.addAttribute("pastQueries", pastQueries);
+            redirectAttributes.addAttribute("pastQueries", pastQueries);
         }
         return "redirect:/queries";
     }
