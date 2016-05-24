@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.service;
 
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,36 @@ public class CategoryService {
         if (!taskList.contains(task)) {
             taskList.add(task);
             category.setTaskList(taskList);
+        }
+    }
+    
+    @Transactional
+    public void setCategoryToTasks(Category category, List<Task> tasks) {
+        category.setTaskList(tasks);                
+    }
+    
+    public Task getNextTask(Category category, Task task) {
+        List<Task> categoryTasks = category.getTaskList();
+        int taskIndex = categoryTasks.indexOf(task);
+        int nextTaskIndex = taskIndex + 1;
+        
+        if (taskIndex < categoryTasks.size() - 1 && categoryTasks.contains(task)) {
+            return categoryTasks.get(nextTaskIndex);
+        }
+        
+        return null;
+    }
+    
+    @Transactional
+    public void setCategoryTaskFurther(Category category, Task task) {
+        List<Task> categoryTasks = category.getTaskList();
+        
+        int taskIndex = categoryTasks.indexOf(task);
+        
+        if(taskIndex < categoryTasks.size() - 1 && categoryTasks.contains(task)) {
+            Task next = categoryTasks.get(taskIndex + 1);
+            categoryTasks.set(taskIndex, next);
+            categoryTasks.set(taskIndex + 1, task);
         }
     }
 

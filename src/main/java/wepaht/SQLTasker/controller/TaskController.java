@@ -150,7 +150,8 @@ public class TaskController {
         List<Tag> tags = tagRepository.findByTaskId(id);
         model.addAttribute("tags", tags);        
         model.addAttribute("task", task);
-        model.addAttribute("categoryId", 1);
+        model.addAttribute("database", task.getDatabase());
+//        model.addAttribute("categoryId", 1);
         return "task";
     }
 

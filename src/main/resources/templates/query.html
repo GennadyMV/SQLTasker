@@ -35,18 +35,21 @@
                     </select>
                     <br/>
                     <br/>
-                    
+
 
                     <ul>
-                        <li id="sql-li"><input id="sql-input" type="submit" value="Submit"/></li>
-                        <li id="sql-li" sec:authorize="hasRole('ROLE_STUDENT')">
-                            <form th:method="POST" th:action="@{/queries/student}">
-                                <input id="sql-input" type="submit" name="My queries" value="My Queries"></input>
-                            </form>
-                        </li>                    
+                        <li id="sql-li"><input id="sql-input" type="submit" value="Submit"/></li>                                            
                     </ul>
                 </form>
             </div>
+
+            <ul sec:authorize="!hasRole('ROLE_TEACHER')">
+                <li>
+                    <form th:method="POST" th:action="@{/queries/student}">
+                        <input id="sql-input" type="submit" name="My queries" value="My Queries"></input>
+                    </form>
+                </li>
+            </ul>
 
 
             <div th:include="fragments/messages_template :: messages"></div>

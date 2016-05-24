@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
+import wepaht.SQLTasker.service.CategoryService;
 
 @Controller
 @RequestMapping("categories")
@@ -31,6 +32,9 @@ public class CategoryController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private CategoryService categoryService;
 
     @RequestMapping(method = RequestMethod.GET)
     @Transactional
@@ -74,7 +78,7 @@ public class CategoryController {
             category.setStarts(LocalDate.parse(starts));
             category.setExpires(LocalDate.parse(expires));
             category.setDescription(description);
-            category.setTaskList(tasks);
+            categoryService.setCategoryToTasks(category, tasks);
             categoryRepository.save(category);
         } catch (Exception e) {
             return redirectMessage("Category creation failed!", redirectAttributes);            
@@ -122,7 +126,7 @@ public class CategoryController {
                 tasks.add(taskRepository.findOne(taskId));
             }
         }
-        oldCategory.setTaskList(tasks);
+        categoryService.setCategoryToTasks(oldCategory, tasks);
         
         try {
             categoryRepository.save(oldCategory);
@@ -148,16 +152,36 @@ public class CategoryController {
     public String getCategoryTask(@PathVariable Long id,
             @PathVariable Long taskId,
             Model model, RedirectAttributes redirectAttributes) {
+        
         Category category = categoryRepository.findOne(id);
         Account user = userService.getAuthenticatedUser();
-        if (category.getStarts().isBefore(LocalDate.now()) || category.getStarts().equals(LocalDate.now()) || user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
-            model.addAttribute("task", taskRepository.findOne(taskId));
+        LocalDate now = LocalDate.now();
+        if ((category.getStarts().isBefore(now) && category.getExpires().isAfter(now)) || user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
+            Task task = taskRepository.findOne(taskId);
+            model.addAttribute("task", task);
+            model.addAttribute("database", task.getDatabase());
             model.addAttribute("category", category);
+            model.addAttribute("next", categoryService.getNextTask(category, task));
             return "task";
         }
 
         redirectAttributes.addFlashAttribute("messages", "You shall not pass here!");
         return "redirect:/categories/";
+    }
+    
+    @Secured("ROLE_TEACHER")
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public String changeCategoryTaskOrder(RedirectAttributes redirectAttributes,
+            @PathVariable Long id,
+            @RequestParam Long taskId) {
+        
+        Category category = categoryRepository.findOne(id);
+        Task task = taskRepository.findOne(taskId);
+        categoryService.setCategoryTaskFurther(category, task);
+        
+        redirectAttributes.addAttribute("categoryId", id);
+        
+        return "redirect:/categories/{categoryId}";
     }
     
     private String redirectMessage(String message, RedirectAttributes ra) {

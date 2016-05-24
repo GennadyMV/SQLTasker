@@ -63,7 +63,7 @@ public class DevProfile {
         Category category = new Category();
         category.setName("first week");
         category.setDescription("easybeasy");
-        category.setStarts(LocalDate.now());
+        category.setStarts(LocalDate.of(1, 1, 1));
         category.setExpires(LocalDate.MAX);
         categoryRepository.save(category);
 
@@ -74,18 +74,18 @@ public class DevProfile {
         }        
         
         Account student = new Account();
-        student.setUsername("0123456789");
-        student.setPassword("opiskelija");
+        student.setUsername("student");
+        student.setPassword("student");
         student.setRole("STUDENT");
 
         Account teacher = new Account();
-        teacher.setUsername("avihavai");
-        teacher.setPassword("vihainen");
+        teacher.setUsername("admin");
+        teacher.setPassword("admin");
         teacher.setRole("ADMIN");
 
         Account assistant = new Account();
-        assistant.setUsername("assistant");
-        assistant.setPassword("iassist");
+        assistant.setUsername("teacher");
+        assistant.setPassword("teacher");
         assistant.setRole("TEACHER");
 
         userRepository.save(student);

@@ -42,21 +42,23 @@ and open the template in the editor.
 
                 <p sec:authorize="hasRole('ROLE_TEACHER')" th:text="${task.solution}">Task solution</p>
 
-                <h3>Database</h3>
-                <a th:text="${task.database.name}" th:href="@{/databases/{id} (id = ${task.database.id})}">Task database</a>
+                <div th:if="${database}">
+                    <h3>Database</h3>
+                    <a th:text="${database.name}" th:href="@{/databases/{id} (id = ${database.id})}">Task database</a>    
+                </div>
             </div>
         </div>
-        
+
         <div class="get-in-touch" th:if="${category != null}">
             <div class="get-in-touch-text-boxs">
                 <div class="get-in-touch-text-box">
-            <form th:method="POST" th:action="@{/tasks/{categoryId}/{id}/query (categoryId=${category.id}, id=${task.id})}">
-                <textarea name="query"/>
-                <input type="hidden" name="id" th:value="${task.id}"/>
+                    <form th:method="POST" th:action="@{/tasks/{categoryId}/{id}/query (categoryId=${category.id}, id=${task.id})}">
+                        <textarea name="query"/>
+                        <input type="hidden" name="id" th:value="${task.id}"/>
 
-                <input type="submit" value="Submit query"/>
-            </form>
-            </div>
+                        <input type="submit" value="Submit query"/>
+                    </form>
+                </div>
             </div>
         </div>
         <!-- SELECT query to a database results -->
@@ -64,10 +66,11 @@ and open the template in the editor.
             <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
         </div>
 
-        <div th:if="${category != null}">
+        <div th:if="${category}">
+            <a th:if="${next}" th:id="${next}" th:href="@{/categories/{id}/tasks/{nextId} (id=${category.id}, nextId=${next.id})}" th:text="'Next task: ' + ${next.name}">Next Task</a>
             <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
         </div>
-        <a sec:autorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
+        <a th:if='${category == null}' sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: confirmScript"></div>
