@@ -42,7 +42,7 @@
                 <div sec:authorize="hasRole('ROLE_TEACHER')">
                     <form th:method="POST" th:action="@{/categories/{id} (id = ${category.id})}">
                         <input id="taskId" name="taskId" type="hidden" th:value="${task.id}"></input>
-                        <input type="submit" th:value="'Switch '${task.name} + ' with next task'"></input>
+                        <input type="submit" th:value="'Switch ' + ${task.name} + ' with next task'"></input>
                     </form>    
                 </div>
             </div>
