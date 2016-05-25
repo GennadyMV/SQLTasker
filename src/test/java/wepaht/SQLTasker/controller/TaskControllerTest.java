@@ -162,9 +162,10 @@ public class TaskControllerTest {
     @Test
     public void studentCanSuggestTask() throws Exception {
         Account student = new Account();
-        student.setUsername("student");
+        student.setUsername("suggestingstudent");
         student.setPassword("student");
         student.setRole("STUDENT");
+        student = userRepository.save(student);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
         
         String taskName = "testTask";
@@ -173,7 +174,7 @@ public class TaskControllerTest {
                     .param("description", "To test suggestion")
                     .param("solution", "select * from persons;")
                     .param("databaseId", databaseId.toString())
-                    .with(user("student").roles("STUDENT")).with(csrf()))
+                    .with(user("suggestingstudent").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
