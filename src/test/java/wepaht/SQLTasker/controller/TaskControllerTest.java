@@ -76,13 +76,13 @@ public class TaskControllerTest {
     private PastQueryService pastQueryService;
 
     @Autowired
-    AccountRepository userRepository;
+    private AccountRepository userRepository;
 
     @Autowired
-    TagRepository tagRepository;
+    private TagRepository tagRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     
     @Mock
     UserService userServiceMock;
@@ -215,7 +215,7 @@ public class TaskControllerTest {
         testTask.setSolution(solution);
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Your answer is correct!"))
                 .andReturn();
