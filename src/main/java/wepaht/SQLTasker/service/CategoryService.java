@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,31 +36,31 @@ public class CategoryService {
             category.setTaskList(taskList);
         }
     }
-    
+
     @Transactional
     public void setCategoryToTasks(Category category, List<Task> tasks) {
-        category.setTaskList(tasks);                
+        category.setTaskList(tasks);
     }
-    
+
     public Task getNextTask(Category category, Task task) {
         List<Task> categoryTasks = category.getTaskList();
         int taskIndex = categoryTasks.indexOf(task);
         int nextTaskIndex = taskIndex + 1;
-        
+
         if (taskIndex < categoryTasks.size() - 1 && categoryTasks.contains(task)) {
             return categoryTasks.get(nextTaskIndex);
         }
-        
+
         return null;
     }
-    
+
     @Transactional
     public void setCategoryTaskFurther(Category category, Task task) {
         List<Task> categoryTasks = category.getTaskList();
-        
+
         int taskIndex = categoryTasks.indexOf(task);
-        
-        if(taskIndex < categoryTasks.size() - 1 && categoryTasks.contains(task)) {
+
+        if (taskIndex < categoryTasks.size() - 1 && categoryTasks.contains(task)) {
             Task next = categoryTasks.get(taskIndex + 1);
             categoryTasks.set(taskIndex, next);
             categoryTasks.set(taskIndex + 1, task);
@@ -77,10 +78,22 @@ public class CategoryService {
     }
 
     public void setTaskToCategories(Task task, List<Long> categoryIds) {
-        for (Long id : categoryIds) {
+        categoryIds.stream().forEach((id) -> {
             setCategoryToTask(id, task);
-        }
+        });
 
     }
 
+    public List<Category> findCategoriesByIds(List<Long> categoryIds) {
+        if (categoryIds != null) {
+            ArrayList<Category> categories = new ArrayList<>();
+
+            categoryIds.stream().forEach((categoryId) -> {
+                categories.add(categoryRepository.findOne(categoryId));
+            });
+
+            return categories;
+        }
+        return null;
+    }
 }

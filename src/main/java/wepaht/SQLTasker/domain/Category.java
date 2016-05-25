@@ -16,12 +16,6 @@ public class Category extends AbstractPersistable<Long> {
 
     @NotBlank
     private String name;
-
-    
-//    @JoinTable(name = "APP_USER_USER_PROFILE", 
-//             joinColumns = { @JoinColumn(name = "USER_ID") }, 
-//             inverseJoinColumns = { @JoinColumn(name = "USER_PROFILE_ID") })
-    
     
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Task> taskList;    
@@ -33,6 +27,9 @@ public class Category extends AbstractPersistable<Long> {
     @NotNull
     @Convert(converter = LocalDatePersistenceConverter.class)
     private LocalDate expires;
+    
+    @ManyToMany(mappedBy = "courseCategories")
+    private List<Course> courses;
 
     private String description;
 
@@ -113,5 +110,13 @@ public class Category extends AbstractPersistable<Long> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 }
