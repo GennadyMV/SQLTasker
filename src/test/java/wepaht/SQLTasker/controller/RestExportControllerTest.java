@@ -21,7 +21,7 @@ import wepaht.SQLTasker.domain.AuthenticationToken;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
 import wepaht.SQLTasker.repository.PastQueryRepository;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ import wepaht.SQLTasker.service.TaskService;
 public class RestExportControllerTest {
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository userRepository;
 
     @Autowired
     AuthenticationTokenRepository tokenRepository;

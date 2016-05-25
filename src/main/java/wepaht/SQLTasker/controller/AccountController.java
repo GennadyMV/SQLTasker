@@ -9,7 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.PointService;
 import wepaht.SQLTasker.service.UserService;
@@ -24,7 +24,7 @@ public class AccountController {
     private String[] roles = {"STUDENT", "TEACHER", "ADMIN"};
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository userRepository;
 
     @Autowired
     UserService userService;

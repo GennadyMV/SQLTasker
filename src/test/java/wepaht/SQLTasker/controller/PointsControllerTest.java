@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 
 import static junit.framework.TestCase.assertTrue;
 import org.junit.After;
@@ -49,7 +49,7 @@ public class PointsControllerTest {
     private PastQueryService pastQueryService;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
     
     @Autowired
     private TaskRepository taskRepository;

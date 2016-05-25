@@ -39,7 +39,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,7 +72,7 @@ public class TaskControllerTest {
     private PastQueryService pastQueryService;
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository userRepository;
 
     @Autowired
     TagRepository tagRepository;
@@ -112,9 +112,7 @@ public class TaskControllerTest {
 
     @After
     public void tearDown() {
-        if (admin != null) {
-            userRepository.delete(admin);
-        }
+        userRepository.deleteAll();
     }
 
     private Task randomTask() {
@@ -167,7 +165,6 @@ public class TaskControllerTest {
         student.setUsername("student");
         student.setPassword("student");
         student.setRole("STUDENT");
-        student = userRepository.save(student);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
         
         String taskName = "testTask";
@@ -176,7 +173,7 @@ public class TaskControllerTest {
                     .param("description", "To test suggestion")
                     .param("solution", "select * from persons;")
                     .param("databaseId", databaseId.toString())
-                    .with(user("student")).with(csrf()))
+                    .with(user("student").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 

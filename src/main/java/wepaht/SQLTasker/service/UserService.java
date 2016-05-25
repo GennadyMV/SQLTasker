@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 import wepaht.SQLTasker.domain.AuthenticationToken;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 
 
 @Service
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
 
     @Autowired
     private AuthenticationTokenRepository tokenRepository;

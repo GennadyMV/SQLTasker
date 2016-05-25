@@ -17,7 +17,7 @@ import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +56,7 @@ public class DatabaseControllerTest {
     private DatabaseService dbService;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
     
     @Mock
     UserService userServiceMock;

@@ -25,7 +25,7 @@ import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
 import wepaht.SQLTasker.service.UserService;
 
@@ -68,7 +68,7 @@ public class CategoryControllerTest {
     private WebApplicationContext webAppContext;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
 
     @Autowired
     private TaskService taskService;

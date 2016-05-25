@@ -32,7 +32,7 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.PastQueryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,7 +72,7 @@ public class PastQueryControllerTest {
     private PastQueryRepository pastQueryRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
 
     @Mock
     UserService userServiceMock;

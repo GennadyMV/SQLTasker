@@ -16,7 +16,7 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CategoryRepository;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.CategoryService;
@@ -40,7 +40,7 @@ public class DevProfile {
     private DatabaseRepository databaseRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
     
     @Autowired
     private CategoryRepository categoryRepository;

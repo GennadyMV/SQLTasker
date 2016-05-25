@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import wepaht.SQLTasker.domain.Account;
 
 @RestResource(exported = false)
-public interface UserRepository extends JpaRepository<Account, Long>{
+public interface AccountRepository extends JpaRepository<Account, Long>{
 
     Account findByUsername(String username);
     List findByRole(String role);

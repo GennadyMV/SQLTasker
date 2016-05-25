@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.repository.UserRepository;
+import wepaht.SQLTasker.repository.AccountRepository;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -30,7 +30,7 @@ public class AccountControllerTest {
     private WebApplicationContext webAppContext;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
 
     private MockMvc mockMvc = null;
 
