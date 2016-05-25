@@ -6,3 +6,6 @@ before_install:
   
 notifications:
  email: false
+ 
+ after_failure:
+  - cat target/surefire-reports/*.txt
