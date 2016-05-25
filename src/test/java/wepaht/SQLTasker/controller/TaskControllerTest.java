@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.controller;
 
+import java.time.LocalDate;
 import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.controller.TaskController;
 import wepaht.SQLTasker.domain.Database;
@@ -44,6 +45,8 @@ import wepaht.SQLTasker.service.DatabaseService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaht.SQLTasker.domain.Category;
+import wepaht.SQLTasker.repository.CategoryRepository;
 
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.UserService;
@@ -54,6 +57,7 @@ import wepaht.SQLTasker.service.UserService;
 @WebAppConfiguration
 public class TaskControllerTest {
 
+    // /tasks/{categoryId}/{id}/query
     private final String API_URI = "/tasks";
 
     @Autowired
@@ -77,6 +81,9 @@ public class TaskControllerTest {
     @Autowired
     TagRepository tagRepository;
 
+    @Autowired
+    CategoryRepository categoryRepository;
+    
     @Mock
     UserService userServiceMock;
 
@@ -86,6 +93,7 @@ public class TaskControllerTest {
     private MockMvc mockMvc = null;
     private Database database = null;
     private Account admin = null;
+    private Category category = null;
 
     @Before
     public void setUp() {
@@ -107,12 +115,19 @@ public class TaskControllerTest {
         admin.setPassword("test");
         admin.setRole("ADMIN");
         admin = userRepository.save(admin);
-        when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);        
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);     
+        
+        category = new Category();
+        category.setName("taskCategory");
+        category.setStarts(LocalDate.MIN);
+        category.setExpires(LocalDate.MAX);
+        category = categoryRepository.save(category);        
     }
 
     @After
     public void tearDown() {
         userRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
     private Task randomTask() {
@@ -136,7 +151,7 @@ public class TaskControllerTest {
 
         String query = "select firstname, lastname from testdb";
 
-        mockMvc.perform(post(API_URI + "/1/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Query sent."))
                 .andReturn();
@@ -187,7 +202,7 @@ public class TaskControllerTest {
         Task testTask = randomTask();
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("tables"))
                 .andReturn();
@@ -250,7 +265,7 @@ public class TaskControllerTest {
         taskRepository.save(testTask);
         String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
 
-        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query")
+        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + testTask.getId() + "/query")
                     .param("query", sql)
                     .with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -264,7 +279,7 @@ public class TaskControllerTest {
         task = taskRepository.save(task);
 
         String query = "select firstname, lastname from testdb";
-        mockMvc.perform(post(API_URI + "/1/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Query sent."))
                 .andReturn();
