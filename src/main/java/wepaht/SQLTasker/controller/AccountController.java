@@ -12,7 +12,7 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.PointService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class AccountController {
     AccountRepository userRepository;
 
     @Autowired
-    UserService userService;
+    AccountService userService;
     
     @Autowired
     PointService pointService;

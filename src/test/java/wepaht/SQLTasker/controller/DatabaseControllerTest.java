@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -59,7 +59,7 @@ public class DatabaseControllerTest {
     private AccountRepository userRepository;
     
     @Mock
-    UserService userServiceMock;
+    AccountService userServiceMock;
     
     @InjectMocks
     DatabaseController databaseController;

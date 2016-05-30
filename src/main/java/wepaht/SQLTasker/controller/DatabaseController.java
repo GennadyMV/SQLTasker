@@ -9,7 +9,7 @@ import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.service.DatabaseService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class DatabaseController {
     DatabaseRepository databaseRepository;
 
     @Autowired
-    UserService userService;
+    AccountService userService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String listDatabases(Model model) {

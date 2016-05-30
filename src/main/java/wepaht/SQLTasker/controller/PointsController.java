@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.service.PointService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 @Controller
 @RequestMapping("points")
@@ -19,7 +19,7 @@ public class PointsController {
     PointService pointService;
     
     @Autowired
-    UserService userService;
+    AccountService userService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String listPoints(Model model, RedirectAttributes redirectAttributes) {

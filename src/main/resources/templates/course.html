@@ -27,9 +27,9 @@
             <p th:text="${course.expires}"></p>
         </div>
         
-        <div th:if="${course.courseCategories}">
+        <div th:if="${courseCategories}">
             <span>Categories</span>
-            <div th:each="category : ${course.courseCategories}">
+            <div th:each="category : ${courseCategories}">
                 <h3><a th:text="${category.name}">Category Name</a></h3>
             </div>
         </div>

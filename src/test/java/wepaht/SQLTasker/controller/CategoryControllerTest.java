@@ -27,7 +27,7 @@ import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -84,7 +84,7 @@ public class CategoryControllerTest {
     private CourseRepository courseRepository;
 
     @Mock
-    UserService userServiceMock;
+    AccountService userServiceMock;
 
     @InjectMocks
     CategoryController testingObject;

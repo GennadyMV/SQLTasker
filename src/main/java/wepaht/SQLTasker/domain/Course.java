@@ -25,6 +25,9 @@ public class Course extends AbstractPersistable<Long>{
     
     @Convert(converter = LocalDatePersistenceConverter.class)
     private LocalDate expires;
+    
+    @ManyToMany
+    private List<Account> students;
 
     public List<Category> getCourseCategories() {
         return courseCategories;
@@ -65,6 +68,12 @@ public class Course extends AbstractPersistable<Long>{
     public void setExpires(LocalDate expires) {
         this.expires = expires;
     }
-    
-    
+
+    public List<Account> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Account> students) {
+        this.students = students;
+    }
 }

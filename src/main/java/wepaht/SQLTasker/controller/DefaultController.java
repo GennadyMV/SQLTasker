@@ -11,13 +11,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import wepaht.SQLTasker.repository.AccountRepository;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 @Controller
 public class DefaultController {
 
     @Autowired
-    UserService userService;
+    AccountService userService;
     
     @Autowired
     AccountRepository userRepository;

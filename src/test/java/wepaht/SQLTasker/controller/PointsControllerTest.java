@@ -35,7 +35,7 @@ import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.TaskService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -58,7 +58,7 @@ public class PointsControllerTest {
     private TaskService taskService;
 
     @Mock
-    UserService userServiceMock;
+    AccountService userServiceMock;
 
     @InjectMocks
     PointsController testingObject;

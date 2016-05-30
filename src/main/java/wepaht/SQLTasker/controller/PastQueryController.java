@@ -14,7 +14,7 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,7 @@ public class PastQueryController {
     PastQueryService pastQueryService;
 
     @Autowired
-    UserService userService;
+    AccountService userService;
 
     @Autowired
     AccountRepository userRepository;

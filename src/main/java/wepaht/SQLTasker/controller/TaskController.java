@@ -33,7 +33,7 @@ import wepaht.SQLTasker.service.DatabaseService;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.TaskResultService;
 import wepaht.SQLTasker.service.TaskService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 @Controller
 @RequestMapping("tasks")
@@ -55,7 +55,7 @@ public class TaskController {
     TaskResultService taskResultService;
 
     @Autowired
-    UserService userService;
+    AccountService userService;
 
     @Autowired
     PastQueryService pastQueryService;

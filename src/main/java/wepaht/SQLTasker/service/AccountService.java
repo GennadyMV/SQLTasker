@@ -10,16 +10,16 @@ import wepaht.SQLTasker.repository.AccountRepository;
 
 
 @Service
-public class UserService {
+public class AccountService {
 
     @Autowired
-    private AccountRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private AuthenticationTokenRepository tokenRepository;
 
     public Account getAuthenticatedUser() {
-        return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        return accountRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     public void customLogout() {

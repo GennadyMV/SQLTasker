@@ -1,17 +1,22 @@
 package wepaht.SQLTasker.domain;
 
 
+import java.util.List;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 @Entity
 public class Account extends AbstractPersistable<Long> {
+    
+    @ManyToMany(mappedBy = "students")
+    private List<Course> courses;
 
     @Column(unique = true)
     @NotEmpty
@@ -63,4 +68,14 @@ public class Account extends AbstractPersistable<Long> {
     public void setSalt(String salt) {
         this.salt = salt;
     }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+    
+    
 }

@@ -12,7 +12,7 @@ import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class CategoryController {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserService userService;
+    private AccountService userService;
     
     @Autowired
     private CategoryService categoryService;

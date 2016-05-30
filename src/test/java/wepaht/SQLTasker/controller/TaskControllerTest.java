@@ -49,7 +49,7 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.repository.CategoryRepository;
 
 import wepaht.SQLTasker.service.PastQueryService;
-import wepaht.SQLTasker.service.UserService;
+import wepaht.SQLTasker.service.AccountService;
 
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -85,7 +85,7 @@ public class TaskControllerTest {
     private CategoryRepository categoryRepository;
     
     @Mock
-    UserService userServiceMock;
+    AccountService userServiceMock;
 
     @InjectMocks
     TaskController taskController;
