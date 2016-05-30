@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +32,11 @@ public class CourseController {
         return courseService.courseListing(model);
     }
     
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public String getCourse(Model model, @PathVariable Long id) {
+        return courseService.getCourse(model, id);
+    }
+    
     @RequestMapping(method = RequestMethod.POST)
     public String createCourse(RedirectAttributes redirectAttributes,
             @RequestParam String name,
@@ -40,5 +46,32 @@ public class CourseController {
             @RequestParam(required = false) List<Long> categoryIds) {
         
         return courseService.createCourse(redirectAttributes, name, starts, expires, description, categoryIds);
+    }
+    
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public String getCreateCourse(Model model) {
+        return courseService.courseCreateForm(model);
+    }
+    
+    @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
+    public String deleteCourse(RedirectAttributes redirectAttributes, @PathVariable Long id) {
+        return courseService.deleteCourse(redirectAttributes, id);
+    }
+    
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
+    public String getEditCourse(Model model, @PathVariable Long id) {
+        return courseService.editForm(model, id);
+    }
+    
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
+    public String editCourse(RedirectAttributes redirectAttributes, 
+            @PathVariable Long id, 
+            @RequestParam String name,
+            @RequestParam(required = false) String starts,
+            @RequestParam(required = false) String expires,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) List<Long> categoryIds) {
+        
+        return courseService.editCourse(redirectAttributes, id, name, starts, expires, description, categoryIds);
     }
 }

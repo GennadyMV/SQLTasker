@@ -1,6 +1,8 @@
 package wepaht.SQLTasker.controller;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import org.hamcrest.Matchers;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import org.junit.After;
@@ -28,6 +30,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -164,5 +167,109 @@ public class CourseControllerTest {
         assertTrue(courseRepository.findAll().stream()
                 .filter(course -> course.getName().equals(name))
                 .findFirst().isPresent());
+    }
+    
+    @Test
+    public void testTeacherCanNotSetInvalidExpireDate() throws Exception {
+        String name = "Incorrect dates";
+        String starts = "01-01-2017";
+        String expires = "01-01-2016";
+        
+        mockMvc.perform(post(URI)
+                .param("name", name)
+                .param("starts", starts)
+                .param("expires", expires)
+                .with(user("teacher").roles("TEACHER")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        
+        assertTrue(courseRepository.findAll().stream()
+                .filter(course -> course.getName().equals(name) && course.getExpires() == null)
+                .findFirst().isPresent());
+    }
+    
+    @Test
+    public void testCourseCanBeSeen() throws Exception {
+        Course course = createTestCourse("Lookin at dis");
+        
+        mockMvc.perform(get(URI + "/" + course.getId())
+                .with(user("student").roles("STUDENT")).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("course", course))
+                .andReturn();
+    }
+    
+    @Test
+    public void testCourseCanBeDeleted() throws Exception {
+        Course course = createTestCourse("Deleting course");
+        
+        mockMvc.perform(delete(URI + "/" + course.getId() + "/delete")
+                .with(user("teacher").roles("TEACHER"))
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        
+        assertTrue(courseRepository.findOne(course.getId()) == null);
+    }
+    
+    @Test
+    public void testCourseCanBeDeletedWithCourses() throws Exception {
+        Course course = createTestCourse("Deleting course with category");
+        Category category = createTestCategory("I'm a friend");
+        
+        course.setCourseCategories(Arrays.asList(category));
+        course = courseRepository.save(course);
+        
+        mockMvc.perform(delete(URI + "/" + course.getId() + "/delete")
+                .with(user("teacher").roles("TEACHER"))
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        
+        assertTrue(courseRepository.findOne(course.getId()) == null);
+    }
+    
+    @Test
+    public void testCourseEditFormCanBeSeen() throws Exception {
+      Course course = createTestCourse("Spoon");
+      
+      mockMvc.perform(get(URI + "/" + course.getId() + "/edit")
+              .with(user("teacher").roles("TEACHER"))
+              .with(csrf()))
+              .andExpect(status().isOk())
+              .andExpect(model().attribute("course", course))
+              .andReturn();
+    }
+    
+    @Test
+    public void testCourseCanBeEdited() throws Exception {
+        Course course = createTestCourse("Editing!");
+        Category category = createTestCategory("Hurr");
+        String name = "Edited!";
+        String description = "It is now edited";
+        LocalDate starts = LocalDate.now();
+        LocalDate expires = LocalDate.now().plusDays(8l);
+        String categoryIds = category.getId().toString();
+        
+        mockMvc.perform(post(URI + "/" + course.getId() + "/edit")
+                .param("name", name)
+                .param("description", description)
+                .param("starts", starts.toString())
+                .param("expires", expires.toString())
+                .param("categoryIds", categoryIds)
+                .with(user("teacher").roles("TEACHER")).with(csrf()))
+                .andExpect(flash().attributeExists("messages"))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        
+        course = courseRepository.findOne(course.getId());
+        List<Category> categories = courseRepository.getCourseCategories(course);
+        
+        assertTrue(course.getName().equals(name) 
+                && course.getDescription().equals(description) 
+                && course.getStarts().equals(starts) 
+                && course.getExpires().equals(expires) 
+                && categories.contains(category)
+        );
     }
 }

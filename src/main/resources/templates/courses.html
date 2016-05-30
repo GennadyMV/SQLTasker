@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title>Categories</title>
+        <title>Courses</title>
 
     </head>
     <body>
@@ -10,7 +10,16 @@
         <div th:include="fragments/navbar_template :: navbar"></div>
         <div th:include="fragments/messages_template :: messages"></div>
 
-
+        <div th:if="${courses}">
+            <h2>Courses</h2>
+            <div th:each="course : ${courses}">
+                <h3><a th:text="${course.name}" th:href="@{/courses/{id} (id = ${course.id})}">Course name</a></h3>
+            </div>
+        </div>
+        
+        <div>
+            <a th:href="@{/courses/create}">Create course</a>
+        </div>
 
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/bootstrap :: bootstrap"></div>

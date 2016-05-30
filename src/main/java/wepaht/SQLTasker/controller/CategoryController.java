@@ -102,7 +102,8 @@ public class CategoryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeCategory(@PathVariable Long id,
             RedirectAttributes redirectAttributes) throws Exception {
-        categoryRepository.delete(id);
+        categoryService.deleteCategory(id);
+//        categoryRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "Category deleted!");
         return "redirect:/categories";
     }

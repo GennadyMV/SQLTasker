@@ -14,12 +14,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.CategoryService;
+import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.DatabaseService;
 
 /**
@@ -47,6 +49,9 @@ public class DevProfile {
     
     @Autowired
     private CategoryService categoryService;
+    
+    @Autowired
+    private CourseService courseService;
 
     @PostConstruct
     public void init() {
@@ -91,6 +96,8 @@ public class DevProfile {
         userRepository.save(student);
         userRepository.save(teacher);
         userRepository.save(assistant);
+        
+        courseService.createCourse(null, "Test course", null, null, "Dis a test", null);
     }
 
     public Task randomTask() {
@@ -101,4 +108,6 @@ public class DevProfile {
         task.setSolution("select address from persons");
         return task;
     }
+    
+    
 }

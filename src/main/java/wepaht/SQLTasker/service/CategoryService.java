@@ -11,6 +11,7 @@ import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 import java.util.List;
+import wepaht.SQLTasker.domain.Course;
 
 @Service
 public class CategoryService {
@@ -20,6 +21,9 @@ public class CategoryService {
 
     @Autowired
     private TaskRepository taskRepository;
+    
+    @Autowired
+    private CourseService courseService;
 
     /**
      * Adds task to categorys' task list.
@@ -95,5 +99,20 @@ public class CategoryService {
             return categories;
         }
         return null;
+    }
+    
+    public List<Category> findAllCategories() {
+        return categoryRepository.findAll();
+    }
+
+    public void deleteCategory(Long id) {
+        Category deleting = categoryRepository.findOne(id);
+        List<Course> courses = deleting.getCourses();
+        
+        if (courses != null || !courses.isEmpty()) {
+            courseService.removeCategoryFromCourses(courses, deleting);
+        }
+        
+        categoryRepository.delete(deleting);
     }
 }

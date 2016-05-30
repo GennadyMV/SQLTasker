@@ -45,9 +45,13 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.repository.CourseRepository;
+import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.TaskService;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -72,6 +76,12 @@ public class CategoryControllerTest {
 
     @Autowired
     private TaskService taskService;
+    
+    @Autowired
+    private CourseService courseService;
+    
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Mock
     UserService userServiceMock;
@@ -111,6 +121,7 @@ public class CategoryControllerTest {
     @After
     public void tearDown() {
         userRepository.deleteAll();
+        courseRepository.deleteAll();
         categoryRepository.deleteAll();
         taskRepository.findAllTaskIds().stream().forEach((taskId) -> {
             taskService.removeTask(taskId);
@@ -332,5 +343,23 @@ public class CategoryControllerTest {
                 .andReturn();
         
         Assert.assertEquals(task2.getId(), categoryRepository.findOne(category.getId()).getTaskList().get(0).getId());
+    }
+    
+    @Test
+    public void testCategoryCanBeDeletedWhileInCourse() throws Exception {
+        user.setRole("ADMIN");
+        userRepository.save(user);
+        
+        Category category = createCategory();
+        category = categoryRepository.save(category);
+        String courseName = "Deleting course";
+        courseService.createCourse(null, courseName, null, null, null, Arrays.asList(category.getId()));
+        
+        mockMvc.perform(delete(URI + "/" + category.getId())
+                .with(user("stud").roles("ADMIN"))
+                .with(csrf()))
+                .andReturn();
+        
+        assertTrue(categoryRepository.findOne(category.getId()) == null);
     }
 }
