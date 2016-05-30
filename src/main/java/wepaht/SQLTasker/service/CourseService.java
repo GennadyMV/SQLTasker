@@ -93,6 +93,7 @@ public class CourseService {
         return "courseForm";
     }
 
+    @Transactional
     public String getCourse(Model model, Long courseId) {
         Course course = courseRepository.findOne(courseId);
         model.addAttribute("course", course);
