@@ -35,6 +35,10 @@
         </div>
         
         <div>
+            <a th:href="@{/courses/{id}/edit (id = {course.id})}">Edit course</a>
+        </div>
+        
+        <div>
             <form th:method="DELETE" th:action="@{/courses/{id}/delete (id = ${course.id})}">
                 <input type="submit" value="Delete course"/>
             </form>

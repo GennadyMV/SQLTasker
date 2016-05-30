@@ -113,7 +113,7 @@ public class CourseService {
         }
 
         if (redirectAttributes != null) {
-            redirectAttributes.addAttribute("messages", messages);
+            redirectAttributes.addFlashAttribute("messages", messages);
         }
 
         return redirectCourses;
@@ -122,8 +122,9 @@ public class CourseService {
     public String editForm(Model model, Long courseId) {
         Course course = courseRepository.findOne(courseId);
 
+        model.addAttribute("id", courseId);
         model.addAttribute("course", course);
-        model.addAttribute("actionURL", "/courses/{id}/edit");
+        model.addAttribute("actionURL", "/courses/" + courseId + "/edit");
         model.addAttribute("categories", categoryService.findAllCategories());
 
         return "courseForm";
