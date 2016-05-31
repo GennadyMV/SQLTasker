@@ -9,11 +9,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import wepaht.SQLTasker.domain.Category;
+import wepaht.SQLTasker.domain.CategoryDetails;
 import wepaht.SQLTasker.service.CourseService;
 
 /**
@@ -84,5 +87,15 @@ public class CourseController {
     @RequestMapping(value = "/{id}/leave", method = RequestMethod.POST)
     public String leaveCourse(RedirectAttributes redirectAttributes, @PathVariable Long id) {
         return courseService.leaveCourse(redirectAttributes, id);
+    }
+    
+    @RequestMapping(value = "/{id}/details", method = RequestMethod.GET)
+    public String getCategoryDetails(Model model, @PathVariable Long id, @ModelAttribute("categoryDetails") CategoryDetails categoryDetails) {
+        return courseService.getCategoryDetails(model, id);
+    }
+    
+    @RequestMapping(value = "/{id}/details", method = RequestMethod.POST)
+    public String postCategoryDetails(RedirectAttributes redirectAttributes, @RequestParam List<CategoryDetails> categoryDetails) {
+        return "redirect:/courses";
     }
 }

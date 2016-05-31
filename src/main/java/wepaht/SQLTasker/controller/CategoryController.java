@@ -32,7 +32,7 @@ public class CategoryController {
 
     @Autowired
     private AccountService userService;
-    
+
     @Autowired
     private CategoryService categoryService;
 
@@ -40,13 +40,8 @@ public class CategoryController {
     @Transactional
     public String getCategories(Model model) {
         Account user = userService.getAuthenticatedUser();
-        if (user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
-            model.addAttribute("categories", categoryRepository.findAll());
-        } else {
-            List<Category> categoryList = categoryRepository.getActiveCategories(LocalDate.now());
-            model.addAttribute("categories", categoryList);
-        }
 
+        model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("tasks", taskRepository.findAll());
         return "categories";
     }
@@ -54,16 +49,10 @@ public class CategoryController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(
-            RedirectAttributes redirectAttributes,            
+            RedirectAttributes redirectAttributes,
             @RequestParam String name,
-            @RequestParam String starts,
-            @RequestParam String expires,
             @RequestParam String description,
             @RequestParam(required = false) List<Long> taskIds) {
-
-        if (LocalDate.parse(starts).isAfter(LocalDate.parse(expires))) {
-            return redirectMessage("Error! Start date is after expiridation date!", redirectAttributes);            
-        }
 
         List<Task> tasks = new ArrayList();
         if (taskIds != null) {
@@ -75,13 +64,11 @@ public class CategoryController {
         try {
             Category category = new Category();
             category.setName(name);
-            category.setStarts(LocalDate.parse(starts));
-            category.setExpires(LocalDate.parse(expires));
             category.setDescription(description);
             categoryService.setCategoryToTasks(category, tasks);
             categoryRepository.save(category);
         } catch (Exception e) {
-            return redirectMessage("Category creation failed!", redirectAttributes);            
+            return redirectMessage("Category creation failed!", redirectAttributes);
         }
 
         redirectAttributes.addFlashAttribute("messages", "Category has been created!");
@@ -103,7 +90,6 @@ public class CategoryController {
     public String removeCategory(@PathVariable Long id,
             RedirectAttributes redirectAttributes) throws Exception {
         categoryService.deleteCategory(id);
-//        categoryRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "Category deleted!");
         return "redirect:/categories";
     }
@@ -112,15 +98,11 @@ public class CategoryController {
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
     public String updateCategory(@PathVariable Long id, RedirectAttributes redirectAttributes,
             @RequestParam String name,
-            @RequestParam String startDate,
-            @RequestParam String expiredDate,
             @RequestParam String description,
             @RequestParam(required = false) List<Long> taskIds) {
         Category oldCategory = categoryRepository.findOne(id);
         oldCategory.setName(name);
         oldCategory.setDescription(description);
-        oldCategory.setExpires(LocalDate.parse(expiredDate));
-        oldCategory.setStarts(LocalDate.parse(startDate));
         List<Task> tasks = new ArrayList<>();
         if (taskIds != null) {
             for (Long taskId : taskIds) {
@@ -128,14 +110,13 @@ public class CategoryController {
             }
         }
         categoryService.setCategoryToTasks(oldCategory, tasks);
-        
+
         try {
             categoryRepository.save(oldCategory);
         } catch (Exception e) {
             return redirectMessage("Category update failed", redirectAttributes);
         }
-        
-        
+
         redirectAttributes.addFlashAttribute("messages", "Category modified!");
         return "redirect:/categories/{id}";
     }
@@ -153,38 +134,34 @@ public class CategoryController {
     public String getCategoryTask(@PathVariable Long id,
             @PathVariable Long taskId,
             Model model, RedirectAttributes redirectAttributes) {
-        
+
         Category category = categoryRepository.findOne(id);
         Account user = userService.getAuthenticatedUser();
         LocalDate now = LocalDate.now();
-        if ((category.getStarts().isBefore(now) && category.getExpires().isAfter(now)) || user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
-            Task task = taskRepository.findOne(taskId);
-            model.addAttribute("task", task);
-            model.addAttribute("database", task.getDatabase());
-            model.addAttribute("category", category);
-            model.addAttribute("next", categoryService.getNextTask(category, task));
-            return "task";
-        }
 
-        redirectAttributes.addFlashAttribute("messages", "You shall not pass here!");
-        return "redirect:/categories/";
+        Task task = taskRepository.findOne(taskId);
+        model.addAttribute("task", task);
+        model.addAttribute("database", task.getDatabase());
+        model.addAttribute("category", category);
+        model.addAttribute("next", categoryService.getNextTask(category, task));
+        return "task";
     }
-    
+
     @Secured("ROLE_TEACHER")
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public String changeCategoryTaskOrder(RedirectAttributes redirectAttributes,
             @PathVariable Long id,
             @RequestParam Long taskId) {
-        
+
         Category category = categoryRepository.findOne(id);
         Task task = taskRepository.findOne(taskId);
         categoryService.setCategoryTaskFurther(category, task);
-        
+
         redirectAttributes.addAttribute("categoryId", id);
-        
+
         return "redirect:/categories/{categoryId}";
     }
-    
+
     private String redirectMessage(String message, RedirectAttributes ra) {
         ra.addFlashAttribute("messages", message);
         return "redirect:/categories/";

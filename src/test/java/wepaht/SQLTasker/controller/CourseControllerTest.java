@@ -121,8 +121,6 @@ public class CourseControllerTest {
     private Category createTestCategory(String name) {
         Category category = new Category();
         category.setName(name);
-        category.setStarts(LocalDate.MIN);
-        category.setExpires(LocalDate.MAX);
 
         return categoryRepository.save(category);
     }

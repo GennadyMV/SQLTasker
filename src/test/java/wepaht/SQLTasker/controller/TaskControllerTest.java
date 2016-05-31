@@ -119,8 +119,6 @@ public class TaskControllerTest {
         
         category = new Category();
         category.setName("taskCategory");
-        category.setStarts(LocalDate.MIN);
-        category.setExpires(LocalDate.MAX);
         category = categoryRepository.save(category);        
     }
 

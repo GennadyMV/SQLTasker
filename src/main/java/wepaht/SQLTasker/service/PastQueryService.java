@@ -33,13 +33,9 @@ public class PastQueryService {
         pastQuery.setTask(task);
         pastQuery.setCorrect(correctness);
         pastQuery.setDate(new Date());
-        pastQuery.setAwarded(compareExpirationDate(categoryRepository.findOne(categoryId).getExpires()));
+        pastQuery.setAwarded(true);
         pastQueryRepository.save(pastQuery);
 
-    }
-
-    private boolean compareExpirationDate(LocalDate expiredDate) {
-        return expiredDate.isAfter(LocalDate.now());
     }
 
     /**

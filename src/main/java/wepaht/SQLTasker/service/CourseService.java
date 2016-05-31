@@ -41,26 +41,37 @@ public class CourseService {
         Course course = new Course();
         course.setName(name);
         course.setDescription(description);
-        course.setCourseCategories(categoryService.findCategoriesByIds(categoryIds));
+        List<Category> categories = categoryService.findCategoriesByIds(categoryIds);
+        course.setCourseCategories(categories);
         course = setDates(course, starts, expires, messages);
-
-        saveCourse(course, messages, redirectAttributes, redirectAddress);
+        redirectAddress = saveCourse(course, messages, redirectAttributes, redirectAddress);       
+        
         if (redirectAttributes != null) {
             redirectAttributes.addFlashAttribute("messages", messages);
         }
 
-        return redirectCourses;
+        return redirectAddress;
     }
 
-    private void saveCourse(Course course, List<String> messages, RedirectAttributes redirectAttributes, String redirectAddress) {
+    private String saveCourse(Course course, List<String> messages, RedirectAttributes redirectAttributes, String redirectAddress) {
         try {
-            courseRepository.save(course);
+            course = courseRepository.save(course);
             messages.add("New course created");
+            
+            if (courseRepository.getCourseCategories(course).size() > 0) {
+                redirectAddress = redirectCourses + "/{id}/details";
+                redirectAttributes.addAttribute("id", course.getId());                
+            }
         } catch (Exception e) {
             messages.add("Course creation failed");
             redirectAttributes.addAttribute("course", course);
             redirectAddress = "redirect:/courses/create";
         }
+        return redirectAddress;
+    }
+    
+    public Course saveCourse(Course course) {
+        return courseRepository.save(course);
     }
 
     private Course setDates(Course course, String starts, String expires, List<String> messages) {
@@ -219,4 +230,15 @@ public class CourseService {
         redirectAttributes.addFlashAttribute("messages", messages);
         return redirectCourses;
     }
+
+    public String getCategoryDetails(Model model, Long id) {
+        Course course = courseRepository.findOne(id);
+        model.addAttribute("course", course);
+        model.addAttribute("categories", courseRepository.getCourseCategories(course));
+        model.addAttribute("actionURL", "/courses/" + id + "/details");        
+        
+        return "categoryDetails";
+    }
+    
+    
 }

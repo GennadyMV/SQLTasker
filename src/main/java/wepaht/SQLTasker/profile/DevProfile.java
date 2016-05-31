@@ -68,8 +68,6 @@ public class DevProfile {
         Category category = new Category();
         category.setName("first week");
         category.setDescription("easybeasy");
-        category.setStarts(LocalDate.of(1, 1, 1));
-        category.setExpires(LocalDate.MAX);
         categoryRepository.save(category);
 
         for (int i = 0; i < 10; i++) {

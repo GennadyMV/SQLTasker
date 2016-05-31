@@ -18,15 +18,7 @@ public class Category extends AbstractPersistable<Long> {
     private String name;
     
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Task> taskList;    
-    
-    @NotNull
-    @Convert(converter = LocalDatePersistenceConverter.class)
-    private LocalDate starts;
-
-    @NotNull
-    @Convert(converter = LocalDatePersistenceConverter.class)
-    private LocalDate expires;
+    private List<Task> taskList;       
     
     @ManyToMany(mappedBy = "courseCategories")
     private List<Course> courses;
@@ -63,38 +55,6 @@ public class Category extends AbstractPersistable<Long> {
      */
     public void setTaskList(List<Task> taskList) {
         this.taskList = taskList;
-    }
-
-    /**
-     *
-     * @return date when user can do tasks on category.
-     */
-    public LocalDate getStarts() {
-        return starts;
-    }
-
-    /**
-     *
-     * @param startDate set date when user can do tasks on category.
-     */
-    public void setStarts(LocalDate startDate) {
-        this.starts = startDate;
-    }
-
-    /**
-     *
-     * @return get the date when user can't get point from task which are in category.
-     */
-    public LocalDate getExpires() {
-        return expires;
-    }
-
-    /**
-     *
-     * @param expires date when user can't get point from tasks which are in category.
-     */
-    public void setExpires(LocalDate expires) {
-        this.expires = expires;
     }
 
     /**

@@ -34,9 +34,24 @@
             </div>
         </div>
         
+        <div th:if="${course.students}">
+            <span>Participants</span>
+            <div th:each="student : ${course.students}">
+                <h4 th:text="${student.username}">Student name</h4>
+            </div>
+        </div>
+        
         <div>
             <a th:href="@{/courses/{id}/edit (id = ${course.id})}">Edit course</a>
         </div>
+        
+        <form th:method="POST" th:action="@{/courses/{id}/join (id = ${course.id})}">
+            <input type="submit" value="Join course"/>
+        </form>
+        
+        <form th:method="POST" th:action="@{/courses/{id}/leave (id = ${course.id})}">
+            <input type="submit" value="Leave course"/>
+        </form>
         
         <div>
             <form th:method="DELETE" th:action="@{/courses/{id}/delete (id = ${course.id})}">
