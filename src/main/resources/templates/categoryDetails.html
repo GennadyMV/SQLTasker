@@ -11,22 +11,41 @@
         <div th:include="fragments/messages_template :: messages"></div>
 
         <div>
+            
             <form method="POST" th:action="@{${actionURL}}">
-                <div th:each="category : ${categories}" th:object="${categoryDetails}">
-                    <span th:text="${category.name}"></span>
-                    <input type="hidden" name="course" th:value="${course}"/>
-                    <input type="hidden" name="category" th:value="${category}"/>
+                <div th:each="detail : @{categoryDetailsList}">
+                    <input type="hidden" name="course" th:value="${detail.course}"/>
+                    <input type="hidden" name="category" th:value="${detail.category}"/>
                     <div>
-                        <span>Category opens</span>
-                        <input type="date" name="starts"/>
+                        <label>Category starts</label><input type="date" name="starts"/>
                     </div>
+                    
                     <div>
-                        <span>Category expires</span>
-                        <input type="date" name="expires"/>
+                        <label>Category expires</label><input type="date" name="expires"/>
                     </div>
+                    <input type="submit" th:text="submit it"/>
                 </div>
-                <input type="submit" value="Submit details" />
             </form>
+            
+            <!-- 
+            <form method="POST" th:action="@{${actionURL}}" class="form-group">
+                <div th:each="detail,status : ${categoryDetailsList}">
+                    <input type="hidden" name="*{categoryDetailsList[__${status.index}__].course}" th:value="${detail.course}"/>
+                    <input type="hidden" name="*{categoryDetailsList[__${status.index}__].category}" th:value="${detail.category}"/>
+                    
+                    <div>
+                        <label>Category starts</label><input type="date" name="*{categoryDetailsList[__${status.index}__].starts}"/>
+                    </div>
+                    
+                    <div>
+                        <label>Category expires</label><input type="date" name="*{categoryDetailsList[__${status.index}__].expires}"/>
+                    </div>
+                    
+                </div>
+                
+                <input type="submit"/>
+            </form>
+            -->
         </div>
 
         <div th:include="fragments/scripts :: searchScript"></div>

@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
+import wepaht.SQLTasker.domain.CategoryDetails;
+import wepaht.SQLTasker.domain.CategoryDetailsList;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.repository.CourseRepository;
 
@@ -25,6 +27,9 @@ public class CourseService {
 
     @Autowired
     private CategoryService categoryService;
+    
+    @Autowired
+    private CategoryDetailsService categoryDetailsService;
 
     private final String redirectCourses = "redirect:/courses";
 
@@ -231,13 +236,25 @@ public class CourseService {
         return redirectCourses;
     }
 
+    @Transactional
     public String getCategoryDetails(Model model, Long id) {
         Course course = courseRepository.findOne(id);
-        model.addAttribute("course", course);
-        model.addAttribute("categories", courseRepository.getCourseCategories(course));
-        model.addAttribute("actionURL", "/courses/" + id + "/details");        
+        model.addAttribute("categoryDetailsList", categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
+        model.addAttribute("actionURL", "/courses/" + id + "/details");
+        model.addAttribute("details", categoryDetailsService.getCourseCategoryDetails(course));
         
         return "categoryDetails";
+    }
+
+    public String setCategoryDetails(RedirectAttributes redirectAttributes, List<CategoryDetails> categoryDetailsList) {
+        String redirectAddress = redirectCourses + "/{id}";
+        List<String> messages = new ArrayList<>();
+        
+        int detailsSaved = categoryDetailsService.saveCategoryDetailsList(categoryDetailsList);
+        messages.add(detailsSaved + " category details saved");
+        redirectAttributes.addFlashAttribute("messages", messages);
+        
+        return redirectAddress;
     }
     
     
