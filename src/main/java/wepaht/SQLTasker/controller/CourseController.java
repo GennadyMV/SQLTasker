@@ -5,6 +5,7 @@
  */
 package wepaht.SQLTasker.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetails;
-import wepaht.SQLTasker.domain.CategoryDetailsList;
+import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
+import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.repository.CourseRepository;
+import wepaht.SQLTasker.service.CategoryDetailsService;
 import wepaht.SQLTasker.service.CourseService;
 
 /**
@@ -30,6 +33,12 @@ public class CourseController {
     
     @Autowired
     private CourseService courseService;
+    
+    @Autowired
+    private CategoryDetailsService categoryDetailsService;
+    
+    @Autowired
+    private CourseRepository courseRepository;
     
     @RequestMapping(method = RequestMethod.GET)
     public String getCourses(Model model) {
@@ -96,7 +105,7 @@ public class CourseController {
     }
     
     @RequestMapping(value = "/{id}/details", method = RequestMethod.POST)
-    public String postCategoryDetails(RedirectAttributes redirectAttributes, @RequestParam List<CategoryDetails> categoryDetailsList) {
-        return courseService.setCategoryDetails(redirectAttributes, categoryDetailsList);
+    public String postCategoryDetails(RedirectAttributes redirectAttributes, @PathVariable Long id, @ModelAttribute CategoryDetailsWrapper wrapper) {
+        return courseService.setCategoryDetails(redirectAttributes, wrapper.getCategoryDetailsList());
     }
 }

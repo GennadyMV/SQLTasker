@@ -1,11 +1,10 @@
 package wepaht.SQLTasker.domain;
 
 import java.time.LocalDate;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import org.springframework.data.jpa.domain.AbstractPersistable;
-import wepaht.SQLTasker.converter.LocalDatePersistenceConverter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class CategoryDetails extends AbstractPersistable<Long> {
@@ -16,11 +15,15 @@ public class CategoryDetails extends AbstractPersistable<Long> {
     @ManyToOne
     private Category category;
 
-    @Convert(converter = LocalDatePersistenceConverter.class)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate starts;
     
-    @Convert(converter = LocalDatePersistenceConverter.class)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate expires;
+    
+    public CategoryDetails() {
+        
+    }
     
     public CategoryDetails(Course course, Category category, LocalDate starts, LocalDate expires) {
         this.course = course;

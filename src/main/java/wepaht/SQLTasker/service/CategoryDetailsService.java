@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetails;
-import wepaht.SQLTasker.domain.CategoryDetailsList;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.repository.CategoryDetailsRepository;
 

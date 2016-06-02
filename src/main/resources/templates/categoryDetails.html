@@ -12,19 +12,27 @@
 
         <div>
             
-            <form method="POST" th:action="@{${actionURL}}">
-                <div th:each="detail : @{categoryDetailsList}">
-                    <input type="hidden" name="course" th:value="${detail.course}"/>
-                    <input type="hidden" name="category" th:value="${detail.category}"/>
-                    <div>
-                        <label>Category starts</label><input type="date" name="starts"/>
-                    </div>
+            <form method="POST" th:action="@{${actionURL}}" th:object="${wrapper}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Category</th>
+                            <th>Starts</th>
+                            <th>Expires</th>
+                        </tr>
+                    </thead>
                     
-                    <div>
-                        <label>Category expires</label><input type="date" name="expires"/>
-                    </div>
-                    <input type="submit" th:text="submit it"/>
-                </div>
+                    <tbody>
+                        <tr th:each="detail, stat : *{categoryDetailsList}">
+                            <td th:text="${detail.course}"></td>
+                            <td th:text="${detail.category}"></td>
+                            <td><input th:type="date" th:name="|categoryDetailsList[${stat.index}].starts|"/></td>
+                            <td><input th:type="date" th:name="|categoryDetailsList[${stat.index}].expires|"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" value="submit">Submit</button>
             </form>
             
             <!-- 

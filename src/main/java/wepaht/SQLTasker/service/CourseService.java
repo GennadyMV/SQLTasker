@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetails;
-import wepaht.SQLTasker.domain.CategoryDetailsList;
+import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.repository.CourseRepository;
 
@@ -241,7 +241,9 @@ public class CourseService {
         Course course = courseRepository.findOne(id);
         model.addAttribute("categoryDetailsList", categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
         model.addAttribute("actionURL", "/courses/" + id + "/details");
-        model.addAttribute("details", categoryDetailsService.getCourseCategoryDetails(course));
+        CategoryDetailsWrapper wrapper = new CategoryDetailsWrapper();
+        wrapper.setCategoryDetailsList((ArrayList<CategoryDetails>) categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
+        model.addAttribute("wrapper", wrapper);
         
         return "categoryDetails";
     }
