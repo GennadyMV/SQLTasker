@@ -18,7 +18,7 @@ public class CategoryDetailsService {
     private CategoryDetailsRepository categoryDetailsRepository;
     
     public List<CategoryDetail> getCourseCategoryDetails(Course course) {
-        return categoryDetailsRepository.findByCourse(course);
+        return categoryDetailsRepository.findByCourseOrderByStartsAscExpiresDesc(course);
     }
     
     @Transactional
@@ -56,7 +56,7 @@ public class CategoryDetailsService {
             return starts.isBefore(expires);
         } 
         
-        return (starts != null || expires != null);
+        return true;
     }
     
     public List<CategoryDetail> categoriesToCategoryDetails(List<Category> categories, Course course) {

@@ -7,7 +7,7 @@ import wepaht.SQLTasker.domain.Course;
 
 public interface CategoryDetailsRepository extends JpaRepository<CategoryDetail, Long>{
     
-    List<CategoryDetail> findByCourse(Course course);
+    List<CategoryDetail> findByCourseOrderByStartsAscExpiresDesc(Course course);
     
     List<CategoryDetail> findByCourseAndCategory(Course course, Category category);
 }

@@ -114,7 +114,6 @@ public class CourseService {
         Course course = courseRepository.findOne(courseId);
         List<CategoryDetail> details = categoryDetailsService.getCourseCategoryDetails(course);
         model.addAttribute("course", course);
-        model.addAttribute("courseCategories", courseRepository.getCourseCategories(course));        
         if (!details.isEmpty()) model.addAttribute("details", details);
         return "course";
     }
@@ -164,6 +163,9 @@ public class CourseService {
 
     private String saveEditCourse(Course course, List<String> messages, String redirectAddress, RedirectAttributes redirectAttributes) {
         try {
+            if (course.getCourseCategories() != null && !course.getCourseCategories().isEmpty()) {
+                redirectAddress = redirectAddress + "/details";
+            }
             courseRepository.save(course);
             messages.add("Course edited");
         } catch (Exception e) {
