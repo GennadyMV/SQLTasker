@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class CategoryDetailsWrapper {
     
-    private ArrayList<CategoryDetails> categoryDetailsList;
+    private ArrayList<CategoryDetail> categoryDetailsList;
 
-    public ArrayList<CategoryDetails> getCategoryDetailsList() {
+    public ArrayList<CategoryDetail> getCategoryDetailsList() {
         return categoryDetailsList;
     }
 
-    public void setCategoryDetailsList(ArrayList<CategoryDetails> categoryDetailses) {
+    public void setCategoryDetailsList(ArrayList<CategoryDetail> categoryDetailses) {
         this.categoryDetailsList = categoryDetailses;
     }
     

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title>Course Form</title>
+        <title th:text="${course.name} + ' category details'">Course Form</title>
 
     </head>
     <body>
@@ -11,49 +11,48 @@
         <div th:include="fragments/messages_template :: messages"></div>
 
         <div>
-            
-            <form method="POST" th:action="@{${actionURL}}" th:object="${wrapper}">
-                <table>
+
+            <form method="POST" action="#" th:action="@{${actionURL}}" th:object="${wrapper}">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Course</th>
                             <th>Category</th>
                             <th>Starts</th>
                             <th>Expires</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
-                        <tr th:each="detail, stat : *{categoryDetailsList}">
-                            <td th:text="${detail.course}"></td>
-                            <td th:text="${detail.category}"></td>
-                            <td><input th:type="date" th:name="|categoryDetailsList[${stat.index}].starts|"/></td>
-                            <td><input th:type="date" th:name="|categoryDetailsList[${stat.index}].expires|"/></td>
+                        <tr th:each="detail, stat : ${wrapper.categoryDetailsList}">
+                            <td>
+                                <p th:text="${detail.category.name}"></p>
+
+                                <input th:type="hidden" readonly="readonly"
+                                       th:name="|wrapper.categoryDetailsList[${stat.index}]|"
+                                       th:value="${detail.course}"
+                                       th:field="*{categoryDetailsList[__${stat.index}__].course}"/>
+
+                                <input th:type="hidden" readonly="readonly"
+                                       th:name="|wrapper.categoryDetailsList[${stat.index}]|"
+                                       th:value="${detail.category}"
+                                       th:field="*{categoryDetailsList[__${stat.index}__].category}"/>
+                            </td>
+                            <td>
+                                <input type="date"
+                                       th:name="|wrapper.categoryDetailsList[${stat.index}]|"
+                                       th:field="*{categoryDetailsList[__${stat.index}__].starts}"/>
+                            </td>
+                            <td>
+                                <input type="date"
+                                       th:name="|wrapper.categoryDetailsList[${stat.index}]|"
+                                       th:field="*{categoryDetailsList[__${stat.index}__].expires}"/>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
-                <button type="submit" value="submit">Submit</button>
-            </form>
-            
-            <!-- 
-            <form method="POST" th:action="@{${actionURL}}" class="form-group">
-                <div th:each="detail,status : ${categoryDetailsList}">
-                    <input type="hidden" name="*{categoryDetailsList[__${status.index}__].course}" th:value="${detail.course}"/>
-                    <input type="hidden" name="*{categoryDetailsList[__${status.index}__].category}" th:value="${detail.category}"/>
-                    
-                    <div>
-                        <label>Category starts</label><input type="date" name="*{categoryDetailsList[__${status.index}__].starts}"/>
-                    </div>
-                    
-                    <div>
-                        <label>Category expires</label><input type="date" name="*{categoryDetailsList[__${status.index}__].expires}"/>
-                    </div>
-                    
-                </div>
-                
                 <input type="submit"/>
             </form>
-            -->
+
         </div>
 
         <div th:include="fragments/scripts :: searchScript"></div>

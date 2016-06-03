@@ -41,8 +41,31 @@
             </div>
         </div>
         
+        <div th:if="${details}">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Starts</th>
+                        <th>Expires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="detail : ${details}">
+                        <td th:text="${detail.category.name}"></td>
+                        <td th:text="((${detail.starts != null})? ${detail.starts} : '')"></td>
+                        <td th:text="((${detail.expires != null})? ${detail.expires} : '')"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
         <div>
             <a th:href="@{/courses/{id}/edit (id = ${course.id})}">Edit course</a>
+        </div>
+        
+        <div>
+            <a th:herf="@{/courses/{id}/details (id = ${course.id})}">Edit categories details'</a>
         </div>
         
         <form th:method="POST" th:action="@{/courses/{id}/join (id = ${course.id})}">

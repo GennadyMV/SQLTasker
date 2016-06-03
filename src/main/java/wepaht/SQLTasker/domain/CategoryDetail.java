@@ -2,17 +2,21 @@ package wepaht.SQLTasker.domain;
 
 import java.time.LocalDate;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-public class CategoryDetails extends AbstractPersistable<Long> {
+public class CategoryDetail extends AbstractPersistable<Long> {
 
-    @ManyToOne
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
     private Course course;
 
-    @ManyToOne
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -21,11 +25,11 @@ public class CategoryDetails extends AbstractPersistable<Long> {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate expires;
     
-    public CategoryDetails() {
+    public CategoryDetail() {
         
     }
     
-    public CategoryDetails(Course course, Category category, LocalDate starts, LocalDate expires) {
+    public CategoryDetail(Course course, Category category, LocalDate starts, LocalDate expires) {
         this.course = course;
         this.category = category;
         this.starts = starts;

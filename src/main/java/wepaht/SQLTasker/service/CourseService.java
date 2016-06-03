@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
-import wepaht.SQLTasker.domain.CategoryDetails;
+import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.repository.CourseRepository;
@@ -112,8 +112,10 @@ public class CourseService {
     @Transactional
     public String getCourse(Model model, Long courseId) {
         Course course = courseRepository.findOne(courseId);
+        List<CategoryDetail> details = categoryDetailsService.getCourseCategoryDetails(course);
         model.addAttribute("course", course);
-        model.addAttribute("courseCategories", courseRepository.getCourseCategories(course));
+        model.addAttribute("courseCategories", courseRepository.getCourseCategories(course));        
+        if (!details.isEmpty()) model.addAttribute("details", details);
         return "course";
     }
 
@@ -239,22 +241,26 @@ public class CourseService {
     @Transactional
     public String getCategoryDetails(Model model, Long id) {
         Course course = courseRepository.findOne(id);
-        model.addAttribute("categoryDetailsList", categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
-        model.addAttribute("actionURL", "/courses/" + id + "/details");
         CategoryDetailsWrapper wrapper = new CategoryDetailsWrapper();
-        wrapper.setCategoryDetailsList((ArrayList<CategoryDetails>) categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
+        wrapper.setCategoryDetailsList((ArrayList<CategoryDetail>) categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
+
+//        model.addAttribute("categoryDetailsList", categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
+        model.addAttribute("actionURL", "/courses/" + id + "/details");
+        model.addAttribute("course", course);
         model.addAttribute("wrapper", wrapper);
         
         return "categoryDetails";
     }
 
-    public String setCategoryDetails(RedirectAttributes redirectAttributes, List<CategoryDetails> categoryDetailsList) {
+    public String setCategoryDetails(RedirectAttributes redirectAttributes, List<CategoryDetail> categoryDetailsList, Long id) {
         String redirectAddress = redirectCourses + "/{id}";
         List<String> messages = new ArrayList<>();
-        
+        Course course = courseRepository.findOne(id);
         int detailsSaved = categoryDetailsService.saveCategoryDetailsList(categoryDetailsList);
         messages.add(detailsSaved + " category details saved");
+        
         redirectAttributes.addFlashAttribute("messages", messages);
+        redirectAttributes.addFlashAttribute("id", id);
         
         return redirectAddress;
     }
