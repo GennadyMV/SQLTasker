@@ -25,11 +25,8 @@ public class CategoryDetailsService {
     public int saveCategoryDetailsList(List<CategoryDetail> categoryDetailsList) {
         int detailsSaved = 0;
         
-        for (CategoryDetail detail : categoryDetailsList) {
-            if (saveCategoryDetails(detail)) {
-                detailsSaved ++;
-            }
-        }
+        detailsSaved = categoryDetailsList.stream().filter((detail) 
+                -> (saveCategoryDetails(detail))).map((_item) -> 1).reduce(detailsSaved, Integer::sum);
         
         return detailsSaved;
     }
