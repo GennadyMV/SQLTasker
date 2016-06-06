@@ -88,5 +88,4 @@ public class CategoryDetailsServiceTest {
 
         assertEquals(sizeBefore + 1, categoryDetailsRepository.findAll().size());
     }
-
 }

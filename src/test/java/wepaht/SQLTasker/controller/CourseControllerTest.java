@@ -37,8 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
+import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.CategoryDetailsRepository;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.service.CourseService;
@@ -59,6 +61,9 @@ public class CourseControllerTest {
 
     @Autowired
     CourseService courseService;
+    
+    @Autowired
+    private CategoryDetailsRepository categoryDetailsRepository;
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -346,5 +351,23 @@ public class CourseControllerTest {
         
         List<Account> students = courseRepository.getCourseStudents(course);
         assertFalse(students.contains(student));
+    }
+    
+    @Test
+    public void testCategoryDetailIsDeletedWhenCourseIsDeleted() throws Exception {
+        Course course = createTestCourse("Deleting");
+        Category category = createTestCategory("Whee");
+        course.setCourseCategories(Arrays.asList(category));
+        course = courseRepository.save(course);
+        
+        CategoryDetail detail = categoryDetailsRepository.save(new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX));
+        
+        mockMvc.perform(delete(URI + "/" + course.getId() + "/delete")
+                .with(user("teacher").roles("TEACHER"))
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        
+        assertTrue(categoryDetailsRepository.findOne(detail.getId()) == null);
     }
 }

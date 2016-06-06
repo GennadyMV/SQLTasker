@@ -49,7 +49,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.repository.CategoryDetailsRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.TaskService;
@@ -82,6 +84,9 @@ public class CategoryControllerTest {
     
     @Autowired
     private CourseRepository courseRepository;
+    
+    @Autowired
+    private CategoryDetailsRepository categoryDetailRepository;
 
     @Mock
     AccountService userServiceMock;
@@ -350,5 +355,26 @@ public class CategoryControllerTest {
                 .andReturn();
         
         assertTrue(categoryRepository.findOne(category.getId()) == null);
+    }
+    
+    @Test
+    public void testCategoryDetailIsDeletedWhenCategoryIsDeleted() throws Exception {
+        user.setRole("ADMIN");
+        
+        Category category = createCategory();
+        category = categoryRepository.save(category);
+        Course course = new Course();
+        course.setName("delete category 2");
+        course.setCourseCategories(Arrays.asList(category));
+        courseService.saveCourse(course);
+        CategoryDetail detail = new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX);
+        detail = categoryDetailRepository.save(detail);
+        
+        mockMvc.perform(delete(URI + "/" + category.getId())
+                .with(user("stud").roles("ADMIN"))
+                .with(csrf()))
+                .andReturn();
+        
+        assertTrue(categoryDetailRepository.findOne(detail.getId()) == null);
     }
 }
