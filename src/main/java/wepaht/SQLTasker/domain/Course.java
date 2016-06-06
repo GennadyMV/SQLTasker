@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import wepaht.SQLTasker.converter.LocalDatePersistenceConverter;
@@ -28,6 +29,9 @@ public class Course extends AbstractPersistable<Long>{
     
     @ManyToMany
     private List<Account> students;
+    
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private List<CategoryDetail> details;
 
     public List<Category> getCourseCategories() {
         return courseCategories;
@@ -75,5 +79,13 @@ public class Course extends AbstractPersistable<Long>{
 
     public void setStudents(List<Account> students) {
         this.students = students;
+    }
+
+    public List<CategoryDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<CategoryDetail> details) {
+        this.details = details;
     }
 }

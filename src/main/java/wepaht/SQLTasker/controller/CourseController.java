@@ -20,7 +20,7 @@ import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.repository.CourseRepository;
-import wepaht.SQLTasker.service.CategoryDetailsService;
+import wepaht.SQLTasker.service.CategoryDetailService;
 import wepaht.SQLTasker.service.CourseService;
 
 /**
@@ -35,7 +35,7 @@ public class CourseController {
     private CourseService courseService;
     
     @Autowired
-    private CategoryDetailsService categoryDetailsService;
+    private CategoryDetailService categoryDetailsService;
     
     @Autowired
     private CourseRepository courseRepository;

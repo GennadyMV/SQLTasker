@@ -22,16 +22,16 @@ import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.repository.CategoryDetailsRepository;
+import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
-public class CategoryDetailsServiceTest {
+public class CategoryDetailServiceTest {
 
     @Autowired
-    private CategoryDetailsRepository categoryDetailsRepository;
+    private CategoryDetailRepository categoryDetailsRepository;
     
     @Autowired
     private CategoryRepository categoryRepository;
@@ -43,9 +43,9 @@ public class CategoryDetailsServiceTest {
     private Category category;
 
     @Autowired
-    private CategoryDetailsService categoryDetailsService;
+    private CategoryDetailService categoryDetailsService;
 
-    public CategoryDetailsServiceTest() {
+    public CategoryDetailServiceTest() {
     }
 
     @BeforeClass
@@ -77,7 +77,7 @@ public class CategoryDetailsServiceTest {
     }
 
     /**
-     * Test of saveCategoryDetailsList method, of class CategoryDetailsService.
+     * Test of saveCategoryDetailsList method, of class CategoryDetailService.
      */
     @Test
     public void testSaveCategoryDetailsList() {

@@ -40,7 +40,7 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.repository.AccountRepository;
-import wepaht.SQLTasker.repository.CategoryDetailsRepository;
+import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.service.CourseService;
@@ -61,9 +61,9 @@ public class CourseControllerTest {
 
     @Autowired
     CourseService courseService;
-    
+
     @Autowired
-    private CategoryDetailsRepository categoryDetailsRepository;
+    private CategoryDetailRepository categoryDetailsRepository;
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -96,6 +96,7 @@ public class CourseControllerTest {
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
+        accountRepository.deleteAll();
         student = new Account();
         student.setUsername("student");
         student.setPassword("student");
@@ -111,6 +112,7 @@ public class CourseControllerTest {
 
     @After
     public void tearDown() {
+        categoryDetailsRepository.deleteAll();
         courseRepository.deleteAll();
         categoryRepository.deleteAll();
         accountRepository.deleteAll();
@@ -238,9 +240,9 @@ public class CourseControllerTest {
 
     @Test
     public void testCourseCanBeDeletedWithCourses() throws Exception {
-        Course course = createTestCourse("Deleting course with category");
         Category category = createTestCategory("I'm a friend");
-
+        Course course = new Course();
+        course.setName("Deleting course with category");
         course.setCourseCategories(Arrays.asList(category));
         course = courseRepository.save(course);
 
@@ -312,13 +314,13 @@ public class CourseControllerTest {
         List<Account> students = courseRepository.getCourseStudents(course);
         assertTrue(students.contains(student));
     }
-    
+
     @Test
     public void testUserCannotJoinMultipleTimesToSameCourse() throws Exception {
         Course course = createTestCourse("Join this");
 
         BDDMockito.given(accountServiceMock.getAuthenticatedUser()).willReturn(student);
-        
+
         int courseStudentCountAtBeginning = courseRepository.getCourseStudents(course).size();
 
         mockMvc.perform(post(URI + "/" + course.getId() + "/join")
@@ -326,48 +328,50 @@ public class CourseControllerTest {
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
-        
+
         mockMvc.perform(post(URI + "/" + course.getId() + "/join")
                 .with(user("student").roles("STUDENT"))
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
-        
+
         List<Account> students = courseRepository.getCourseStudents(course);
         assertEquals(courseStudentCountAtBeginning + 1, students.size());
     }
-    
+
     @Test
     public void testUserCanLeaveJoinedCourse() throws Exception {
         Course course = createTestCourse("Leave dis");
         courseService.addStudentToCourse(student, course);
         BDDMockito.given(accountServiceMock.getAuthenticatedUser()).willReturn(student);
-        
+
         mockMvc.perform(post(URI + "/" + course.getId() + "/leave")
                 .with(user("student").roles("STUDENT"))
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
-        
+
         List<Account> students = courseRepository.getCourseStudents(course);
         assertFalse(students.contains(student));
     }
-    
+
     @Test
     public void testCategoryDetailIsDeletedWhenCourseIsDeleted() throws Exception {
-        Course course = createTestCourse("Deleting");
         Category category = createTestCategory("Whee");
+        Course course = new Course();
+        course.setName("Deleting");
         course.setCourseCategories(Arrays.asList(category));
         course = courseRepository.save(course);
-        
+
         CategoryDetail detail = categoryDetailsRepository.save(new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX));
-        
+        int sizeBefore = categoryDetailsRepository.findAll().size();
+
         mockMvc.perform(delete(URI + "/" + course.getId() + "/delete")
                 .with(user("teacher").roles("TEACHER"))
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
-        
-        assertTrue(categoryDetailsRepository.findOne(detail.getId()) == null);
+
+        assertEquals(sizeBefore - 1, categoryDetailsRepository.findAll().size());
     }
 }

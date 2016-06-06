@@ -22,6 +22,9 @@ public class Category extends AbstractPersistable<Long> {
     
     @ManyToMany(mappedBy = "courseCategories")
     private List<Course> courses;
+    
+    @OneToMany(mappedBy = "category", orphanRemoval = true)
+    private List<CategoryDetail> details;
 
     private String description;
 
@@ -78,5 +81,13 @@ public class Category extends AbstractPersistable<Long> {
 
     public void setCourses(List<Course> courses) {
         this.courses = courses;
+    }
+
+    public List<CategoryDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<CategoryDetail> details) {
+        this.details = details;
     }
 }

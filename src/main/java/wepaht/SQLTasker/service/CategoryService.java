@@ -25,6 +25,8 @@ public class CategoryService {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private CategoryDetailService categoryDetailService;
     /**
      * Adds task to categorys' task list.
      *
@@ -113,6 +115,8 @@ public class CategoryService {
             courseService.removeCategoryFromCourses(courses, deleting);
         }
         
-        categoryRepository.delete(deleting);
+        try {
+            categoryRepository.delete(deleting);
+        } catch (Exception e) {}        
     }
 }

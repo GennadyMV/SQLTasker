@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.repository.CategoryDetailsRepository;
+import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.TaskService;
@@ -86,7 +86,7 @@ public class CategoryControllerTest {
     private CourseRepository courseRepository;
     
     @Autowired
-    private CategoryDetailsRepository categoryDetailRepository;
+    private CategoryDetailRepository categoryDetailRepository;
 
     @Mock
     AccountService userServiceMock;
@@ -126,6 +126,7 @@ public class CategoryControllerTest {
     @After
     public void tearDown() {
         userRepository.deleteAll();
+        categoryDetailRepository.deleteAll();
         courseRepository.deleteAll();
         categoryRepository.deleteAll();
         taskRepository.findAllTaskIds().stream().forEach((taskId) -> {

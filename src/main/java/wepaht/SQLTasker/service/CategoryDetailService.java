@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.repository.CategoryDetailsRepository;
+import wepaht.SQLTasker.repository.CategoryDetailRepository;
 
 @Service
-public class CategoryDetailsService {
+public class CategoryDetailService {
     
     @Autowired
-    private CategoryDetailsRepository categoryDetailsRepository;
+    private CategoryDetailRepository categoryDetailsRepository;
     
     public List<CategoryDetail> getCourseCategoryDetails(Course course) {
         return categoryDetailsRepository.findByCourseOrderByStartsAscExpiresDesc(course);

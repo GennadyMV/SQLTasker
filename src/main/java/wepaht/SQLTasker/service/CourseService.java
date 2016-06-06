@@ -29,7 +29,7 @@ public class CourseService {
     private CategoryService categoryService;
     
     @Autowired
-    private CategoryDetailsService categoryDetailsService;
+    private CategoryDetailService categoryDetailsService;
 
     private final String redirectCourses = "redirect:/courses";
 
