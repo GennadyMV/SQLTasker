@@ -26,4 +26,8 @@ public class TaskService {
         
         return false;
     }
+    
+    public Task getTaskById(Long id) {
+        return taskRepository.findOne(id);
+    }
 }

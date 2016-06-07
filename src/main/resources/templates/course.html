@@ -45,7 +45,9 @@
                 </thead>
                 <tbody>
                     <tr th:each="detail : ${details}">
-                        <td th:text="${detail.category.name}"></td>
+                        <td>
+                            <a th:text="${detail.category.name}" th:href="@{/courses/{courseId}/category/{categoryId} (courseId=${course.id}, categoryId=${detail.category.id})}"></a>
+                        </td>
                         <td th:text="((${detail.starts != null})? ${detail.starts} : '')"></td>
                         <td th:text="((${detail.expires != null})? ${detail.expires} : '')"></td>
                     </tr>

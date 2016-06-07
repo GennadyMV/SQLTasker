@@ -119,4 +119,8 @@ public class CategoryService {
             categoryRepository.delete(deleting);
         } catch (Exception e) {}        
     }
+
+    Category getCategoryById(Long categoryId) {
+        return categoryRepository.findOne(categoryId);
+    }
 }

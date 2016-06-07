@@ -14,6 +14,7 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CourseRepository;
 
 @Service
@@ -23,19 +24,22 @@ public class CourseService {
     private AccountService accountService;
 
     @Autowired
-    private CourseRepository courseRepository;
+    private CourseRepository repository;
 
     @Autowired
     private CategoryService categoryService;
-    
+
     @Autowired
     private CategoryDetailService categoryDetailsService;
+
+    @Autowired
+    private TaskService taskService;
 
     private final String redirectCourses = "redirect:/courses";
 
     public String courseListing(Model model) {
 
-        model.addAttribute("courses", courseRepository.findAll());
+        model.addAttribute("courses", repository.findAll());
 
         return "courses";
     }
@@ -49,8 +53,8 @@ public class CourseService {
         List<Category> categories = categoryService.findCategoriesByIds(categoryIds);
         course.setCourseCategories(categories);
         course = setDates(course, starts, expires, messages);
-        redirectAddress = saveCourse(course, messages, redirectAttributes, redirectAddress);       
-        
+        redirectAddress = saveCourse(course, messages, redirectAttributes, redirectAddress);
+
         if (redirectAttributes != null) {
             redirectAttributes.addFlashAttribute("messages", messages);
         }
@@ -60,12 +64,12 @@ public class CourseService {
 
     private String saveCourse(Course course, List<String> messages, RedirectAttributes redirectAttributes, String redirectAddress) {
         try {
-            course = courseRepository.save(course);
+            course = repository.save(course);
             messages.add("New course created");
-            
-            if (courseRepository.getCourseCategories(course).size() > 0) {
+
+            if (repository.getCourseCategories(course).size() > 0) {
                 redirectAddress = redirectCourses + "/{id}/details";
-                redirectAttributes.addAttribute("id", course.getId());                
+                redirectAttributes.addAttribute("id", course.getId());
             }
         } catch (Exception e) {
             messages.add("Course creation failed");
@@ -74,9 +78,9 @@ public class CourseService {
         }
         return redirectAddress;
     }
-    
+
     public Course saveCourse(Course course) {
-        return courseRepository.save(course);
+        return repository.save(course);
     }
 
     private Course setDates(Course course, String starts, String expires, List<String> messages) {
@@ -111,10 +115,12 @@ public class CourseService {
 
     @Transactional
     public String getCourse(Model model, Long courseId) {
-        Course course = courseRepository.findOne(courseId);
+        Course course = repository.findOne(courseId);
         List<CategoryDetail> details = categoryDetailsService.getCourseCategoryDetails(course);
         model.addAttribute("course", course);
-        if (!details.isEmpty()) model.addAttribute("details", details);
+        if (!details.isEmpty()) {
+            model.addAttribute("details", details);
+        }
         return "course";
     }
 
@@ -122,8 +128,8 @@ public class CourseService {
         List<String> messages = new ArrayList<>();
 
         try {
-            Course deletingCourse = courseRepository.findOne(course);
-            courseRepository.delete(deletingCourse);
+            Course deletingCourse = repository.findOne(course);
+            repository.delete(deletingCourse);
             messages.add("Course " + deletingCourse.getName() + " deleted");
         } catch (Exception e) {
             messages.add("Course deletion failed");
@@ -137,7 +143,7 @@ public class CourseService {
     }
 
     public String editForm(Model model, Long courseId) {
-        Course course = courseRepository.findOne(courseId);
+        Course course = repository.findOne(courseId);
 
         model.addAttribute("id", courseId);
         model.addAttribute("course", course);
@@ -150,7 +156,7 @@ public class CourseService {
     public String editCourse(RedirectAttributes redirectAttributes, Long id, String name, String starts, String expires, String description, List<Long> categoryIds) {
         String redirectAddress = redirectCourses + "/" + id;
         List<String> messages = new ArrayList<>();
-        Course course = courseRepository.findOne(id);
+        Course course = repository.findOne(id);
         course.setName(name);
         course.setDescription(description);
         course = setDates(course, starts, expires, messages);
@@ -166,7 +172,7 @@ public class CourseService {
             if (course.getCourseCategories() != null && !course.getCourseCategories().isEmpty()) {
                 redirectAddress = redirectAddress + "/details";
             }
-            courseRepository.save(course);
+            repository.save(course);
             messages.add("Course edited");
         } catch (Exception e) {
             messages.add("Course edit failed");
@@ -177,7 +183,7 @@ public class CourseService {
     }
 
     public List<Course> getCoursesByName(String name) {
-        return courseRepository.findByName(name);
+        return repository.findByName(name);
     }
 
     @Transactional
@@ -189,13 +195,15 @@ public class CourseService {
 
     @Transactional
     public String joinCourse(RedirectAttributes redirectAttributes, Long id) {
-        Course course = courseRepository.findOne(id);
+        Course course = repository.findOne(id);
         List<String> messages = new ArrayList<>();
-        
+
         try {
             List<Account> students = course.getStudents();
             Account currentUser = accountService.getAuthenticatedUser();
-            if (!students.contains(currentUser)) course.getStudents().add(currentUser);
+            if (!students.contains(currentUser)) {
+                course.getStudents().add(currentUser);
+            }
             messages.add("Joined to course " + course.getName());
         } catch (Exception e) {
             messages.add("Could not join course " + course.getName());
@@ -208,7 +216,7 @@ public class CourseService {
 
         return redirectCourses + "/{id}";
     }
-    
+
     public boolean addStudentToCourse(Account student, Course course) {
         try {
             if (course.getStudents() == null) {
@@ -216,18 +224,19 @@ public class CourseService {
             } else {
                 course.getStudents().add(student);
             }
-            courseRepository.save(course);
+            repository.save(course);
             return true;
-        } catch (Exception e) {}
-        
+        } catch (Exception e) {
+        }
+
         return false;
     }
 
     @Transactional
     public String leaveCourse(RedirectAttributes redirectAttributes, Long id) {
         List<String> messages = new ArrayList<>();
-        Course course = courseRepository.findOne(id);
-        
+        Course course = repository.findOne(id);
+
         try {
             Account student = accountService.getAuthenticatedUser();
             course.getStudents().remove(student);
@@ -235,14 +244,14 @@ public class CourseService {
         } catch (Exception e) {
             messages.add("You failed to leave course" + course.getName());
         }
-        
+
         redirectAttributes.addFlashAttribute("messages", messages);
         return redirectCourses;
     }
 
     @Transactional
     public String getCategoryDetails(Model model, Long id) {
-        Course course = courseRepository.findOne(id);
+        Course course = repository.findOne(id);
         CategoryDetailsWrapper wrapper = new CategoryDetailsWrapper();
         wrapper.setCategoryDetailsList((ArrayList<CategoryDetail>) categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
 
@@ -250,22 +259,78 @@ public class CourseService {
         model.addAttribute("actionURL", "/courses/" + id + "/details");
         model.addAttribute("course", course);
         model.addAttribute("wrapper", wrapper);
-        
+
         return "categoryDetails";
     }
 
     public String setCategoryDetails(RedirectAttributes redirectAttributes, List<CategoryDetail> categoryDetailsList, Long id) {
         String redirectAddress = redirectCourses + "/{id}";
         List<String> messages = new ArrayList<>();
-        Course course = courseRepository.findOne(id);
+        Course course = repository.findOne(id);
         int detailsSaved = categoryDetailsService.saveCategoryDetailsList(categoryDetailsList);
         messages.add(detailsSaved + " category details saved");
-        
+
         redirectAttributes.addFlashAttribute("messages", messages);
         redirectAttributes.addFlashAttribute("id", id);
-        
+
         return redirectAddress;
     }
-    
-    
+
+    public String getCourseCategory(Model model, RedirectAttributes redirectAttributes, Long courseId, Long categoryId) {
+        Course course = repository.findOne(courseId);
+        Category category = categoryService.getCategoryById(categoryId);
+
+        if (!courseHasCategory(course, category)) {
+            return noSuchCategoryInCourse(course, redirectAttributes);
+        }
+        
+        model.addAttribute("course", course);
+        model.addAttribute("category", category);
+        model.addAttribute("taskList", category.getTaskList());
+        return "category";
+    }
+
+    private String noSuchCategoryInCourse(Course course, RedirectAttributes redirectAttributes) {
+        List<String> messages = Arrays.asList("No such category in course " + course.getName());
+        redirectAttributes.addFlashAttribute("messages", messages);
+        redirectAttributes.addAttribute("id", course.getId());
+        return "redirect:/courses/{id}";
+    }
+
+    public String getCourseCategoryTask(Model model, RedirectAttributes redirectAttr, Long courseId, Long categoryId, Long taskId) {
+        Course course = repository.findOne(courseId);
+        Category category = categoryService.getCategoryById(categoryId);
+        Task task = taskService.getTaskById(taskId);
+        
+        if (!courseHasCategory(course, category)) {
+            return noSuchCategoryInCourse(course, redirectAttr);
+        }
+        
+        if (!categoryHasTask(category, task)) {
+            return noSuchTaskInCategory(course, category, redirectAttr);
+        }
+
+        model.addAttribute("course", course);
+        model.addAttribute("category", category);
+        model.addAttribute("task", task);
+
+        return "task";
+    }
+
+    private boolean courseHasCategory(Course course, Category category) {
+        return course.getCourseCategories().contains(category);
+    }
+
+    private boolean categoryHasTask(Category category, Task task) {
+        return category.getTaskList().contains(task);
+    }
+
+    private String noSuchTaskInCategory(Course course, Category category, RedirectAttributes redirectAttr) {
+        List<String> messages = Arrays.asList("No such task in category " + category.getName());
+        redirectAttr.addFlashAttribute("messages", messages);
+        redirectAttr.addAttribute("courseId", course.getId());
+        redirectAttr.addAttribute("categoryId", category.getId());
+        return "redirect:/courses/{courseId}/category/{categoryId}";
+    }
+
 }

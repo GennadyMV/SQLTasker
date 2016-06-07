@@ -33,7 +33,8 @@
         <div class="get-in-touch" th:if="${category.taskList}">
             <h3>Task list</h3>
             <div th:each="task : ${taskList}">
-                <h4><a th:text="${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</a></h4>
+                <h4 th:if="${course != null}"><a th:text="${task.name}" th:href="@{/courses/{courseId}/category/{categoryId}/task/{taskId} (courseId = ${course.id}, categoryId = ${category.id}, taskId = ${task.id})}">Task name</a></h4>
+                <h4 th:if="${course == null}"><a th:text="${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</a></h4>
                 <div sec:authorize="hasRole('ROLE_TEACHER')">
                     <form th:method="POST" th:action="@{/categories/{id} (id = ${category.id})}">
                         <input id="taskId" name="taskId" type="hidden" th:value="${task.id}"></input>

@@ -1,6 +1,7 @@
 package wepaht.SQLTasker.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.hamcrest.Matchers;
@@ -39,10 +40,14 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.domain.Database;
+import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
+import wepaht.SQLTasker.repository.DatabaseRepository;
+import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.CourseService;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -61,6 +66,12 @@ public class CourseControllerTest {
 
     @Autowired
     CourseService courseService;
+    
+    @Autowired
+    DatabaseRepository databaseRepository;
+    
+    @Autowired
+    TaskRepository taskRepository;
 
     @Autowired
     private CategoryDetailRepository categoryDetailsRepository;
@@ -112,7 +123,7 @@ public class CourseControllerTest {
 
     @After
     public void tearDown() {
-        categoryDetailsRepository.deleteAll();
+        categoryDetailsRepository.deleteAll();        
         courseRepository.deleteAll();
         categoryRepository.deleteAll();
         accountRepository.deleteAll();
@@ -128,6 +139,30 @@ public class CourseControllerTest {
     private Category createTestCategory(String name) {
         Category category = new Category();
         category.setName(name);
+
+        return categoryRepository.save(category);
+    }       
+    
+    private Database createTestDatabase(String name) {
+        Database database = new Database();
+        database.setName(name);
+        database.setDatabaseSchema("CREATE TABLE Foo(id integer);INSERT INTO Foo (id) VALUES (7);");
+        database = databaseRepository.save(database);
+        return database;
+    }
+    
+    private Task createTestTask(String name, Database database) {
+        Task task = new Task();
+        task.setName(name);
+        task.setDatabase(database);
+        task.setSolution("SELECT 1;");
+        return taskRepository.save(task);
+    }
+
+    private Category createTestCategory(String name, List<Task> tasks) {
+        Category category = new Category();
+        category.setName(name);
+        category.setTaskList(tasks);
 
         return categoryRepository.save(category);
     }
@@ -373,5 +408,87 @@ public class CourseControllerTest {
                 .andReturn();
 
         assertEquals(sizeBefore - 1, categoryDetailsRepository.findAll().size());
+    }
+    
+    @Test
+    public void testCategoryIsAccessableThroughCourse() throws Exception {
+        Category category = createTestCategory("Whee");
+        Course course = new Course();
+        course.setName("Here!");
+        course.setCourseCategories(Arrays.asList(category));
+        course = courseRepository.save(course);
+        
+        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("course", "category"))
+                .andReturn();
+    }
+    
+    @Test
+    public void testCategoryAccessedThroughCourseMustBelongToCourse() throws Exception {
+        Category category = createTestCategory("Is not in the course");
+        Course course = new Course();
+        course.setName("No categories");
+        course = courseRepository.save(course);
+        
+        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(model().attributeDoesNotExist("category"))
+                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
+    }
+    
+    @Test
+    public void testTaskIsAccessableThroughCourseAndCategory() throws Exception {
+        Database database = createTestDatabase("Access");
+        Task task = createTestTask("This place", database);
+        Category category = createTestCategory("From here", Arrays.asList(task));
+        Course course = new Course();
+        course.setName("From hererer");
+        course.setCourseCategories(Arrays.asList(category));
+        courseRepository.save(course);
+        
+        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("category", "course", "task"))
+                .andReturn();
+    }
+    
+    @Test
+    public void testCategoryAccessedThroughCourseMustBelongToCourse2() throws Exception {
+        Database database = createTestDatabase("Moonshine");
+        Task task = createTestTask("In a side role", database);
+        Category category = createTestCategory("Not in course", Arrays.asList(task));
+        Course course = new Course();
+        course.setName("No categories");
+        courseRepository.save(course);
+        
+        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(model().attributeDoesNotExist("task", "category"))
+                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
+    }
+    
+    @Test
+    public void testTaskAccessedThroughCourseAndCategoryMustBelongToCourse() throws Exception {
+        Database database = createTestDatabase("Must belong");
+        Task task = createTestTask("Not in category", database);
+        Category category = createTestCategory("From here", new ArrayList<>());
+        Course course = new Course();
+        course.setName("Not important");
+        course.setCourseCategories(Arrays.asList(category));
+        courseRepository.save(course);
+        
+        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(model().attributeDoesNotExist("task"))
+                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
     }
 }

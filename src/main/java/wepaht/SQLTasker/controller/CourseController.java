@@ -108,4 +108,19 @@ public class CourseController {
     public String postCategoryDetails(RedirectAttributes redirectAttributes, @PathVariable Long id, @ModelAttribute CategoryDetailsWrapper wrapper) {
         return courseService.setCategoryDetails(redirectAttributes, wrapper.getCategoryDetailsList(), id);
     }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}", method = RequestMethod.GET)
+    public String getCourseCategory(Model model, RedirectAttributes redirectAttributes, @PathVariable Long courseId, @PathVariable Long categoryId) {
+        return courseService.getCourseCategory(model, redirectAttributes, courseId, categoryId);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/task/{taskId}", method = RequestMethod.GET)
+    public String getCourseCategoryTask(
+            Model model, 
+            RedirectAttributes redirectAttr, 
+            @PathVariable Long courseId, 
+            @PathVariable Long categoryId,
+            @PathVariable Long taskId) {
+        return courseService.getCourseCategoryTask(model, redirectAttr, courseId, categoryId, taskId);
+    }
 }
