@@ -123,4 +123,14 @@ public class CourseController {
             @PathVariable Long taskId) {
         return courseService.getCourseCategoryTask(model, redirectAttr, courseId, categoryId, taskId);
     }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/task/{taskId}/query", method = RequestMethod.POST)
+    public String postQuery(RedirectAttributes redirectAttr, 
+            @RequestParam String query, 
+            @PathVariable Long courseId, 
+            @PathVariable Long cateoryId, 
+            @PathVariable Long taskId) {
+        
+        return courseService.createQuery(redirectAttr, query, courseId, cateoryId, taskId);
+    }
 }
