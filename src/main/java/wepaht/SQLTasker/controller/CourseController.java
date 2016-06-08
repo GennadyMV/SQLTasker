@@ -128,9 +128,9 @@ public class CourseController {
     public String postQuery(RedirectAttributes redirectAttr, 
             @RequestParam String query, 
             @PathVariable Long courseId, 
-            @PathVariable Long cateoryId, 
+            @PathVariable Long categoryId, 
             @PathVariable Long taskId) {
         
-        return courseService.createQuery(redirectAttr, query, courseId, cateoryId, taskId);
+        return courseService.createQuery(redirectAttr, query, courseId, categoryId, taskId);
     }
 }

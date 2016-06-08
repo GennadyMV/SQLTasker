@@ -52,12 +52,22 @@ and open the template in the editor.
         <div class="get-in-touch" th:if="${category != null}">
             <div class="get-in-touch-text-boxs">
                 <div class="get-in-touch-text-box">
-                    <form th:method="POST" th:action="@{/tasks/{categoryId}/{id}/query (categoryId=${category.id}, id=${task.id})}">
-                        <textarea name="query"/>
-                        <input type="hidden" name="id" th:value="${task.id}"/>
+                    <div th:if="${course != null}">
+                        <form th:method="POST" th:action="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/query (courseId = ${course.id}, categoryId = ${category.id}, taskId = ${task.id})}">
+                            <textarea name="query"/>
+                            <input type="hidden" name="id" th:value="${task.id}"/>
 
-                        <input type="submit" value="Submit query"/>
-                    </form>
+                            <input type="submit" value="Submit query"/>
+                        </form>
+                    </div>
+                    <div th:if="${course == null}">
+                        <form th:method="POST" th:action="@{/tasks/{categoryId}/{id}/query (categoryId=${category.id}, id=${task.id})}">
+                            <textarea name="query"/>
+                            <input type="hidden" name="id" th:value="${task.id}"/>
+
+                            <input type="submit" value="Submit query"/>
+                        </form>
+                    </div>                    
                 </div>
             </div>
         </div>

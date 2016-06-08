@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,15 @@ public class TaskService {
         return taskRepository.findOne(id);
     }
     
-    public Map<String, Table> performQueryToTask(List<String> messages, Long taskId, String query, Long categoryId) {
+    /**
+     * Performs query to given task.
+     * @param messages Messages  which are set to RedirectAttributes
+     * @param taskId Task id which the query is directed to
+     * @param query Query which is made to task
+     * @param categoryId Category Id in which task is part of
+     * @return First index contains messages, second contains the query result.
+     */
+    public List<Object> performQueryToTask(List<String> messages, Long taskId, String query, Long categoryId) {
         messages.add("Query sent");
         Task task = taskRepository.findOne(taskId);
         
@@ -57,6 +66,6 @@ public class TaskService {
             pastQueryService.saveNewPastQuery(accountService.getAuthenticatedUser().getUsername(), task, query, false, categoryId);
         }
         
-        return databaseService.performQuery(task.getDatabase().getId(), query);
+        return Arrays.asList(messages, databaseService.performQuery(task.getDatabase().getId(), query));
     }
 }

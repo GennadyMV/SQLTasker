@@ -37,6 +37,8 @@ import wepaht.SQLTasker.repository.TagRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 import java.util.List;
+import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.hasSize;
 
 import static org.junit.Assert.*;
 
@@ -151,7 +153,7 @@ public class TaskControllerTest {
 
         mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Query sent."))
+                .andExpect(flash().attribute("messages", Matchers.hasSize(1)))
                 .andReturn();
     }
 
@@ -215,7 +217,7 @@ public class TaskControllerTest {
 
         mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Your answer is correct!"))
+                .andExpect(flash().attribute("messages", hasSize(2)))
                 .andReturn();
     }
 
@@ -267,7 +269,7 @@ public class TaskControllerTest {
                     .param("query", sql)
                     .with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Query sent."))
+                .andExpect(flash().attribute("messages", hasSize(1)))
                 .andReturn();
     }
     
@@ -279,7 +281,7 @@ public class TaskControllerTest {
         String query = "select firstname, lastname from testdb";
         mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Query sent."))
+                .andExpect(flash().attribute("messages", hasSize(1)))
                 .andReturn();
 
         assertNotNull(pastQueryService.returnQuery("allUsers", task.getId(), "allAnswers").get(0));

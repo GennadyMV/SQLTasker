@@ -344,14 +344,13 @@ public class CourseService {
         return "redirect:/courses/{courseId}/category/{categoryId}";
     }
 
-    public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long cateoryId, Long taskId) {
-        ArrayList<String> messages = new ArrayList<>();
-        Map<String, Table> queryResult = taskService.performQueryToTask(messages, taskId, query, cateoryId);
+    public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long categoryId, Long taskId) {
+        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<String>(), taskId, query, categoryId);
         
-        redirectAttr.addFlashAttribute("tables", queryResult);
-        redirectAttr.addFlashAttribute("messages", messages);
+        redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
+        redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
         redirectAttr.addAttribute("taskId", taskId);
-        redirectAttr.addAttribute("categoryId", cateoryId);
+        redirectAttr.addAttribute("categoryId", categoryId);
         redirectAttr.addAttribute("courseId", courseId);
         
         return "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";

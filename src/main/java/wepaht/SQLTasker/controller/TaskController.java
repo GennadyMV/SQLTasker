@@ -210,19 +210,12 @@ public class TaskController {
         Task task = taskRepository.findOne(id);
 
         queries.put(id, query);
-        redirectAttributes.addFlashAttribute("messages", "Query sent.");
-
-        if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryResult(task, query)) {
-            redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task, query, true, categoryId);
-        } else {
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task, query, false, categoryId);
-        }
-
-        Map<String, Table> queryResult = databaseService.performQuery(task.getDatabase().getId(), query);
-
+        
+        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<String>(), id, query, categoryId);
+        
+        redirectAttributes.addFlashAttribute("messages", messagesAndQueryResult.get(0));
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("tables", queryResult);
+        redirectAttributes.addFlashAttribute("tables", messagesAndQueryResult.get(1));
         return "redirect:/categories/{categoryId}/tasks/{id}";
     }
     
