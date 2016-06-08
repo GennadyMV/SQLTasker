@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.AccountService;
+import wepaht.SQLTasker.service.SubmissionService;
 
 @Controller
 public class DefaultController {
@@ -22,10 +23,14 @@ public class DefaultController {
     @Autowired
     AccountRepository userRepository;
     
+    @Autowired
+    SubmissionService submissionService;
+    
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String hello(Model model){
         
         model.addAttribute("user", userService.getAuthenticatedUser());
+        model.addAttribute("submissions", submissionService.listAllSubmissions());
         
         return "index";
     }

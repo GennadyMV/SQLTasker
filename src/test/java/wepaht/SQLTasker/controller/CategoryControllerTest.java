@@ -78,13 +78,13 @@ public class CategoryControllerTest {
 
     @Autowired
     private TaskService taskService;
-    
+
     @Autowired
     private CourseService courseService;
-    
+
     @Autowired
     private CourseRepository courseRepository;
-    
+
     @Autowired
     private CategoryDetailRepository categoryDetailRepository;
 
@@ -125,12 +125,20 @@ public class CategoryControllerTest {
 
     @After
     public void tearDown() {
-        userRepository.deleteAll();
+        try {
+            userRepository.deleteAll();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }        
         categoryDetailRepository.deleteAll();
         courseRepository.deleteAll();
         categoryRepository.deleteAll();
         taskRepository.findAllTaskIds().stream().forEach((taskId) -> {
-            taskService.removeTask(taskId);
+            try {
+                taskService.removeTask(taskId);
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
         });
     }
 
@@ -300,7 +308,7 @@ public class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
     }
-    
+
     @Test
     public void nextTaskIsNextTask() throws Exception {
         Task task1 = randomTask();
@@ -316,52 +324,54 @@ public class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
     }
-    
+
     @Test
-    public void teacherCanReorderCategoryTasks()  throws Exception {
+    @Transactional
+    public void teacherCanReorderCategoryTasks() throws Exception {
         user.setRole("TEACHER");
-        userRepository.save(user);
-        
+//        userRepository.save(user);
+
         Task task1 = randomTask();
         Task task2 = randomTask();
         Category category = createCategory();
         category.getTaskList().add(task1);
         category.getTaskList().add(task2);
         category = categoryRepository.save(category);
-        
+
         mockMvc.perform(post(URI + "/" + category.getId())
                 .param("taskId", task1.getId().toString())
                 .with(user("stud").roles("TEACHER")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
-        
+
         Assert.assertEquals(task2.getId(), categoryRepository.findOne(category.getId()).getTaskList().get(0).getId());
     }
-    
+
     @Test
+    @Transactional
     public void testCategoryCanBeDeletedWhileInCourse() throws Exception {
         user.setRole("ADMIN");
-        userRepository.save(user);
-        
+//        userRepository.save(user);
+
         Category category = createCategory();
         category = categoryRepository.save(category);
         Course course = new Course();
         course.setName("delete category");
         course.setCourseCategories(Arrays.asList(category));
         courseService.saveCourse(course);
-        
+
         mockMvc.perform(delete(URI + "/" + category.getId())
                 .with(user("stud").roles("ADMIN"))
                 .with(csrf()))
                 .andReturn();
-        
+
         assertTrue(categoryRepository.findOne(category.getId()) == null);
     }
-    
+
     @Test
     public void testCategoryDetailIsDeletedWhenCategoryIsDeleted() throws Exception {
         user.setRole("ADMIN");
-        
+
         Category category = createCategory();
         category = categoryRepository.save(category);
         Course course = new Course();
@@ -370,12 +380,12 @@ public class CategoryControllerTest {
         courseService.saveCourse(course);
         CategoryDetail detail = new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX);
         detail = categoryDetailRepository.save(detail);
-        
+
         mockMvc.perform(delete(URI + "/" + category.getId())
                 .with(user("stud").roles("ADMIN"))
                 .with(csrf()))
                 .andReturn();
-        
+
         assertTrue(categoryDetailRepository.findOne(detail.getId()) == null);
     }
 }

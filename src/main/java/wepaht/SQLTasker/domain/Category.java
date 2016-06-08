@@ -25,6 +25,9 @@ public class Category extends AbstractPersistable<Long> {
     
     @OneToMany(mappedBy = "category", orphanRemoval = true)
     private List<CategoryDetail> details;
+    
+    @OneToMany(mappedBy = "category")
+    private List<Submission> submissions;
 
     private String description;
 
@@ -89,5 +92,13 @@ public class Category extends AbstractPersistable<Long> {
 
     public void setDetails(List<CategoryDetail> details) {
         this.details = details;
+    }
+
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
     }
 }

@@ -211,7 +211,7 @@ public class TaskController {
 
         queries.put(id, query);
         
-        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<String>(), id, query, categoryId);
+        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<String>(), id, query, categoryId, null);
         
         redirectAttributes.addFlashAttribute("messages", messagesAndQueryResult.get(0));
         redirectAttributes.addAttribute("id", id);

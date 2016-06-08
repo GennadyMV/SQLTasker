@@ -2,6 +2,7 @@ package wepaht.SQLTasker.domain;
 
 import java.time.LocalDate;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -32,6 +33,9 @@ public class Course extends AbstractPersistable<Long>{
     
     @OneToMany(mappedBy = "course", orphanRemoval = true)
     private List<CategoryDetail> details;
+    
+    @OneToMany(mappedBy = "course")
+    private List<Submission> submissions;
 
     public List<Category> getCourseCategories() {
         return courseCategories;
@@ -87,5 +91,13 @@ public class Course extends AbstractPersistable<Long>{
 
     public void setDetails(List<CategoryDetail> details) {
         this.details = details;
+    }
+
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
     }
 }

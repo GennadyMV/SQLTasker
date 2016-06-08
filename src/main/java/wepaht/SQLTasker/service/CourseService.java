@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +14,6 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CourseRepository;
 
@@ -36,15 +34,6 @@ public class CourseService {
 
     @Autowired
     private TaskService taskService;
-    
-    @Autowired
-    private TaskResultService taskResultService;
-    
-    @Autowired
-    private PastQueryService pastQueryService;
-    
-    @Autowired
-    private DatabaseService databaseService;
     
     private final String redirectCourses = "redirect:/courses";
 
@@ -345,7 +334,7 @@ public class CourseService {
     }
 
     public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long categoryId, Long taskId) {
-        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<String>(), taskId, query, categoryId);
+        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<>(), taskId, query, categoryId, courseId);
         
         redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
         redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
@@ -356,4 +345,7 @@ public class CourseService {
         return "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
     }
 
+    public Course getCourseById(Long id) {
+        return repository.findOne(id);
+    }
 }

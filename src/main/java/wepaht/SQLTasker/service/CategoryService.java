@@ -110,9 +110,8 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         Category deleting = categoryRepository.findOne(id);
         List<Course> courses = deleting.getCourses();
-        
-        if (courses != null || !courses.isEmpty()) {
-            courseService.removeCategoryFromCourses(courses, deleting);
+        if (courses != null) {
+            if (!courses.isEmpty()) courseService.removeCategoryFromCourses(courses, deleting);
         }
         
         try {

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
@@ -26,6 +27,9 @@ public class Account extends AbstractPersistable<Long> {
     @NotNull
     @NotEmpty
     private String password;
+    
+    @OneToMany(mappedBy = "account", orphanRemoval = true)
+    private List<Submission> submissions;
 
     private String role;
     private String salt;
@@ -76,6 +80,12 @@ public class Account extends AbstractPersistable<Long> {
     public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
-    
-    
+
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
+    }
 }

@@ -20,6 +20,31 @@ and open the template in the editor.
     <h2><a th:href="@{/databases}">To database listing</a></h2>
 </div>
 
+<div th:if="${submissions}">
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Task</th>
+                <th>Category</th>
+                <th>Course</th>
+                <th>Query</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="submission : ${submissions}">
+                <td th:text="${submission.account.username}">Username</td>
+                <td th:text="${submission.task.name}">Task name</td>
+                <td th:text="${submission.category.name}">Category name</td>
+                <td th:text="${submission.course.name}">Course name</td>
+                <td th:text="${submission.query}">Query</td>
+                <td th:text="${submission.points}">Points</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 <div th:include="fragments/footer_template :: footer"></div>
 <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
 </body>

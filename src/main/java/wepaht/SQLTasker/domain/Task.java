@@ -6,10 +6,12 @@
 package wepaht.SQLTasker.domain;
 
 import java.util.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -29,6 +31,9 @@ public class Task extends AbstractPersistable<Long> {
 
     @ManyToOne
     private Database database;
+    
+    @OneToMany(mappedBy = "task")
+    private List<Submission> submissions;
 
     /**
      * @return the name
@@ -87,6 +92,12 @@ public class Task extends AbstractPersistable<Long> {
     public void setCategories(List<Category> categories) {
         this.categories = categories;
     }
-    
-    
+
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
+    }
 }
