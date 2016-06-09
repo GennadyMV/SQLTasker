@@ -12,6 +12,7 @@ import wepaht.SQLTasker.repository.TaskRepository;
 
 import java.util.List;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.domain.Submission;
 
 @Service
 public class CategoryService {
@@ -107,12 +108,17 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+    @Transactional
     public void deleteCategory(Long id) {
         Category deleting = categoryRepository.findOne(id);
         List<Course> courses = deleting.getCourses();
         if (courses != null) {
             if (!courses.isEmpty()) courseService.removeCategoryFromCourses(courses, deleting);
         }
+        
+        if (deleting.getSubmissions() != null)deleting.getSubmissions().stream().forEach((sub) -> {
+            sub.setCategory(null);
+        });
         
         try {
             categoryRepository.delete(deleting);

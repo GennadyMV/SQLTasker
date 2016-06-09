@@ -36,6 +36,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.TaskService;
 
@@ -56,6 +57,9 @@ public class RestExportControllerTest {
 
     @Autowired
     PastQueryRepository pastQueryRepository;
+    
+    @Autowired
+    CategoryRepository categoryRepository;
     
     @Autowired
     TaskRepository taskRepository;
@@ -123,9 +127,10 @@ public class RestExportControllerTest {
 
     @After
     public void tearDown() {
+        pastQueryRepository.deleteAll();
         tokenRepository.deleteAll();
-        taskService.removeTask(task1.getId());
-        taskService.removeTask(task2.getId());
+        categoryRepository.deleteAll();
+        taskRepository.deleteAll();
     }
 
     @Test

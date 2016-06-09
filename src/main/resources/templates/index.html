@@ -35,9 +35,9 @@ and open the template in the editor.
         <tbody>
             <tr th:each="submission : ${submissions}">
                 <td th:text="${submission.account.username}">Username</td>
-                <td th:text="${submission.task.name}">Task name</td>
-                <td th:text="${submission.category.name}">Category name</td>
-                <td th:text="${submission.course.name}">Course name</td>
+                <td th:text="((${submission.task != null}) ? ${submission.task.name} : '')">Task name</td>
+                <td th:text="((${submission.category != null}) ? ${submission.category.name} : '')">Category name</td>
+                <td th:text="((${submission.course != null}) ? ${submission.course.name} : '')">Course name</td>
                 <td th:text="${submission.query}">Query</td>
                 <td th:text="${submission.points}">Points</td>
             </tr>

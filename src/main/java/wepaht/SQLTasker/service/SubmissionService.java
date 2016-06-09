@@ -3,6 +3,7 @@ package wepaht.SQLTasker.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Submission;
@@ -24,5 +25,13 @@ public class SubmissionService {
     
     public List<Submission> listAllSubmissions() {
         return repository.findAll();
+    }
+    
+    public Integer getAccountPoints(Account account) {
+        return repository.getPointsByAccount(account);
+    }
+    
+    public List getAccountSubmissions(Account account) {
+        return repository.getTaskNameAndPointsByAccount(account);
     }
 }

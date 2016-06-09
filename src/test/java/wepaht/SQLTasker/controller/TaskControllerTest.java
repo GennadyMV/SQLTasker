@@ -272,20 +272,6 @@ public class TaskControllerTest {
                 .andExpect(flash().attribute("messages", hasSize(1)))
                 .andReturn();
     }
-    
-    @Test
-    public void pastQueryIsSaved() throws Exception {
-        Task task = randomTask();
-        task = taskRepository.save(task);
-
-        String query = "select firstname, lastname from testdb";
-        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", hasSize(1)))
-                .andReturn();
-
-        assertNotNull(pastQueryService.returnQuery("allUsers", task.getId(), "allAnswers").get(0));
-    }
 
     @Test
     public void teacherCanCreateTag() throws Exception {

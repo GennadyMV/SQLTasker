@@ -14,6 +14,7 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CourseRepository;
 
@@ -124,11 +125,15 @@ public class CourseService {
         return "course";
     }
 
+    @Transactional
     public String deleteCourse(RedirectAttributes redirectAttributes, Long course) {
         List<String> messages = new ArrayList<>();
 
         try {
             Course deletingCourse = repository.findOne(course);
+            if (deletingCourse.getSubmissions() != null)deletingCourse.getSubmissions().stream().forEach((sub) -> {
+                sub.setCourse(null);
+            });
             repository.delete(deletingCourse);
             messages.add("Course " + deletingCourse.getName() + " deleted");
         } catch (Exception e) {

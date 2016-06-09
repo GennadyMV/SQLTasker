@@ -48,4 +48,8 @@ public class AccountService {
         }
         return null;
     }
+
+    Account getAccountByUsername(String username) {
+        return accountRepository.findByUsername(username);
+    }
 }

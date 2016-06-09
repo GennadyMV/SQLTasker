@@ -88,7 +88,10 @@ public class PointsControllerTest {
     
     @After
     public void tearDown() {
-        taskService.removeTask(task.getId());
+        try {
+            taskService.removeTask(task.getId());
+        } catch (Exception e) {}
+        
     }
 
     @Test

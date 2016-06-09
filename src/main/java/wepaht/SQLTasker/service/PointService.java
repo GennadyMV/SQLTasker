@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import wepaht.SQLTasker.domain.Table;
 
 import java.util.*;
+import wepaht.SQLTasker.domain.Account;
 
 import wepaht.SQLTasker.domain.PastQuery;
 import wepaht.SQLTasker.domain.PointHolder;
@@ -22,11 +23,18 @@ public class PointService {
 
     @Autowired
     TaskRepository taskRepository;
+    
+    @Autowired
+    SubmissionService submissionService;
+    
+    @Autowired
+    AccountService accountService;
 
     public Table pointsTable;
 
     public Integer getPointsByUsername(String username) {
-        return pastQueryRepository.getPointsByUsername(username);
+        Account account = accountService.getAccountByUsername(username);
+        return submissionService.getAccountPoints(account);
     }
 
     public Table getExercisesAndAwardedByUsername(String username) {
@@ -35,7 +43,7 @@ public class PointService {
         columns.add("exercise");
         columns.add("points");
         pointsTable.setColumns(columns);
-        pointsTable.setRows(pastQueryService.getExercisesAndAwardedByUsername(username));
+        pointsTable.setRows(submissionService.getAccountSubmissions(accountService.getAccountByUsername(username)));
         
         return pointsTable;
     }

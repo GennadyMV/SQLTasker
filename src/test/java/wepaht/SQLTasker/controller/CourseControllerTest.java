@@ -47,6 +47,7 @@ import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.repository.DatabaseRepository;
+import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.CourseService;
 
@@ -69,6 +70,9 @@ public class CourseControllerTest {
     
     @Autowired
     DatabaseRepository databaseRepository;
+    
+    @Autowired
+    SubmissionRepository submissionrepository;
     
     @Autowired
     TaskRepository taskRepository;
@@ -123,7 +127,8 @@ public class CourseControllerTest {
 
     @After
     public void tearDown() {
-        categoryDetailsRepository.deleteAll();        
+        categoryDetailsRepository.deleteAll();
+        submissionrepository.deleteAll();
         courseRepository.deleteAll();
         categoryRepository.deleteAll();
         accountRepository.deleteAll();
