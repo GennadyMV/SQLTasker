@@ -3,30 +3,22 @@ package wepaht.SQLTasker.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.SQLTasker.domain.Table;
-
 import java.util.*;
 import wepaht.SQLTasker.domain.Account;
-
-import wepaht.SQLTasker.domain.PastQuery;
+import wepaht.SQLTasker.domain.Category;
+import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.PointHolder;
-import wepaht.SQLTasker.repository.PastQueryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service
 public class PointService {
 
     @Autowired
-    PastQueryRepository pastQueryRepository;
-
-    @Autowired
-    PastQueryService pastQueryService;
-
-    @Autowired
     TaskRepository taskRepository;
-    
+
     @Autowired
     SubmissionService submissionService;
-    
+
     @Autowired
     AccountService accountService;
 
@@ -44,7 +36,7 @@ public class PointService {
         columns.add("points");
         pointsTable.setColumns(columns);
         pointsTable.setRows(submissionService.getAccountSubmissions(accountService.getAccountByUsername(username)));
-        
+
         return pointsTable;
     }
 
@@ -54,12 +46,22 @@ public class PointService {
         columns.add("username");
         columns.add("points");
         pointsTable.setColumns(columns);
-        pointsTable.setRows(pastQueryService.getPoints());
-    
+        pointsTable.setRows(submissionService.getAllPoints());
+
         return pointsTable;
     }
 
     public List<PointHolder> exportAllPoints() {
-        return pastQueryRepository.exportAllPoints();
+        return submissionService.exportAllPoints();
+    }
+
+    public int getCoursePoints(Course course) {
+        Account account = accountService.getAuthenticatedUser();
+        return submissionService.getAccountCoursePoints(account, course);
+    }
+
+    public Integer getCourseCategoryPoints(Course course, Category category) {
+        Account account = accountService.getAuthenticatedUser();
+        return submissionService.getAccountCourseCategoryPoints(account, course, category);
     }
 }

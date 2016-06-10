@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.controller;
 
+import java.util.ArrayList;
 import wepaht.SQLTasker.controller.PointsController;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.TaskService;
@@ -41,21 +44,24 @@ import wepaht.SQLTasker.service.AccountService;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 public class PointsControllerTest {
-    
+
     @Autowired
     private WebApplicationContext webAppContext;
-    
+
     @Autowired
     private PastQueryService pastQueryService;
 
     @Autowired
     private AccountRepository userRepository;
-    
+
     @Autowired
     private TaskRepository taskRepository;
-    
+
     @Autowired
     private TaskService taskService;
+    
+    @Autowired
+    private SubmissionRepository submissionRepository;
 
     @Mock
     AccountService userServiceMock;
@@ -80,18 +86,20 @@ public class PointsControllerTest {
         teacher.setPassword("test");
         teacher = userRepository.save(teacher);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
-        
+
         task = new Task();
         task.setName("Points test");
         task = taskRepository.save(task);
     }
-    
+
     @After
     public void tearDown() {
+        submissionRepository.deleteAll();
         try {
             taskService.removeTask(task.getId());
-        } catch (Exception e) {}
-        
+        } catch (Exception e) {
+        }
+
     }
 
     @Test
@@ -102,12 +110,13 @@ public class PointsControllerTest {
                 .andExpect(model().attribute("messages", "No points available."))
                 .andReturn();
     }
-    
+
     @Test
     public void returnsTable() throws Exception {
         when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
-        for(Long l=0l; l<5; l++){
-        pastQueryService.saveNewPastQueryForTests("student", task, "select firstname from persons", true);
+        for (Long l = 0l; l < 5; l++) {
+            submissionRepository.save(new Submission(teacher, task, null, null, "SELECT firstname FROM Persons", Boolean.TRUE));
+//            pastQueryService.saveNewPastQueryForTests("student", task, "select firstname from persons", true);
         }
         mockMvc.perform(get("/points").with(user("user").roles("TEACHER")).with(csrf()))
                 .andExpect(view().name("points"))

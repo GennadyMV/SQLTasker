@@ -75,14 +75,12 @@ public class TaskService {
     public List<Object> performQueryToTask(List<String> messages, Long taskId, String query, Long categoryId, Long courseId) {
         messages.add("Query sent");
         Task task = taskRepository.findOne(taskId);
-        Category category = categoryService.getCategoryById(categoryId);
+        Category category = null;
+        if (categoryId != null) category = categoryService.getCategoryById(categoryId);
         
-        Course course;
-        if (courseId != null) {
-            course = courseService.getCourseById(courseId);
-        } else {
-            course = null;
-        }
+        Course course = null;
+        if (courseId != null) course = courseService.getCourseById(courseId);
+         
 
         Boolean isCorrect;
         if (task.getSolution() != null) {

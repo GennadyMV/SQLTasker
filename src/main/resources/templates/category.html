@@ -30,6 +30,11 @@
             </div>
         </div>
 
+        <div th:if="${points}">
+            <label>Your category points</label>
+            <p th:text="${points}">Category points</p>
+        </div>
+        
         <div class="get-in-touch" th:if="${category.taskList}">
             <h3>Task list</h3>
             <div th:each="task : ${taskList}">

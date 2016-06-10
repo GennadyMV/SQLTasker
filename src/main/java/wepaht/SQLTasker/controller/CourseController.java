@@ -16,26 +16,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
-import wepaht.SQLTasker.repository.CourseRepository;
-import wepaht.SQLTasker.service.CategoryDetailService;
 import wepaht.SQLTasker.service.CourseService;
 
-/**
- *
- * @author mcsieni
- */
 @Controller
 @RequestMapping("courses")
 public class CourseController {
     
     @Autowired
     private CourseService courseService;
-    
-    @Autowired
-    private CategoryDetailService categoryDetailsService;
-    
-    @Autowired
-    private CourseRepository courseRepository;
     
     @RequestMapping(method = RequestMethod.GET)
     public String getCourses(Model model) {

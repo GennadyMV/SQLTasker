@@ -27,6 +27,11 @@
             <p th:text="${course.expires}"></p>
         </div>
         
+        <div th:if="${points}">
+            <label>Your points</label>
+            <p th:text="${points}">Course points</p>
+        </div>
+        
         <div th:if="${course.students}">
             <span>Participants</span>
             <div th:each="student : ${course.students}">

@@ -76,10 +76,19 @@ and open the template in the editor.
             <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
         </div>
 
-        <div th:if="${category}">
-            <a th:if="${next}" th:id="${next}" th:href="@{/categories/{id}/tasks/{nextId} (id=${category.id}, nextId=${next.id})}" th:text="'Next task: ' + ${next.name}">Next Task</a>
-            <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
+        <div th:if="${course == null}">
+            <div th:if="${category}">
+                <a th:if="${next}" th:id="${next}" th:href="@{/categories/{id}/tasks/{nextId} (id=${category.id}, nextId=${next.id})}" th:text="'Next task: ' + ${next.name}">Next Task</a>
+                <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
+            </div>
         </div>
+        <div th:if="${course != null}">
+            <div th:if="${category}">
+                <a th:if="${next}" th:id="${next}" th:href="@{/courses/{courseId}/category/{id}/task/{nextId} (id=${category.id}, nextId=${next.id}, courseId=${course.id})}" th:text="'Next task: ' + ${next.name}">Next Task</a>
+                <a th:id="${category}" th:href="@{courses/{courseId}/category/{id} (id = ${category.id}, courseId=${course.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
+            </div>
+        </div>
+
         <a th:if='${category == null}' sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
 
         <div th:include="fragments/footer_template :: footer"></div>

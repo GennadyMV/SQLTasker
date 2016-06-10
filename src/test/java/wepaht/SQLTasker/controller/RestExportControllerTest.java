@@ -30,16 +30,22 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CategoryRepository;
+import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
+import wepaht.SQLTasker.service.AccountService;
+import wepaht.SQLTasker.service.SubmissionService;
 import wepaht.SQLTasker.service.TaskService;
-
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -57,17 +63,21 @@ public class RestExportControllerTest {
 
     @Autowired
     PastQueryRepository pastQueryRepository;
-    
+
     @Autowired
     CategoryRepository categoryRepository;
-    
+
     @Autowired
     TaskRepository taskRepository;
-    
+
     @Autowired
     TaskService taskService;
+    
+    @Autowired
+    SubmissionRepository submissionRepository;
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
+
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
@@ -91,10 +101,9 @@ public class RestExportControllerTest {
     private String authToken;
     private Task task1;
     private Task task2;
-
+    
     @Before
-    public void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
+    public void setUp() {this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
         pastQueryRepository.deleteAll();
 
@@ -104,9 +113,6 @@ public class RestExportControllerTest {
         task2 = new Task();
         task2.setName("Export test 2");
         task2 = taskRepository.save(task2);
-        pastQueryService.saveNewPastQueryForTests(name1, task1, null, true);
-        pastQueryService.saveNewPastQueryForTests(name1, task2, null, true);
-        pastQueryService.saveNewPastQueryForTests(name2, task1, null, true);
 
         userRepository.deleteAll();
         Account user = new Account();
@@ -114,7 +120,23 @@ public class RestExportControllerTest {
         user.setPassword("testi");
         user.setUsername("admiini");
         user = userRepository.save(user);
-
+        
+        Account stud1 = new Account();
+        stud1.setRole("STUDENT");
+        stud1.setPassword("testi");
+        stud1.setUsername(name1);
+        stud1 = userRepository.save(stud1);
+        
+        Account stud2 = new Account();
+        stud2.setRole("STUDENT");
+        stud2.setPassword("testi");
+        stud2.setUsername(name2);
+        stud2 = userRepository.save(stud2);
+        
+        submissionRepository.save(new Submission(stud1, task1, null, null, "SELECT 1;", Boolean.TRUE));
+        submissionRepository.save(new Submission(stud1, task2, null, null, "SELECT 1;", Boolean.TRUE));
+        submissionRepository.save(new Submission(stud2, task1, null, null, "SELECT 1;", Boolean.TRUE));
+        
         tokenRepository.deleteAll();
         AuthenticationToken token = new AuthenticationToken();
         token.setToken("");
@@ -122,11 +144,11 @@ public class RestExportControllerTest {
         token = tokenRepository.save(token);
         authToken = token.getToken();
 
-
     }
 
     @After
     public void tearDown() {
+        submissionRepository.deleteAll();
         pastQueryRepository.deleteAll();
         tokenRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -134,12 +156,12 @@ public class RestExportControllerTest {
     }
 
     @Test
-    public void statusIsOk() throws Exception{
+    public void statusIsOk() throws Exception {
         mockMvc.perform(post(API_URI + "/points").param("exportToken", authToken)).andExpect(status().isOk()).andReturn();
     }
 
     @Test
-    public void userCanGetPointsByUsername() throws Exception{
+    public void userCanGetPointsByUsername() throws Exception {
         mockMvc.perform(post(API_URI + "/points/" + name1).param("exportToken", authToken))
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.username", is(name1)))
@@ -148,7 +170,7 @@ public class RestExportControllerTest {
     }
 
     @Test
-    public void userCanListAllPoints() throws Exception{
+    public void userCanListAllPoints() throws Exception {
         mockMvc.perform(post(API_URI + "/points").param("exportToken", authToken))
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -157,7 +179,7 @@ public class RestExportControllerTest {
     }
 
     @Test
-    public void pointsCanNotBeListedWithoutToken() throws Exception{
+    public void pointsCanNotBeListedWithoutToken() throws Exception {
         mockMvc.perform(post(API_URI + "/points"))
                 .andExpect(status().is4xxClientError())
                 .andReturn();

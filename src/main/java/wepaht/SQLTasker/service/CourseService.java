@@ -14,7 +14,6 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CourseRepository;
 
@@ -35,6 +34,9 @@ public class CourseService {
 
     @Autowired
     private TaskService taskService;
+    
+    @Autowired
+    private PointService pointService;
     
     private final String redirectCourses = "redirect:/courses";
 
@@ -119,6 +121,7 @@ public class CourseService {
         Course course = repository.findOne(courseId);
         List<CategoryDetail> details = categoryDetailsService.getCourseCategoryDetails(course);
         model.addAttribute("course", course);
+        model.addAttribute("points", pointService.getCoursePoints(course));
         if (!details.isEmpty()) {
             model.addAttribute("details", details);
         }
@@ -289,6 +292,7 @@ public class CourseService {
             return noSuchCategoryInCourse(course, redirectAttributes);
         }
         
+        model.addAttribute("points", pointService.getCourseCategoryPoints(course, category));
         model.addAttribute("course", course);
         model.addAttribute("category", category);
         model.addAttribute("taskList", category.getTaskList());

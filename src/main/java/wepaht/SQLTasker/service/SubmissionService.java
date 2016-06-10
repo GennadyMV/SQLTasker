@@ -34,4 +34,20 @@ public class SubmissionService {
     public List getAccountSubmissions(Account account) {
         return repository.getTaskNameAndPointsByAccount(account);
     }
+    
+    public List getAllPoints() {
+        return repository.getAllPoints();
+    }
+    
+    public List exportAllPoints() {
+        return repository.exportAllPoints();
+    }
+
+    int getAccountCoursePoints(Account account, Course course) {
+        return repository.getPointsByAccountAndCourse(account, course);
+    }
+
+    Integer getAccountCourseCategoryPoints(Account account, Course course, Category category) {
+        return repository.getPointsByAccountAndCourseAncCategory(account, course, category);
+    }
 }
