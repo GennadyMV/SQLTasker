@@ -49,18 +49,15 @@ and open the template in the editor.
     <table class="table">
         <thead>
             <tr>
-                <td>Task</td>
-                <td>Difficulty</td>
-                <td>Educational</td>
-                <td>Effort</td>
+                <th>Task</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="fb : ${feedback}">
                 <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
-                <td th:text="${fb.difficulty}"></td>
-                <td th:text="${fb.educational}"></td>
-                <td th:text="${fb.effort}"></td>
+                <div th:each="stuff : ${fb.feedback}">
+                    <td th:text="${stuff.key}: ${stuff.value}">Things</td>
+                </div>
             </tr>
         </tbody>
     </table>

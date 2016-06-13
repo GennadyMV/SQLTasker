@@ -1,6 +1,7 @@
 package wepaht.SQLTasker.service;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class TaskFeedbackService {
         Task task = taskService.getTaskById(taskId);
         TaskFeedback feedback = new TaskFeedback();
         feedback.setTask(task);
+        feedback.setFeedback(new HashMap<>());
         
         model.addAttribute("taskFeedback", feedback);
         model.addAttribute("course", course);

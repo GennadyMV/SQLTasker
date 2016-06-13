@@ -24,31 +24,34 @@
                         <tr>
                             <td>Difficulty</td>
                             <td>
-                                <input type="radio" name="difficulty" value="0"/>0
-                                <input type="radio" name="difficulty" value="1"/>1
-                                <input type="radio" name="difficulty" value="2" checked="checked"/>2
-                                <input type="radio" name="difficulty" value="3"/>3
-                                <input type="radio" name="difficulty" value="4"/>4                                
+                                <input type="radio" name="difficulty" value="0" th:field="${taskFeedback.feedback[' + 'difficulty' + ']}" th:checked="checked"/>0
+                                <input type="radio" name="difficulty" value="1" th:field="${taskFeedback.feedback[' + 'difficulty' + ']}"/>1
+                                <input type="radio" name="difficulty" value="2" th:field="${taskFeedback.feedback[' + 'difficulty' + ']}"/>2
+                                <input type="radio" name="difficulty" value="3" th:field="${taskFeedback.feedback[' + 'difficulty' + ']}"/>3
+                                <input type="radio" name="difficulty" value="4" th:field="${taskFeedback.feedback[' + 'difficulty' + ']}"/>4                                
+                                <input type="radio" name="difficulty" value="5" th:field="${taskFeedback.feedback[' + 'difficulty' + ']}"/>5                                
                             </td>
                         </tr>
                         <tr>
                             <td>Educational</td>
                             <td>
-                                <input type="radio" name="educational" value="0"/>0
-                                <input type="radio" name="educational" value="1"/>1
-                                <input type="radio" name="educational" value="2" checked="checked"/>2
-                                <input type="radio" name="educational" value="3"/>3
-                                <input type="radio" name="educational" value="4"/>4
+                                <input type="radio" name="educational" th:field="${taskFeedback.feedback[' + 'educational' + ']}" value="0" th:checked="checked"/>0
+                                <input type="radio" name="educational" th:field="${taskFeedback.feedback[' + 'educational' + ']}" value="1"/>1
+                                <input type="radio" name="educational" th:field="${taskFeedback.feedback[' + 'educational' + ']}" value="2"/>2
+                                <input type="radio" name="educational" th:field="${taskFeedback.feedback[' + 'educational' + ']}" value="3"/>3
+                                <input type="radio" name="educational" th:field="${taskFeedback.feedback[' + 'educational' + ']}" value="4"/>4
+                                <input type="radio" name="educational" th:field="${taskFeedback.feedback[' + 'educational' + ']}" value="5"/>5
                             </td>
                         </tr>
                         <tr>
                             <td>Effort</td>
                             <td>
-                                <input type="radio" name="effort" value="0"/>0
-                                <input type="radio" name="effort" value="1"/>1
-                                <input type="radio" name="effort" value="2" checked="checked"/>2
-                                <input type="radio" name="effort" value="3"/>3
-                                <input type="radio" name="effort" value="4"/>4
+                                <input type="radio" name="effort" th:field="${taskFeedback.feedback[' + 'effort' + ']}" value="0" th:checked="checked"/>0
+                                <input type="radio" name="effort" th:field="${taskFeedback.feedback[' + 'effort' + ']}" value="1"/>1
+                                <input type="radio" name="effort" th:field="${taskFeedback.feedback[' + 'effort' + ']}" value="2"/>2
+                                <input type="radio" name="effort" th:field="${taskFeedback.feedback[' + 'effort' + ']}" value="3"/>3
+                                <input type="radio" name="effort" th:field="${taskFeedback.feedback[' + 'effort' + ']}" value="4"/>4
+                                <input type="radio" name="effort" th:field="${taskFeedback.feedback[' + 'effort' + ']}" value="5"/>5
                             </td>
                         </tr>
                     </tbody>
