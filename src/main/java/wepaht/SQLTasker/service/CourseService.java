@@ -34,10 +34,10 @@ public class CourseService {
 
     @Autowired
     private TaskService taskService;
-    
+
     @Autowired
     private PointService pointService;
-    
+
     private final String redirectCourses = "redirect:/courses";
 
     public String courseListing(Model model) {
@@ -134,9 +134,11 @@ public class CourseService {
 
         try {
             Course deletingCourse = repository.findOne(course);
-            if (deletingCourse.getSubmissions() != null)deletingCourse.getSubmissions().stream().forEach((sub) -> {
-                sub.setCourse(null);
-            });
+            if (deletingCourse.getSubmissions() != null) {
+                deletingCourse.getSubmissions().stream().forEach((sub) -> {
+                    sub.setCourse(null);
+                });
+            }
             repository.delete(deletingCourse);
             messages.add("Course " + deletingCourse.getName() + " deleted");
         } catch (Exception e) {
@@ -291,7 +293,7 @@ public class CourseService {
         if (!courseHasCategory(course, category)) {
             return noSuchCategoryInCourse(course, redirectAttributes);
         }
-        
+
         model.addAttribute("points", pointService.getCourseCategoryPoints(course, category));
         model.addAttribute("course", course);
         model.addAttribute("category", category);
@@ -310,11 +312,11 @@ public class CourseService {
         Course course = repository.findOne(courseId);
         Category category = categoryService.getCategoryById(categoryId);
         Task task = taskService.getTaskById(taskId);
-        
+
         if (!courseHasCategory(course, category)) {
             return noSuchCategoryInCourse(course, redirectAttr);
         }
-        
+
         if (!categoryService.categoryHasTask(category, task)) {
             return noSuchTaskInCategory(course, category, redirectAttr);
         }
@@ -339,14 +341,21 @@ public class CourseService {
     }
 
     public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long categoryId, Long taskId) {
-        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<>(), taskId, query, categoryId, courseId);
-        
-        redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
-        redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
+        Course course = repository.findOne(courseId);
+        Account loggedUser = accountService.getAuthenticatedUser();
+
+        if (course.getStudents().contains(loggedUser)) {
+            List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<>(), taskId, query, categoryId, courseId);
+            redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
+            redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
+        } else {
+            redirectAttr.addFlashAttribute("messages", "You have not joined course " + course.getName());
+        }
+
         redirectAttr.addAttribute("taskId", taskId);
         redirectAttr.addAttribute("categoryId", categoryId);
         redirectAttr.addAttribute("courseId", courseId);
-        
+
         return "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
     }
 

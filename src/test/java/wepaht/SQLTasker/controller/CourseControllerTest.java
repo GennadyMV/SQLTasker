@@ -505,6 +505,7 @@ public class CourseControllerTest {
         Course course = new Course();
         course.setName("From this");
         course.setCourseCategories(Arrays.asList(category));
+        course.setStudents(Arrays.asList(student));
         course = courseRepository.save(course);
         
         //{courseId}/category/{categoryId}/task/{taskId}/query
@@ -514,6 +515,24 @@ public class CourseControllerTest {
                 .with(user("student").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("messages", "tables"))
+                .andReturn();
+    }
+    
+    @Test
+    public void testQueryCanNotBeSentToTaskAccessedThroughCourseAndCategoryWhenNotJoinedToCourse() throws Exception {
+        Database database = createTestDatabase("Pokemon master");
+        Task task = createTestTask("Query to this", database);
+        Category category = createTestCategory("From here", Arrays.asList(task));
+        Course course = new Course();
+        course.setName("From this");
+        course.setCourseCategories(Arrays.asList(category));
+        course = courseRepository.save(course);
+        
+        mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/query")
+                .param("query", "SELECT 1;")
+                .with(user("student").roles("STUDENT")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "You have not joined course " + course.getName()))
                 .andReturn();
     }
 }
