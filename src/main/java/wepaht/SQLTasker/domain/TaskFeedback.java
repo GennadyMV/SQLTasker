@@ -27,6 +27,11 @@ public class TaskFeedback extends AbstractPersistable<Long>{
     }
 
     public void setTask(Task task) {
+        if (task == null) {
+            setDeleted(true);
+        } else {
+            setDeleted(false);
+        }
         this.task = task;
     }
 

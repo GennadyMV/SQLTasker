@@ -34,6 +34,9 @@ public class Task extends AbstractPersistable<Long> {
     
     @OneToMany(mappedBy = "task")
     private List<Submission> submissions;
+    
+    @OneToMany(mappedBy = "task")
+    private List<TaskFeedback> feedback;
 
     /**
      * @return the name
@@ -99,5 +102,13 @@ public class Task extends AbstractPersistable<Long> {
 
     public void setSubmissions(List<Submission> submissions) {
         this.submissions = submissions;
+    }
+
+    public List<TaskFeedback> getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(List<TaskFeedback> feedback) {
+        this.feedback = feedback;
     }
 }

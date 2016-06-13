@@ -15,19 +15,19 @@ import wepaht.SQLTasker.repository.TaskFeedbackRepository;
 
 @Service
 public class TaskFeedbackService {
-    
+
     @Autowired
     CategoryService categoryService;
-    
+
     @Autowired
     CourseService courseService;
-    
+
     @Autowired
     TaskService taskService;
 
     @Autowired
-    TaskFeedbackRepository repository; 
-    
+    TaskFeedbackRepository repository;
+
     public String getFeedbackForm(Model model, Long courseId, Long categoryId, Long taskId) {
         Course course = courseService.getCourseById(courseId);
         Category category = categoryService.getCategoryById(categoryId);
@@ -35,12 +35,12 @@ public class TaskFeedbackService {
         TaskFeedback feedback = new TaskFeedback();
         feedback.setTask(task);
         feedback.setFeedback(new HashMap<>());
-        
+
         model.addAttribute("taskFeedback", feedback);
         model.addAttribute("course", course);
         model.addAttribute("category", category);
         model.addAttribute("task", task);
-        
+
         return "feedback";
     }
 
@@ -51,19 +51,23 @@ public class TaskFeedbackService {
     public String createFeedback(RedirectAttributes redirAttr, Long courseId, Long categoryId, Long taskId, TaskFeedback taskFeedback) {
         Task task = taskService.getTaskById(taskId);
         List<String> messages = Arrays.asList("Feedback on task " + task.getName() + "has been sent");
-        
+
         try {
-            repository.save(taskFeedback);
+            saveFeedback(taskFeedback);
         } catch (Exception e) {
             messages.add(e.toString());
         }
-        
+
         redirAttr.addFlashAttribute("messages", messages);
         redirAttr.addAttribute("courseId", courseId);
         redirAttr.addAttribute("categoryId", categoryId);
         redirAttr.addAttribute("taskId", taskId);
-        
+
         return "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
     }
-    
+
+    public void saveFeedback(TaskFeedback taskFeedback) {
+        repository.save(taskFeedback);
+    }
+
 }

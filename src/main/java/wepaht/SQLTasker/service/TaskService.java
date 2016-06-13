@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.TaskRepository;
 
@@ -15,47 +14,50 @@ import wepaht.SQLTasker.repository.TaskRepository;
 public class TaskService {
 
     @Autowired
-    TaskRepository taskRepository;
+    private TaskRepository taskRepository;
 
     @Autowired
-    TaskResultService taskResultService;
+    private TaskResultService taskResultService;
 
     @Autowired
-    PastQueryService pastQueryService;
+    private DatabaseService databaseService;
 
     @Autowired
-    AccountService accountService;
+    private CategoryService categoryService;
 
     @Autowired
-    DatabaseService databaseService;
+    private CourseService courseService;
 
     @Autowired
-    CategoryService categoryService;
-
-    @Autowired
-    CourseService courseService;
-
-    @Autowired
-    SubmissionService submissionService;
+    private SubmissionService submissionService;
 
     @Transactional
     public boolean removeTask(Long taskId) {
         Task removing = taskRepository.findOne(taskId);
 
-        removing.getCategories().stream().forEach((cat) -> {
-            cat.getTaskList().remove(removing);
-        });
+        removeConnections(removing);
 
         try {
-            removing.getSubmissions().stream().forEach((sub) -> {
-                sub.setTask(null);
-            });
             taskRepository.delete(taskId);
             return true;
         } catch (Exception e) {
         }
 
         return false;
+    }
+
+    private void removeConnections(Task removing) {
+        if (removing.getCategories() != null) removing.getCategories().stream().forEach((cat) -> {
+            cat.getTaskList().remove(removing);
+        });
+        
+        if (removing.getFeedback() != null) removing.getFeedback().stream().forEach((fb) -> {
+            fb.setTask(null);
+        });
+        
+        if (removing.getSubmissions() != null) removing.getSubmissions().stream().forEach((sub) -> {
+            sub.setTask(null);
+        });
     }
 
     public Task getTaskById(Long id) {
@@ -76,11 +78,14 @@ public class TaskService {
         messages.add("Query sent");
         Task task = taskRepository.findOne(taskId);
         Category category = null;
-        if (categoryId != null) category = categoryService.getCategoryById(categoryId);
-        
+        if (categoryId != null) {
+            category = categoryService.getCategoryById(categoryId);
+        }
+
         Course course = null;
-        if (courseId != null) course = courseService.getCourseById(courseId);
-         
+        if (courseId != null) {
+            course = courseService.getCourseById(courseId);
+        }
 
         Boolean isCorrect;
         if (task.getSolution() != null) {
