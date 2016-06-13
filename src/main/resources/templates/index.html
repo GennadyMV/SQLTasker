@@ -21,7 +21,7 @@ and open the template in the editor.
 </div>
 
 <div th:if="${submissions}">
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>User</th>
@@ -40,6 +40,27 @@ and open the template in the editor.
                 <td th:text="((${submission.course != null}) ? ${submission.course.name} : '')">Course name</td>
                 <td th:text="${submission.query}">Query</td>
                 <td th:text="${submission.points}">Points</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:if="${feedback}">
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Task</td>
+                <td>Difficulty</td>
+                <td>Educational</td>
+                <td>Effort</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="fb : ${feedback}">
+                <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
+                <td th:text="${fb.difficulty}"></td>
+                <td th:text="${fb.educational}"></td>
+                <td th:text="${fb.effort}"></td>
             </tr>
         </tbody>
     </table>

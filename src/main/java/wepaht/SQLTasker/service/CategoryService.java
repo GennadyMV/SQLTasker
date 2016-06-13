@@ -128,4 +128,8 @@ public class CategoryService {
     Category getCategoryById(Long categoryId) {
         return categoryRepository.findOne(categoryId);
     }
+    
+    public boolean categoryHasTask(Category category, Task task) {
+        return category.getTaskList().contains(task);
+    }
 }

@@ -14,12 +14,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.CategoryDetailRepository;
+import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
+import wepaht.SQLTasker.service.CategoryDetailService;
 import wepaht.SQLTasker.service.CategoryService;
 import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.DatabaseService;
@@ -52,6 +56,12 @@ public class DevProfile {
     
     @Autowired
     private CourseService courseService;
+    
+    @Autowired
+    private CourseRepository courseRepository;
+    
+    @Autowired
+    private CategoryDetailRepository detailRepository;
 
     @PostConstruct
     public void init() {
@@ -68,7 +78,7 @@ public class DevProfile {
         Category category = new Category();
         category.setName("first week");
         category.setDescription("easybeasy");
-        categoryRepository.save(category);
+        category = categoryRepository.save(category);
 
         for (int i = 0; i < 10; i++) {
             Task task = randomTask();
@@ -95,7 +105,15 @@ public class DevProfile {
         userRepository.save(teacher);
         userRepository.save(assistant);
         
-        courseService.createCourse(null, "Test course", null, null, "Dis a test", null);
+        Course course = new Course();
+        course.setName("Test course");
+        course.setDescription("Dis a test");
+        course.setCourseCategories(Arrays.asList(category));
+        course = courseRepository.save(course);
+        
+        CategoryDetail details = new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX);
+        detailRepository.save(details);
+//        courseService.createCourse(null, "Test course", null, null, "Dis a test", Arrays.asList(category.getId()));
     }
 
     public Task randomTask() {

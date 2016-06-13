@@ -315,7 +315,7 @@ public class CourseService {
             return noSuchCategoryInCourse(course, redirectAttr);
         }
         
-        if (!categoryHasTask(category, task)) {
+        if (!categoryService.categoryHasTask(category, task)) {
             return noSuchTaskInCategory(course, category, redirectAttr);
         }
 
@@ -326,12 +326,8 @@ public class CourseService {
         return "task";
     }
 
-    private boolean courseHasCategory(Course course, Category category) {
+    public boolean courseHasCategory(Course course, Category category) {
         return course.getCourseCategories().contains(category);
-    }
-
-    private boolean categoryHasTask(Category category, Task task) {
-        return category.getTaskList().contains(task);
     }
 
     private String noSuchTaskInCategory(Course course, Category category, RedirectAttributes redirectAttr) {

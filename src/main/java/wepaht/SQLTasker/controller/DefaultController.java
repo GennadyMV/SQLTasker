@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import wepaht.SQLTasker.repository.AccountRepository;
 import wepaht.SQLTasker.service.AccountService;
 import wepaht.SQLTasker.service.SubmissionService;
+import wepaht.SQLTasker.service.TaskFeedbackService;
 
 @Controller
 public class DefaultController {
@@ -26,11 +27,15 @@ public class DefaultController {
     @Autowired
     SubmissionService submissionService;
     
+    @Autowired
+    TaskFeedbackService feedbackService;
+    
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String hello(Model model){
         
         model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("submissions", submissionService.listAllSubmissions());
+        model.addAttribute("feedback", feedbackService.listAllFeedback());
         
         return "index";
     }

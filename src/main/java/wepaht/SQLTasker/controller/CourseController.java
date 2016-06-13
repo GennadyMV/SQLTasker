@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
+import wepaht.SQLTasker.domain.TaskFeedback;
 import wepaht.SQLTasker.service.CourseService;
+import wepaht.SQLTasker.service.TaskFeedbackService;
 
 @Controller
 @RequestMapping("courses")
@@ -24,6 +26,9 @@ public class CourseController {
     
     @Autowired
     private CourseService courseService;
+    
+    @Autowired
+    private TaskFeedbackService feedbackService;
     
     @RequestMapping(method = RequestMethod.GET)
     public String getCourses(Model model) {
@@ -117,5 +122,22 @@ public class CourseController {
             @PathVariable Long taskId) {
         
         return courseService.createQuery(redirectAttr, query, courseId, categoryId, taskId);
+    }
+    
+    @RequestMapping(value="/{courseId}/category/{categoryId}/task/{taskId}/feedback", method = RequestMethod.GET)
+    public String getTaskFeedback(Model model, 
+            @PathVariable Long courseId, 
+            @PathVariable Long categoryId, 
+            @PathVariable Long taskId,
+            @ModelAttribute("taskFeedback") TaskFeedback taskFeedback) {
+        return feedbackService.getFeedbackForm(model, courseId, categoryId, taskId);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/task/{taskId}/feedback", method = RequestMethod.POST)
+    public String postTaskFeedback(RedirectAttributes redirAttr, @PathVariable Long courseId, 
+            @PathVariable Long categoryId, 
+            @PathVariable Long taskId, 
+            @ModelAttribute TaskFeedback taskFeedback) {
+        return feedbackService.createFeedback(redirAttr, courseId, categoryId, taskId, taskFeedback);
     }
 }
