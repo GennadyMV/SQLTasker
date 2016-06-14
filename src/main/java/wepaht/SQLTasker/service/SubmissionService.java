@@ -50,4 +50,8 @@ public class SubmissionService {
     Integer getAccountCourseCategoryPoints(Account account, Course course, Category category) {
         return repository.getPointsByAccountAndCourseAncCategory(account, course, category);
     }
+
+    List<Submission> getSubmissionByAccountAndCourseAndCategoryAndTaskAndPoints(Account account, Course course, Category category, Task task, Boolean points) {
+        return repository.findByAccountAndCourseAndCategoryAndTaskAndPoints(account, course, category, task, points);
+    }
 }

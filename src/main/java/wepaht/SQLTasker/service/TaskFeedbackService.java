@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +29,17 @@ public class TaskFeedbackService {
     @Autowired
     TaskFeedbackRepository repository;
 
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    PointService pointService;
+
     public String getFeedbackForm(Model model, Long courseId, Long categoryId, Long taskId) {
         Course course = courseService.getCourseById(courseId);
         Category category = categoryService.getCategoryById(categoryId);
         Task task = taskService.getTaskById(taskId);
+        
         TaskFeedback feedback = new TaskFeedback();
         feedback.setTask(task);
         feedback.setFeedback(new HashMap<>());
@@ -50,12 +58,20 @@ public class TaskFeedbackService {
 
     public String createFeedback(RedirectAttributes redirAttr, Long courseId, Long categoryId, Long taskId, TaskFeedback taskFeedback) {
         Task task = taskService.getTaskById(taskId);
-        List<String> messages = Arrays.asList("Feedback on task " + task.getName() + "has been sent");
+        Course course = courseService.getCourseById(courseId);
+        Category category = categoryService.getCategoryById(categoryId);
 
-        try {
-            saveFeedback(taskFeedback);
-        } catch (Exception e) {
-            messages.add(e.toString());
+        List<String> messages = new ArrayList<>();
+
+        if (pointService.hasUserDoneTaskCorrectly(accountService.getAuthenticatedUser(), course, category, task)) {
+            try {
+                saveFeedback(taskFeedback);
+                messages.add("Feedback on task " + task.getName() + "has been sent");
+            } catch (Exception e) {
+                messages.add(e.toString());
+            }
+        } else {
+            messages.add("You have not done task " + task.getName() + " in course " + course.getName());
         }
 
         redirAttr.addFlashAttribute("messages", messages);

@@ -8,6 +8,7 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.PointHolder;
+import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service
@@ -63,5 +64,9 @@ public class PointService {
     public Integer getCourseCategoryPoints(Course course, Category category) {
         Account account = accountService.getAuthenticatedUser();
         return submissionService.getAccountCourseCategoryPoints(account, course, category);
+    }
+    
+    public boolean hasUserDoneTaskCorrectly(Account account, Course course, Category category, Task task) {
+        return submissionService.getSubmissionByAccountAndCourseAndCategoryAndTaskAndPoints(account, course, category, task, (boolean) true).size() > 0;
     }
 }

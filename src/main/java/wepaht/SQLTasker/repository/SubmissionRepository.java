@@ -9,6 +9,7 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.PointHolder;
 import wepaht.SQLTasker.domain.Submission;
+import wepaht.SQLTasker.domain.Task;
 
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
@@ -34,4 +35,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
     @Query("SELECT COUNT(*) FROM Submission WHERE :account=account AND :course=course AND :category=category AND points=true")
     public Integer getPointsByAccountAndCourseAncCategory(@Param("account")Account account, @Param("course") Course course, @Param("category") Category category);
+
+    public List<Submission> findByAccountAndCourseAndCategoryAndTaskAndPoints(Account account, Course course, Category category, Task task, Boolean points);
 }

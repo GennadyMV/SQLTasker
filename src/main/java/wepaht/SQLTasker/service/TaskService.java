@@ -72,7 +72,7 @@ public class TaskService {
      * @param query Query which is made to task
      * @param categoryId Category Id in which task is part of
      * @param courseId
-     * @return First index contains messages, second contains the query result.
+     * @return First index contains messages, second contains the query result, third is boolean which tells was query correct.
      */
     public List<Object> performQueryToTask(List<String> messages, Long taskId, String query, Long categoryId, Long courseId) {
         messages.add("Query sent");
@@ -100,6 +100,6 @@ public class TaskService {
 
         submissionService.createNewSubmisson(task, query, isCorrect, category, course);
 
-        return Arrays.asList(messages, databaseService.performQuery(task.getDatabase().getId(), query));
+        return Arrays.asList(messages, databaseService.performQuery(task.getDatabase().getId(), query), isCorrect);
     }
 }

@@ -171,6 +171,14 @@ public class CourseControllerTest {
 
         return categoryRepository.save(category);
     }
+    
+    private Course createTestCourse(String name, Category category) {
+        Course course = new Course();
+        course.setName(name);
+        course.setCourseCategories(Arrays.asList(category));
+        course = courseRepository.save(course);
+        return course;
+    }
 
     @Test
     public void testGetCoursesIsOk() throws Exception {
@@ -523,10 +531,7 @@ public class CourseControllerTest {
         Database database = createTestDatabase("Pokemon master");
         Task task = createTestTask("Query to this", database);
         Category category = createTestCategory("From here", Arrays.asList(task));
-        Course course = new Course();
-        course.setName("From this");
-        course.setCourseCategories(Arrays.asList(category));
-        course = courseRepository.save(course);
+        Course course = createTestCourse("From this", category);
         
         mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/query")
                 .param("query", "SELECT 1;")
@@ -534,5 +539,18 @@ public class CourseControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "You have not joined course " + course.getName()))
                 .andReturn();
+    }
+
+    @Test
+    public void testFeedbackCannotBeGivenToTaskWhenTaskIsNotDone() throws Exception {
+        Task task = createTestTask("Feedback this", createTestDatabase("Durrr"));
+        Category category = createTestCategory("In dis category", Arrays.asList(task));
+        Course course = createTestCourse("Nerf this", category);
+        
+        mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/feedback")
+                .with(user("student").roles("STUDENT")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", 
+                        Matchers.anyOf(Matchers.contains("You have not done task " + task.getName() + " in course " + course.getName()))));
     }
 }

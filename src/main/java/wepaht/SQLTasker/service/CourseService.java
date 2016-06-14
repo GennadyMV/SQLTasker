@@ -343,11 +343,13 @@ public class CourseService {
     public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long categoryId, Long taskId) {
         Course course = repository.findOne(courseId);
         Account loggedUser = accountService.getAuthenticatedUser();
+        String redirectAddress = "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
 
         if (course.getStudents().contains(loggedUser)) {
             List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<>(), taskId, query, categoryId, courseId);
             redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
             redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
+            if ((Boolean) messagesAndQueryResult.get(2)) redirectAddress = redirectAddress + "/feedback";
         } else {
             redirectAttr.addFlashAttribute("messages", "You have not joined course " + course.getName());
         }
@@ -356,7 +358,7 @@ public class CourseService {
         redirectAttr.addAttribute("categoryId", categoryId);
         redirectAttr.addAttribute("courseId", courseId);
 
-        return "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
+        return redirectAddress;
     }
 
     public Course getCourseById(Long id) {
