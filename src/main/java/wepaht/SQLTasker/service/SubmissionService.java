@@ -72,13 +72,9 @@ public class SubmissionService {
             isCorrect = false;
         }
         
-        if (course != null) {
-            isCorrect = isCourseActive(isCorrect, course);
-        }
-
-        if (category != null) {
-            isCorrect = isCategoryActive(isCorrect, course, category);
-        }
+        if (course != null) isCorrect = isCourseActive(isCorrect, course);
+        
+        if (category != null) isCorrect = isCategoryActive(isCorrect, course, category);
         
         createNewSubmisson(task, query, isCorrect, category, course);
         
