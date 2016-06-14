@@ -362,6 +362,7 @@ public class CourseService {
     }
 
     public Course getCourseById(Long id) {
+        if (id == null) return null;
         return repository.findOne(id);
     }
 }

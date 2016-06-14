@@ -84,4 +84,8 @@ public class CategoryDetailService {
         
         return details;
     }
+
+    List<CategoryDetail> getCategoryDetailsByCourseAndCategory(Course course, Category category) {
+        return categoryDetailsRepository.findByCourseAndCategory(course, category);
+    }
 }

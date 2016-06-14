@@ -56,7 +56,7 @@ and open the template in the editor.
             <tr th:each="fb : ${feedback}">
                 <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
                 <div th:each="stuff : ${fb.feedback}">
-                    <td th:text="${stuff.key}: ${stuff.value}">Things</td>
+                    <td><p th:text="${'' + stuff.key + ': ' + stuff.value}">Things</p></td>
                 </div>
             </tr>
         </tbody>
