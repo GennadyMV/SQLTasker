@@ -86,4 +86,10 @@ public class TaskFeedbackService {
         repository.save(taskFeedback);
     }
 
+    public String getAllFeedback(Model model) {
+        model.addAttribute("feedback", listAllFeedback());
+        
+        return "feedbackList";
+    }
+
 }

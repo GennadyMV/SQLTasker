@@ -1,14 +1,10 @@
 package wepaht.SQLTasker.domain;
 
-import java.time.LocalDate;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.List;
-import wepaht.SQLTasker.converter.LocalDatePersistenceConverter;
 
 
 @Entity

@@ -54,7 +54,7 @@ and open the template in the editor.
                 <div class="get-in-touch-text-box">
                     <div th:if="${course != null}">
                         <form th:method="POST" th:action="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/query (courseId = ${course.id}, categoryId = ${category.id}, taskId = ${task.id})}">
-                            <textarea name="query"/>
+                            <textarea name="query" id="taskQuery"/>
                             <input type="hidden" name="id" th:value="${task.id}"/>
 
                             <input type="submit" value="Submit query"/>
@@ -96,6 +96,7 @@ and open the template in the editor.
            th:href="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"
            th:text="'Give feedback to task ' + ${task.name}"></a>
 
+        <div th:include="fragments/scripts :: spyware"></div>
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: confirmScript"></div>
         <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>

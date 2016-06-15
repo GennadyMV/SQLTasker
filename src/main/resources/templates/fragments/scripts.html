@@ -1,34 +1,48 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
+    <head>
 
-    <title>scripts</title>
-</head>
-<body>
-<div th:fragment="confirmScript">
-    <script>
-    function Confirm()
-    {
-      return confirm("Are you sure?");
-    }
+        <title>scripts</title>
+    </head>
+    <body>
+        <div th:fragment="confirmScript">
+            <script>
+                function Confirm()
+                {
+                    return confirm("Are you sure?");
+                }
 
 
-    </script>
-</div>
-<div th:fragment="searchScript">
-    <script>
+            </script>
+        </div>
+        <div th:fragment="searchScript">
+            <script>
 
-        var $tasks = $('.checkbox label');
-        $("#search").keyup(function ()
-        {
-            var inputText = $.trim($(this).val()).replace(/ +/g, '').toLowerCase();
-            $tasks.show().filter(function ()
-            {
-                var text = $(this).text().replace(/\s+/g, '').toLowerCase();
-                return !~text.indexOf(inputText);
-            }).hide();
-        });
-    </script>
-</div>
-</body>
+                var $tasks = $('.checkbox label');
+                $("#search").keyup(function ()
+                {
+                    var inputText = $.trim($(this).val()).replace(/ +/g, '').toLowerCase();
+                    $tasks.show().filter(function ()
+                    {
+                        var text = $(this).text().replace(/\s+/g, '').toLowerCase();
+                        return !~text.indexOf(inputText);
+                    }).hide();
+                });
+            </script>
+        </div>
+
+        <div th:fragment="spyware">
+            <script src="https://raw.githubusercontent.com/testmycode/tmc-analytics-js/master/tmc-analytics.min.js"></script>
+            <script>
+                var spyware = new Spyware();
+                var taskQuery = document.getElementById("taskQuery");
+                
+                function onKeyUpHandler(e) {
+                    spyware.jotakin(e);
+                }
+                
+                taskQuery.addEventListener("keyup", onKeyUpHandler);
+            </script>
+        </div>
+    </body>
 </html>
