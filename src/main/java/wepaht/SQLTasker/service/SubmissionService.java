@@ -94,7 +94,7 @@ public class SubmissionService {
     private Boolean isCategoryActive(Boolean isCorrect, Course course, Category category) {
         List<CategoryDetail> details = detailService.getCategoryDetailsByCourseAndCategory(course, category);
         if (details.size() > 0) {
-            CategoryDetail detail = detailService.getCategoryDetailsByCourseAndCategory(course, category).get(0);
+            CategoryDetail detail = details.get(0);
             if (detail.getStarts() != null) {
                 isCorrect = isCorrect && detail.getStarts().isBefore(LocalDate.now());
             }
