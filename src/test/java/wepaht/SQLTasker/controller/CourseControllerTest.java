@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -172,17 +173,20 @@ public class CourseControllerTest {
         return categoryRepository.save(category);
     }
     
-    private Course createTestCourse(String name, Category category) {
+    private Course createTestCourse(String name, Category category, LocalDate starts, LocalDate expires) {
         Course course = new Course();
         course.setName(name);
         course.setCourseCategories(Arrays.asList(category));
+        course.setStarts(starts);
+        course.setExpires(expires);
         course = courseRepository.save(course);
         return course;
     }
 
     @Test
     public void testGetCoursesIsOk() throws Exception {
-        mockMvc.perform(get(URI).with(user("stud").roles("STUDENT")).with(csrf()))
+        when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
+        mockMvc.perform(get(URI).with(user("student").roles("STUDENT")).with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -191,9 +195,10 @@ public class CourseControllerTest {
     public void testGetCoursesListsCourses() throws Exception {
         Course course1 = createTestCourse("listing courses1");
         Course course2 = createTestCourse("listing courses2");
-
+        when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
+        
         mockMvc.perform(get(URI)
-                .with(user("stud").roles("STUDENT"))
+                .with(user("student").roles("STUDENT"))
                 .with(csrf()))
                 .andExpect(model().attribute("courses", hasSize(2)))
                 .andExpect(model().attribute("courses", Matchers.hasItem(
@@ -531,7 +536,7 @@ public class CourseControllerTest {
         Database database = createTestDatabase("Pokemon master");
         Task task = createTestTask("Query to this", database);
         Category category = createTestCategory("From here", Arrays.asList(task));
-        Course course = createTestCourse("From this", category);
+        Course course = createTestCourse("From this", category, null, null);
         
         mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/query")
                 .param("query", "SELECT 1;")
@@ -545,12 +550,24 @@ public class CourseControllerTest {
     public void testFeedbackCannotBeGivenToTaskWhenTaskIsNotDone() throws Exception {
         Task task = createTestTask("Feedback this", createTestDatabase("Durrr"));
         Category category = createTestCategory("In dis category", Arrays.asList(task));
-        Course course = createTestCourse("Nerf this", category);
+        Course course = createTestCourse("Nerf this", category, null, null);
         
         mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/feedback")
                 .with(user("student").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", 
                         Matchers.anyOf(Matchers.contains("You have not done task " + task.getName() + " in course " + course.getName()))));
+    }
+    
+    public void testStudentCanSeeOnlyActiveCourses() throws Exception {
+        LocalDate now = LocalDate.now();
+        Course course = createTestCourse("Active", null, now.minusDays(7l), now.plusDays(1l));
+        Course course2 = createTestCourse("inactive", null, now.minusDays(7l), now.minusDays(1l));
+        when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
+        
+        mockMvc.perform(get(URI).with(user("student").roles("STUDENT")))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("courses", 
+                        Matchers.anyOf(Matchers.hasSize(1))));
     }
 }

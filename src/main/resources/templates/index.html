@@ -45,24 +45,6 @@ and open the template in the editor.
     </table>
 </div>
 
-<div th:if="${feedback}">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Task</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="fb : ${feedback}">
-                <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
-                <div th:each="stuff : ${fb.feedback}">
-                    <td><p th:text="${'' + stuff.key + ': ' + stuff.value}">Things</p></td>
-                </div>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
 <div th:include="fragments/footer_template :: footer"></div>
 <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
 </body>

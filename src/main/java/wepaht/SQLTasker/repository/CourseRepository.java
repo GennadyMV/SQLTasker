@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
     
     @Query("SELECT c.students FROM Course c WHERE c = :course")
     List<Account> getCourseStudents(@Param("course") Course course);
+    
+    @Query("SELECT c FROM Course c WHERE (starts <= :now OR starts IS NULL) AND (expires >= :now OR expires IS NULL)")
+    List<Course> findByStartsBeforeAndExpiresAfter(@Param("now") LocalDate now);
 }

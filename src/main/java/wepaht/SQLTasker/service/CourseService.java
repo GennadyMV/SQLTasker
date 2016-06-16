@@ -42,7 +42,12 @@ public class CourseService {
 
     public String courseListing(Model model) {
 
-        model.addAttribute("courses", repository.findAll());
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals("STUDENT")) {
+            model.addAttribute("courses", getActiveCourses());
+        } else {
+            model.addAttribute("courses", repository.findAll());
+        }
 
         return "courses";
     }
@@ -100,7 +105,7 @@ public class CourseService {
         try {
             expireDate = LocalDate.parse(expires);
 
-            if (expireDate.isAfter(startDate) || startDate == null) {
+            if (startDate == null || expireDate.isAfter(startDate)) {
                 course.setExpires(expireDate);
                 messages.add("Expire-date added");
             }
@@ -364,5 +369,10 @@ public class CourseService {
     public Course getCourseById(Long id) {
         if (id == null) return null;
         return repository.findOne(id);
+    }
+
+    private List<Course> getActiveCourses() {
+        LocalDate date = LocalDate.now();
+        return repository.findByStartsBeforeAndExpiresAfter(date);
     }
 }
