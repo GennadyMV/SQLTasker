@@ -182,6 +182,16 @@ public class CourseControllerTest {
         course = courseRepository.save(course);
         return course;
     }
+    
+    private Course createTestCourseWithMultipleCategories(String name, List<Category> categories, LocalDate starts, LocalDate expires) {
+        Course course = new Course();
+        course.setName(name);
+        course.setCourseCategories(categories);
+        course.setStarts(starts);
+        course.setExpires(expires);
+        course = courseRepository.save(course);
+        return course;
+    }
 
     @Test
     public void testGetCoursesIsOk() throws Exception {
@@ -559,6 +569,7 @@ public class CourseControllerTest {
                         Matchers.anyOf(Matchers.contains("You have not done task " + task.getName() + " in course " + course.getName()))));
     }
     
+    @Test
     public void testStudentCanSeeOnlyActiveCourses() throws Exception {
         LocalDate now = LocalDate.now();
         Course course = createTestCourse("Active", null, now.minusDays(7l), now.plusDays(1l));
@@ -569,5 +580,31 @@ public class CourseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("courses", 
                         Matchers.anyOf(Matchers.hasSize(1))));
+    }
+    
+    @Test
+    public void testStudentCanOnlyAccessActiveCourses() throws Exception {
+        LocalDate now = LocalDate.now();
+        Course course = createTestCourse("inactive", null, now.minusDays(7l), now.minusDays(1l));
+        
+        mockMvc.perform(get(URI + "/" + course.getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(status().is3xxRedirection());
+    }
+    
+    public void testStudentCanSeeOnlyActiveCategories() throws Exception {
+        LocalDate now = LocalDate.now();
+        Category category = createTestCategory("Active");
+        Category category2 = createTestCategory("Inactive");
+        Course course = createTestCourseWithMultipleCategories("The course", Arrays.asList(category, category2), null, null);
+        CategoryDetail detail1 = createTestDetail(course, category, null, null);
+        CategoryDetail detail2 = createTestDetail(course, category2, now.plusDays(1l), null);
+        
+        
+    }
+
+    private CategoryDetail createTestDetail(Course course, Category category, LocalDate starts, LocalDate expires) {
+        CategoryDetail detail = new CategoryDetail(course, category, starts, expires);
+        return categoryDetailsRepository.save(detail);
     }
 }

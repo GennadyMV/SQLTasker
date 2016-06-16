@@ -125,6 +125,12 @@ public class CourseService {
     public String getCourse(Model model, Long courseId) {
         Course course = repository.findOne(courseId);
         List<CategoryDetail> details = categoryDetailsService.getCourseCategoryDetails(course);
+        Account user = accountService.getAuthenticatedUser();
+        
+        if (!isActiveCourse(user, course)) {
+            return "redirect:/courses";
+        }
+        
         model.addAttribute("course", course);
         model.addAttribute("points", pointService.getCoursePoints(course));
         if (!details.isEmpty()) {
@@ -374,5 +380,15 @@ public class CourseService {
     private List<Course> getActiveCourses() {
         LocalDate date = LocalDate.now();
         return repository.findByStartsBeforeAndExpiresAfter(date);
+    }
+
+    private boolean isActiveCourse(Account user, Course course) {
+        LocalDate now = LocalDate.now();
+        if (user.getRole().equals("STUDENT")) {
+            return (course.getStarts() == null || (course.getStarts() != null && (course.getStarts().isBefore(now) || course.getStarts().equals(now)))) &&
+                    (course.getExpires() == null || (course.getExpires() != null && (course.getExpires().isAfter(now) || course.getExpires().equals(now))));
+        }
+        
+        return true;
     }
 }

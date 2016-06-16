@@ -53,7 +53,6 @@ import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.AccountService;
 
-
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
@@ -73,7 +72,7 @@ public class TaskControllerTest {
 
     @Autowired
     private DatabaseRepository databaseRepository;
-    
+
     @Autowired
     private PastQueryService pastQueryService;
 
@@ -85,7 +84,7 @@ public class TaskControllerTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    
+
     @Mock
     AccountService userServiceMock;
 
@@ -117,17 +116,20 @@ public class TaskControllerTest {
         admin.setPassword("test");
         admin.setRole("ADMIN");
         admin = userRepository.save(admin);
-        when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);     
-        
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);
+
         category = new Category();
         category.setName("taskCategory");
-        category = categoryRepository.save(category);        
+        category = categoryRepository.save(category);
     }
 
     @After
     public void tearDown() {
         userRepository.deleteAll();
-        categoryRepository.deleteAll();
+        try {
+            categoryRepository.deleteAll();
+        } catch (Exception e) {}
+
     }
 
     private Task randomTask() {
@@ -151,7 +153,7 @@ public class TaskControllerTest {
 
         String query = "select firstname, lastname from testdb";
 
-        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", Matchers.hasSize(1)))
                 .andReturn();
@@ -162,10 +164,10 @@ public class TaskControllerTest {
         String taskName = "testTask";
         Long databaseId = database.getId();
         mockMvc.perform(post(API_URI).param("name", taskName)
-                    .param("description", "To test creation of a task with a database")
-                    .param("solution", "select * from persons;")
-                    .param("databaseId", databaseId.toString())
-                    .with(user("test").roles("ADMIN")).with(csrf()))
+                .param("description", "To test creation of a task with a database")
+                .param("solution", "select * from persons;")
+                .param("databaseId", databaseId.toString())
+                .with(user("test").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
@@ -173,7 +175,7 @@ public class TaskControllerTest {
 
         assertTrue(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
     }
-    
+
     @Test
     public void studentCanSuggestTask() throws Exception {
         Account student = new Account();
@@ -182,27 +184,26 @@ public class TaskControllerTest {
         student.setRole("STUDENT");
         student = userRepository.save(student);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
-        
+
         String taskName = "testTask";
         Long databaseId = database.getId();
         mockMvc.perform(post(API_URI).param("name", taskName)
-                    .param("description", "To test suggestion")
-                    .param("solution", "select * from persons;")
-                    .param("databaseId", databaseId.toString())
-                    .with(user("suggestingstudent").roles("STUDENT")).with(csrf()))
+                .param("description", "To test suggestion")
+                .param("solution", "select * from persons;")
+                .param("databaseId", databaseId.toString())
+                .with(user("suggestingstudent").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
-        assertNotNull(taskRepository.findByNameOrderByNameDesc("SUGGESTION: "+taskName).get(0));
+        assertNotNull(taskRepository.findByNameOrderByNameDesc("SUGGESTION: " + taskName).get(0));
     }
-
 
     @Test
     public void querysTableIsSeen() throws Exception {
         Task testTask = randomTask();
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("tables"))
                 .andReturn();
@@ -215,13 +216,11 @@ public class TaskControllerTest {
         testTask.setSolution(solution);
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() + "/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", hasSize(2)))
                 .andReturn();
     }
-
-
 
     @Test
     public void deleteTask() throws Exception {
@@ -245,18 +244,17 @@ public class TaskControllerTest {
         assertNotNull(taskRepository.findOne(testTask.getId()));
 
         mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
-                    .param("databaseId", "" + database.getId())
-                    .param("name","Test")
-                    .param("solution","SELECT * FROM persons;")
-                    .param("description","It works")
-                    .with(user("admin").roles("ADMIN")).with(csrf()))
+                .param("databaseId", "" + database.getId())
+                .param("name", "Test")
+                .param("solution", "SELECT * FROM persons;")
+                .param("description", "It works")
+                .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Task modified!"))
                 .andReturn();
-        testTask=taskRepository.findOne(testTask.getId());
+        testTask = taskRepository.findOne(testTask.getId());
         assertEquals("Test", testTask.getName());
     }
-
 
     //Update-, delete-, drop-, insert- and create-queries use the same method
     @Test
@@ -265,9 +263,9 @@ public class TaskControllerTest {
         taskRepository.save(testTask);
         String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
 
-        mockMvc.perform(post(API_URI + "/" + category.getId() +"/" + testTask.getId() + "/query")
-                    .param("query", sql)
-                    .with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/" + category.getId() + "/" + testTask.getId() + "/query")
+                .param("query", sql)
+                .with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", hasSize(1)))
                 .andReturn();
@@ -310,36 +308,36 @@ public class TaskControllerTest {
 
         assertFalse(tags.stream().filter(t -> t.getName().equals(tagName)).findFirst().isPresent());
     }
-    
+
     @Test
     public void createdTaskNameIsNotEmpty() throws Exception {
         String taskName = "";
         Long databaseId = database.getId();
         mockMvc.perform(post(API_URI).param("name", taskName)
-                    .param("description", "Name is not empty")
-                    .param("solution", "select * from persons;")
-                    .param("databaseId", databaseId.toString())
-                    .with(user("test").roles("ADMIN")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
+                .param("description", "Name is not empty")
+                .param("solution", "select * from persons;")
+                .param("databaseId", databaseId.toString())
+                .with(user("test").roles("ADMIN")).with(csrf()))
+                //                .andExpect(status().is3xxRedirection())
                 .andReturn();
 
         List<Task> tasks = taskRepository.findAll();
 
         assertFalse(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
     }
-    
+
     @Test
     public void createdTaskNameIsNotNull() throws Exception {
         Long databaseId = database.getId();
-        
+
         String description = "Name is not null";
-        
+
         mockMvc.perform(post(API_URI)
-                    .param("description", description)
-                    .param("solution", "select * from persons;")
-                    .param("databaseId", databaseId.toString())
-                    .with(user("test").roles("ADMIN")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
+                .param("description", description)
+                .param("solution", "select * from persons;")
+                .param("databaseId", databaseId.toString())
+                .with(user("test").roles("ADMIN")).with(csrf()))
+                //                .andExpect(status().is3xxRedirection())
                 .andReturn();
 
         List<Task> tasks = taskRepository.findAll();
