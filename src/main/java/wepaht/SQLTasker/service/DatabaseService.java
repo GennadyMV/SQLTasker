@@ -15,6 +15,9 @@ public class DatabaseService {
 
     @Autowired
     private DatabaseRepository databaseRepository;
+    
+    @Autowired
+    private AccountService accountService;
 
     private HashSet<String> defaultTables = new HashSet<>();
 

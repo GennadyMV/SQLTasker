@@ -31,16 +31,26 @@
             </script>
         </div>
 
-        <div th:fragment="spyware">
-            <script src="https://raw.githubusercontent.com/testmycode/tmc-analytics-js/master/tmc-analytics.min.js"></script>
-            <script>
-                var spyware = new Spyware();
+        <div th:fragment="spyware (course, task)">
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+            <script type="text/javascript" src="/tmc-analytics.min.js"></script>
+            <script th:inline="javascript">
+                var course = [[${course.name}]];
+                var task = [[${task.name}]];
+                var analytics = new TmcAnalytics("sqldummy", "salasana", course, task, "http://staging.spyware.testmycode.net/");
                 var taskQuery = document.getElementById("taskQuery");
-                
+
                 function onKeyUpHandler(e) {
-                    spyware.jotakin(e);
+                    var content = taskQuery.value;
+                    var action = "text_insert";
+                    
+                    if (e.keyCode === 8 || e.keyCode === 46) {
+                        action = "text_remove";
+                    }
+                    
+                    analytics.spyEvent(task, content, action);                    
                 }
-                
+
                 taskQuery.addEventListener("keyup", onKeyUpHandler);
             </script>
         </div>

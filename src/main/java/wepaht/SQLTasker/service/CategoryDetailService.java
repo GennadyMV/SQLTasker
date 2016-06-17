@@ -88,4 +88,12 @@ public class CategoryDetailService {
     List<CategoryDetail> getCategoryDetailsByCourseAndCategory(Course course, Category category) {
         return categoryDetailsRepository.findByCourseAndCategory(course, category);
     }
+    
+    List<CategoryDetail> getActiveCategoryDetailsBycourse(Course course) {
+        return categoryDetailsRepository.findActiveDetailsByCourse(LocalDate.now(), course);
+    }
+    
+    public Boolean isCategoryActive(Course course, Category category) {
+        return categoryDetailsRepository.findActiveDetailByCourseAndCategory(LocalDate.now(), course, category) != null;
+    }
 }

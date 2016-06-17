@@ -20,5 +20,5 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
     List<Account> getCourseStudents(@Param("course") Course course);
     
     @Query("SELECT c FROM Course c WHERE (starts <= :now OR starts IS NULL) AND (expires >= :now OR expires IS NULL)")
-    List<Course> findByStartsBeforeAndExpiresAfter(@Param("now") LocalDate now);
+    List<Course> findByStartsBeforeAndExpiresAfter(@Param("now") LocalDate now);    
 }

@@ -14,6 +14,14 @@ public class Database extends AbstractPersistable<Long> {
 
     @Lob
     private String databaseSchema;
+    
+    private Account owner;
+    
+    private Boolean deleted;
+    
+    public Database() {
+        this.deleted = false;
+    }
 
     /**
      *
@@ -45,5 +53,21 @@ public class Database extends AbstractPersistable<Long> {
      */
     public void setDatabaseSchema(String databaseSchema) {
         this.databaseSchema = databaseSchema;
+    }
+
+    public Account getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Account owner) {
+        this.owner = owner;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

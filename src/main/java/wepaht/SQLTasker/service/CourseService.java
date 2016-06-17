@@ -124,7 +124,7 @@ public class CourseService {
     @Transactional
     public String getCourse(Model model, Long courseId) {
         Course course = repository.findOne(courseId);
-        List<CategoryDetail> details = categoryDetailsService.getCourseCategoryDetails(course);
+        List<CategoryDetail> details = getActiveCategories(course);
         Account user = accountService.getAuthenticatedUser();
         
         if (!isActiveCourse(user, course)) {
@@ -301,7 +301,7 @@ public class CourseService {
         Course course = repository.findOne(courseId);
         Category category = categoryService.getCategoryById(categoryId);
 
-        if (!courseHasCategory(course, category)) {
+        if (!courseHasCategory(course, category) || !isCategoryActive(course, category)) {
             return noSuchCategoryInCourse(course, redirectAttributes);
         }
 
@@ -324,7 +324,7 @@ public class CourseService {
         Category category = categoryService.getCategoryById(categoryId);
         Task task = taskService.getTaskById(taskId);
 
-        if (!courseHasCategory(course, category)) {
+        if (!courseHasCategory(course, category) || !isCategoryActive(course, category)) {
             return noSuchCategoryInCourse(course, redirectAttr);
         }
 
@@ -387,6 +387,23 @@ public class CourseService {
         if (user.getRole().equals("STUDENT")) {
             return (course.getStarts() == null || (course.getStarts() != null && (course.getStarts().isBefore(now) || course.getStarts().equals(now)))) &&
                     (course.getExpires() == null || (course.getExpires() != null && (course.getExpires().isAfter(now) || course.getExpires().equals(now))));
+        }
+        
+        return true;
+    }
+
+    private List<CategoryDetail> getActiveCategories(Course course) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals("STUDENT")) return categoryDetailsService.getActiveCategoryDetailsBycourse(course);
+        
+        return categoryDetailsService.getCourseCategoryDetails(course);
+    }
+
+    private boolean isCategoryActive(Course course, Category category) {
+        Account account = accountService.getAuthenticatedUser();
+        
+        if (account.getRole().equals("STUDENT")) {
+            return categoryDetailsService.isCategoryActive(course, category);
         }
         
         return true;

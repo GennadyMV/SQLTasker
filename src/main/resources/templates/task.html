@@ -96,7 +96,7 @@ and open the template in the editor.
            th:href="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"
            th:text="'Give feedback to task ' + ${task.name}"></a>
 
-        <div th:include="fragments/scripts :: spyware"></div>
+        <div th:if="${course}" th:include="fragments/scripts :: spyware (course = ${course}, task = ${task})"></div>
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: confirmScript"></div>
         <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>

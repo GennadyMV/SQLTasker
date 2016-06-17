@@ -1,4 +1,5 @@
 package wepaht.SQLTasker.repository;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,14 @@ public interface CategoryDetailRepository extends JpaRepository<CategoryDetail, 
     
     @Query("DELETE FROM CategoryDetail WHERE category=:category")
     void deleteCategoryDetailsByCategory(@Param("category") Category category);
+    
+    @Query("SELECT d FROM CategoryDetail d WHERE (d.starts <= :now OR d.starts IS NULL) AND (d.expires >= :now OR d.expires IS NULL) AND d.course = :course")
+    List<CategoryDetail> findActiveDetailsByCourse(@Param("now") LocalDate now, @Param("course") Course course);
+    
+    @Query("SELECT d FROM CategoryDetail d "
+            + "WHERE (d.starts <= :now OR d.starts IS NULL) "
+            + "AND (d.expires >= :now OR d.expires IS NULL) "
+            + "AND d.course = :course "
+            + "AND d.category = :category")
+    CategoryDetail findActiveDetailByCourseAndCategory(@Param("now") LocalDate now, @Param("course") Course course, @Param("category") Category category);
 }

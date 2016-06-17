@@ -592,6 +592,7 @@ public class CourseControllerTest {
                 .andExpect(status().is3xxRedirection());
     }
     
+    @Test
     public void testStudentCanSeeOnlyActiveCategories() throws Exception {
         LocalDate now = LocalDate.now();
         Category category = createTestCategory("Active");
@@ -600,11 +601,26 @@ public class CourseControllerTest {
         CategoryDetail detail1 = createTestDetail(course, category, null, null);
         CategoryDetail detail2 = createTestDetail(course, category2, now.plusDays(1l), null);
         
-        
+        mockMvc.perform(get(URI + "/" + course.getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(model().attribute("details", 
+                        Matchers.anyOf(Matchers.hasSize(1))));
     }
 
     private CategoryDetail createTestDetail(Course course, Category category, LocalDate starts, LocalDate expires) {
         CategoryDetail detail = new CategoryDetail(course, category, starts, expires);
         return categoryDetailsRepository.save(detail);
+    }
+    
+    @Test
+    public void testStudentCannotAccessInactiveCourse() throws Exception {
+        LocalDate now = LocalDate.now();
+        Category category2 = createTestCategory("Inactive");
+        Course course = createTestCourseWithMultipleCategories("The course", Arrays.asList(category2), null, null);
+        CategoryDetail detail2 = createTestDetail(course, category2, now.plusDays(1l), null);
+        
+        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + detail2.getCategory().getId())
+                .with(user("student").roles("STUDENT")))
+                .andExpect(status().is3xxRedirection());
     }
 }
