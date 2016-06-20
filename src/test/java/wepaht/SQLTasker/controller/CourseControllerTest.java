@@ -476,7 +476,9 @@ public class CourseControllerTest {
         Course course = new Course();
         course.setName("From hererer");
         course.setCourseCategories(Arrays.asList(category));
+        course.setStudents(Arrays.asList(student));
         courseRepository.save(course);
+        when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
         
         mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
                 .with(user("student").roles("STUDENT")))

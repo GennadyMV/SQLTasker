@@ -301,7 +301,10 @@ public class CourseService {
         Course course = repository.findOne(courseId);
         Category category = categoryService.getCategoryById(categoryId);
 
-        if (!courseHasCategory(course, category) || !isCategoryActive(course, category)) {
+        boolean hasCategory = courseHasCategory(course, category);
+        boolean categoryIsActive = isCategoryActive(course, category);
+        
+        if (!hasCategory || !categoryIsActive) {
             return noSuchCategoryInCourse(course, redirectAttributes);
         }
 
@@ -323,8 +326,11 @@ public class CourseService {
         Course course = repository.findOne(courseId);
         Category category = categoryService.getCategoryById(categoryId);
         Task task = taskService.getTaskById(taskId);
+        
+        boolean courseHasCategory = courseHasCategory(course, category);
+        boolean categoryIsActive = isCategoryActive(course, category);
 
-        if (!courseHasCategory(course, category) || !isCategoryActive(course, category)) {
+        if (!courseHasCategory || !categoryIsActive) {
             return noSuchCategoryInCourse(course, redirectAttr);
         }
 
@@ -340,6 +346,7 @@ public class CourseService {
     }
 
     public boolean courseHasCategory(Course course, Category category) {
+//        return course.getCourseCategories().stream().filter(cat -> cat.getId().equals(category.getId())).findAny().isPresent();
         return course.getCourseCategories().contains(category);
     }
 
