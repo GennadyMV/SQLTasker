@@ -9,6 +9,7 @@ import wepaht.SQLTasker.repository.DatabaseRepository;
 import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.*;
+import wepaht.SQLTasker.domain.Account;
 
 @Service
 public class DatabaseService {
@@ -58,9 +59,16 @@ public class DatabaseService {
     public boolean createDatabase(String name, String createTable) {
         try {
             Database db = new Database();
-
+            Account user = null;
+            try {
+                user = accountService.getAuthenticatedUser();
+            } catch (Exception e) {
+                System.out.println("Account service is not initialized");
+            }
+            
             db.setName(name);
             db.setDatabaseSchema(createTable);
+            db.setOwner(user);
 
             //Testing the connection
             Connection conn = createConnectionToDatabase(name, createTable);

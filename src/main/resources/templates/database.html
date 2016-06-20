@@ -16,6 +16,9 @@ and open the template in the editor.
 
         <!-- Example usage of listing database's tables -->
         <h1 th:text="${database.name}">Database name</h1>
+        <!-- Only for testing purposes. Delete afterwards -->
+        <div th:if="${database.owner}"><p th:text="${'Owner: ' + database.owner.username}"></p></div>
+        
         <pre th:text="${database.databaseSchema}">Database create-tables</pre>
         <div class="get-in-touch">
             <div class="get-in-touch-text-boxs">

@@ -25,9 +25,9 @@ public interface CategoryDetailRepository extends JpaRepository<CategoryDetail, 
     List<CategoryDetail> findActiveDetailsByCourse(@Param("now") LocalDate now, @Param("course") Course course);
     
     @Query("SELECT d FROM CategoryDetail d "
-            + "WHERE (d.starts IS NULL OR d.starts <= :now) "
-            + "AND (d.expires IS NULL OR d.expires >= :now) "
-            + "AND d.course = :course "
-            + "AND d.category = :category")
+            + "WHERE (starts IS NULL OR starts <= :now) "
+            + "AND (expires IS NULL OR expires >= :now) "
+            + "AND course = :course "
+            + "AND category = :category")
     CategoryDetail findActiveDetailByCourseAndCategory(@Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate now, @Param("course") Course course, @Param("category") Category category);
 }

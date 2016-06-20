@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
@@ -15,6 +16,7 @@ public class Database extends AbstractPersistable<Long> {
     @Lob
     private String databaseSchema;
     
+    @ManyToOne
     private Account owner;
     
     private Boolean deleted;
