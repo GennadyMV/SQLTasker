@@ -93,7 +93,7 @@ public class TaskController {
                              BindingResult result) {
 
         if(databaseId==null){
-            redirectAttributes.addFlashAttribute("messages", "You didn't choose the database!");
+            redirectAttributes.addFlashAttribute("messages", "You didn't choose a database!");
 
             return "redirect:/tasks";
 

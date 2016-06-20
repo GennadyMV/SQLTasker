@@ -19,6 +19,9 @@ public class Category extends AbstractPersistable<Long> {
     @ManyToMany(mappedBy = "courseCategories")
     private List<Course> courses;
     
+    @ManyToOne
+    private Account owner;
+    
     @OneToMany(mappedBy = "category", orphanRemoval = true)
     private List<CategoryDetail> details;
     
@@ -96,5 +99,13 @@ public class Category extends AbstractPersistable<Long> {
 
     public void setSubmissions(List<Submission> submissions) {
         this.submissions = submissions;
+    }
+
+    public Account getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Account owner) {
+        this.owner = owner;
     }
 }

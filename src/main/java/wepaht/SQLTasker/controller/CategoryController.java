@@ -56,15 +56,16 @@ public class CategoryController {
 
         List<Task> tasks = new ArrayList();
         if (taskIds != null) {
-            for (Long taskId : taskIds) {
+            taskIds.stream().forEach((taskId) -> {
                 tasks.add(taskRepository.findOne(taskId));
-            }
+            });
         }
 
         try {
             Category category = new Category();
             category.setName(name);
             category.setDescription(description);
+            category.setOwner(userService.getAuthenticatedUser());
             categoryService.setCategoryToTasks(category, tasks);
             categoryRepository.save(category);
         } catch (Exception e) {

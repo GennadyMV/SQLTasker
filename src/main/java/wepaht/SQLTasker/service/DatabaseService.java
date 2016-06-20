@@ -63,7 +63,7 @@ public class DatabaseService {
             try {
                 user = accountService.getAuthenticatedUser();
             } catch (Exception e) {
-                System.out.println("Account service is not initialized");
+                System.out.println("No authenticated user. Setting null as database " + name + " owner");
             }
             
             db.setName(name);
