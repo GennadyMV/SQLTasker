@@ -11,4 +11,11 @@ import org.springframework.data.repository.query.Param;
 @RestResource(exported = false)
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
+    @Override
+    @Query("SELECT c FROM Category c WHERE c.id=:id AND c.deleted=false")
+    Category findOne(@Param("id") Long id);
+    
+    @Override
+    @Query("SELECT c FROM Category c WHERE c.deleted=false")
+    List<Category> findAll();
 }

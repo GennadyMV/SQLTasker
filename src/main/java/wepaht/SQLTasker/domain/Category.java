@@ -29,7 +29,13 @@ public class Category extends AbstractPersistable<Long> {
     private List<Submission> submissions;
 
     private String description;
+    
+    private Boolean deleted;
 
+    public Category() {
+        this.deleted = false;
+    }
+    
     /**
      *
      * @return get name of the category.
@@ -107,5 +113,13 @@ public class Category extends AbstractPersistable<Long> {
 
     public void setOwner(Account owner) {
         this.owner = owner;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

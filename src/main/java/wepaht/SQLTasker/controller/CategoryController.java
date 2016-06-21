@@ -87,9 +87,11 @@ public class CategoryController {
     }
 
     @Secured("ROLE_ADMIN")
+    @Transactional
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeCategory(@PathVariable Long id,
             RedirectAttributes redirectAttributes) throws Exception {
+        
         categoryService.deleteCategory(id);
         redirectAttributes.addFlashAttribute("messages", "Category deleted!");
         return "redirect:/categories";

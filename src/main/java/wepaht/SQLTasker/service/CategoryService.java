@@ -121,7 +121,7 @@ public class CategoryService {
         });
         
         try {
-            categoryRepository.delete(deleting);
+            deleting.setDeleted(true);
         } catch (Exception e) {}        
     }
 
