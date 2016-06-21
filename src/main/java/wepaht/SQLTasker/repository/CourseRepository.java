@@ -11,14 +11,22 @@ import wepaht.SQLTasker.domain.Course;
 
 public interface CourseRepository extends JpaRepository<Course, Long>{
     
-    @Query("SELECT c.courseCategories FROM Course c WHERE c = :course")
+    @Override
+    @Query("SELECT c FROM Course c WHERE c.id=:id AND c.deleted=false")
+    Course findOne(@Param("id") Long id);
+    
+    @Override
+    @Query("SELECT c FROM Course c WHERE c.deleted=false")
+    List<Course> findAll();
+    
+    @Query("SELECT c.courseCategories FROM Course c WHERE c = :course AND c.deleted=false")
     List<Category> getCourseCategories(@Param("course") Course course);
     
-    List<Course> findByName(String name);
+    List<Course> findByNameAndDeletedFalse(String name);
     
-    @Query("SELECT c.students FROM Course c WHERE c = :course")
+    @Query("SELECT c.students FROM Course c WHERE c = :course AND c.deleted=false")
     List<Account> getCourseStudents(@Param("course") Course course);
     
-    @Query("SELECT c FROM Course c WHERE (starts <= :now OR starts IS NULL) AND (expires >= :now OR expires IS NULL)")
+    @Query("SELECT c FROM Course c WHERE (starts <= :now OR starts IS NULL) AND (expires >= :now OR expires IS NULL) AND c.deleted=false")
     List<Course> findByStartsBeforeAndExpiresAfter(@Param("now") LocalDate now);    
 }

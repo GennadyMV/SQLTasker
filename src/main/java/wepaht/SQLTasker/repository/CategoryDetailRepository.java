@@ -12,16 +12,19 @@ import wepaht.SQLTasker.domain.Course;
 public interface CategoryDetailRepository extends JpaRepository<CategoryDetail, Long>{
     
     @Override
-    @Query("SELECT d FROM CategoryDetail d WHERE d.id=:id AND d.category.deleted=false")
+    @Query("SELECT d FROM CategoryDetail d WHERE d.course.deleted=false AND d.category.deleted=false")
+    List<CategoryDetail> findAll();
+    
+    @Override
+    @Query("SELECT d FROM CategoryDetail d WHERE d.id=:id AND d.category.deleted=false AND d.course.deleted=false")
     CategoryDetail findOne(@Param("id") Long id);
     
-    List<CategoryDetail> findByCourseOrderByStartsAscExpiresDesc(Course course);
+    @Query("SELECT d FROM CategoryDetail d Where d.course=:course AND d.course.deleted=false AND d.category.deleted=false")
+    List<CategoryDetail> findByCourseOrderByStartsAscExpiresDesc(@Param("course") Course course);
     
-    @Query("SELECT d FROM CategoryDetail d WHERE d.course=:course AND d.category=:category AND d.category.deleted=false")
+    @Query("SELECT d FROM CategoryDetail d WHERE d.course=:course AND d.category=:category AND d.category.deleted=false AND d.course.deleted=false")
     List<CategoryDetail> findByCourseAndCategory(@Param("course") Course course, @Param("category") Category category);
     
-    @Query("DELETE FROM CategoryDetail WHERE course=:course")
-    void deleteCategoryDetailsByCourse(@Param("course") Course course);
     
 //    @Query("SELECT d FROM CategoryDetail d WHERE (d.starts <= :now OR d.starts IS NULL) AND (d.expires >= :now OR d.expires IS NULL) AND d.course = :course")
 //    List<CategoryDetail> findActiveDetailsByCourse(@Param("now") LocalDate now, @Param("course") Course course);

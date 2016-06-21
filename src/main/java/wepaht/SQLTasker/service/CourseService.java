@@ -150,7 +150,7 @@ public class CourseService {
                     sub.setCourse(null);
                 });
             }
-            repository.delete(deletingCourse);
+            deletingCourse.setDeleted(true);
             messages.add("Course " + deletingCourse.getName() + " deleted");
         } catch (Exception e) {
             messages.add("Course deletion failed");
@@ -204,7 +204,7 @@ public class CourseService {
     }
 
     public List<Course> getCoursesByName(String name) {
-        return repository.findByName(name);
+        return repository.findByNameAndDeletedFalse(name);
     }
 
     @Transactional

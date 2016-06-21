@@ -36,6 +36,12 @@ public class Course extends AbstractPersistable<Long>{
     
     @OneToMany(mappedBy = "course")
     private List<Submission> submissions;
+    
+    private Boolean deleted;
+    
+    public Course() {
+        this.deleted = false;
+    }
 
     public List<Category> getCourseCategories() {
         return courseCategories;
@@ -99,5 +105,13 @@ public class Course extends AbstractPersistable<Long>{
 
     public void setSubmissions(List<Submission> submissions) {
         this.submissions = submissions;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }
