@@ -33,6 +33,11 @@ public class Account extends AbstractPersistable<Long> {
 
     private String role;
     private String salt;
+    private Boolean deleted;
+    
+    public Account() {
+        this.deleted = false;
+    }
 
     /**
      *
@@ -87,5 +92,13 @@ public class Account extends AbstractPersistable<Long> {
 
     public void setSubmissions(List<Submission> submissions) {
         this.submissions = submissions;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

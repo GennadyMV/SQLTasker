@@ -40,9 +40,9 @@ public class AccountController {
     public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("roles", roles);
-        model.addAttribute("students", userRepository.findByRole("STUDENT"));
-        model.addAttribute("teachers", userRepository.findByRole("TEACHER"));
-        model.addAttribute("admins", userRepository.findByRole("ADMIN"));
+        model.addAttribute("students", userRepository.findByRoleAndDeletedFalse("STUDENT"));
+        model.addAttribute("teachers", userRepository.findByRoleAndDeletedFalse("TEACHER"));
+        model.addAttribute("admins", userRepository.findByRoleAndDeletedFalse("ADMIN"));
         return "users";
     }
 
@@ -85,6 +85,7 @@ public class AccountController {
     }
 
     @Secured("ROLE_ADMIN")
+    @Transactional
     @RequestMapping(value = "users/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Account user = userService.getAuthenticatedUser();
@@ -92,7 +93,8 @@ public class AccountController {
             redirectAttributes.addFlashAttribute("messages", "Admin users cannot delete themselves.");
             return "redirect:/users";
         }
-        userRepository.delete(id);
+        Account deleted = userRepository.findOne(id);
+        deleted.setDeleted(true);
         redirectAttributes.addFlashAttribute("messages", "User deleted.");
 
         return "redirect:/users";

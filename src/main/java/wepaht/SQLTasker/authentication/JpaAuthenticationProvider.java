@@ -26,7 +26,7 @@ public class JpaAuthenticationProvider implements AuthenticationProvider{
         String username = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
 
-        Account user = userRepository.findByUsername(username);
+        Account user = userRepository.findByUsernameAndDeletedFalse(username);
 
         if (user == null || !BCrypt.hashpw(password, user.getSalt()).equals(user.getPassword())) {
             throw new AuthenticationException("Unable to authenticate user " + username){};

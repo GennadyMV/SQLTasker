@@ -46,7 +46,7 @@ public class AccountControllerTest {
                     .andExpect(flash().attribute("messages", "User created succesfully, please log in."))
                     .andReturn();
 
-        Account testUser = userRepository.findByUsername("test1");
+        Account testUser = userRepository.findByUsernameAndDeletedFalse("test1");
 
         assertTrue(testUser != null);
     }
@@ -58,7 +58,7 @@ public class AccountControllerTest {
                 .andExpect(flash().attribute("messages", "User created succesfully, please log in."))
                 .andReturn();
 
-        Account testUser = userRepository.findByUsername("test2");
+        Account testUser = userRepository.findByUsernameAndDeletedFalse("test2");
         assertTrue(testUser.getRole().equals("STUDENT"));
     }
 }

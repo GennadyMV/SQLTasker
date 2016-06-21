@@ -19,7 +19,7 @@ public class AccountService {
     private AuthenticationTokenRepository tokenRepository;
 
     public Account getAuthenticatedUser() {
-        return accountRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        return accountRepository.findByUsernameAndDeletedFalse(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     public void customLogout() {
@@ -50,6 +50,6 @@ public class AccountService {
     }
 
     Account getAccountByUsername(String username) {
-        return accountRepository.findByUsername(username);
+        return accountRepository.findByUsernameAndDeletedFalse(username);
     }
 }

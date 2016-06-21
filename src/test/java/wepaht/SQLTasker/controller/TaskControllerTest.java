@@ -111,7 +111,7 @@ public class TaskControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
         database = databaseRepository.findByNameAndDeletedFalse("testDatabase4").get(0);
-        if (userRepository.findByUsername("test") == null) {
+        if (userRepository.findByUsernameAndDeletedFalse("test") == null) {
             admin = new Account();
             admin.setUsername("test");
             admin.setPassword("test");

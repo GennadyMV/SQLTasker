@@ -127,34 +127,34 @@ public class RestExportControllerTest {
             task2 = taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 2").get(0);
         }
 
-        if (userRepository.findByUsername("admiini") == null) {
+        if (userRepository.findByUsernameAndDeletedFalse("admiini") == null) {
             user = new Account();
             user.setRole("ADMIN");
             user.setPassword("testi");
             user.setUsername("admiini");
             user = userRepository.save(user);
         } else {
-            user = userRepository.findByUsername("admiini");
+            user = userRepository.findByUsernameAndDeletedFalse("admiini");
         }
 
-        if (userRepository.findByUsername(name1) == null) {
+        if (userRepository.findByUsernameAndDeletedFalse(name1) == null) {
             stud1 = new Account();
             stud1.setRole("STUDENT");
             stud1.setPassword("testi");
             stud1.setUsername(name1);
             stud1 = userRepository.save(stud1);
         } else {
-            stud1 = userRepository.findByUsername(name1);
+            stud1 = userRepository.findByUsernameAndDeletedFalse(name1);
         }
 
-        if (userRepository.findByUsername(name2) == null) {
+        if (userRepository.findByUsernameAndDeletedFalse(name2) == null) {
             stud2 = new Account();
             stud2.setRole("STUDENT");
             stud2.setPassword("testi");
             stud2.setUsername(name2);
             stud2 = userRepository.save(stud2);
         } else {
-            stud2 = userRepository.findByUsername(name2);
+            stud2 = userRepository.findByUsernameAndDeletedFalse(name2);
         }
 
         submissionRepository.deleteAll();
