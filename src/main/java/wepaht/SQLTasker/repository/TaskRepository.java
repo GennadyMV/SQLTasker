@@ -11,13 +11,20 @@ import wepaht.SQLTasker.domain.Task;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 @RestResource(exported = false)
 public interface TaskRepository extends JpaRepository<Task,Long> {
-    List<Task> findByNameOrderByNameDesc(String name);
+    @Override
+    @Query("SELECT t FROM Task t WHERE t.id=:id AND t.deleted=false")
+    Task findOne(@Param("id") Long id);
     
-//        @Query("SELECT username, COUNT(*) AS points FROM PastQuery WHERE awarded=true AND correct=true GROUP BY username")
+    @Override
+    @Query("SELECT t FROM Task t WHERE t.deleted=false")
+    List<Task> findAll();
+    
+    List<Task> findByNameAndDeletedFalseOrderByNameDesc(String name);    
 
-    @Query("SELECT id FROM Task")
+    @Query("SELECT t.id FROM Task t WHERE t.deleted=false")
     List<Long> findAllTaskIds();
 }

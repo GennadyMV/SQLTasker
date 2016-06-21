@@ -9,6 +9,7 @@ import wepaht.SQLTasker.repository.DatabaseRepository;
 import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.*;
+import org.springframework.transaction.annotation.Transactional;
 import wepaht.SQLTasker.domain.Account;
 
 @Service
@@ -16,7 +17,7 @@ public class DatabaseService {
 
     @Autowired
     private DatabaseRepository databaseRepository;
-    
+
     @Autowired
     private AccountService accountService;
 
@@ -65,7 +66,7 @@ public class DatabaseService {
             } catch (Exception e) {
                 System.out.println("No authenticated user. Setting null as database " + name + " owner");
             }
-            
+
             db.setName(name);
             db.setDatabaseSchema(createTable);
             db.setOwner(user);
@@ -84,13 +85,14 @@ public class DatabaseService {
     }
 
     /**
-     * Lists tables of a single Database-entity. Example of use found in database.html-resource file and
-     * DatabaseController.
+     * Lists tables of a single Database-entity. Example of use found in
+     * database.html-resource file and DatabaseController.
      *
      * @param databaseId ID of selected database
      * @param updateQuery teehee
-     * @return A map in which String-object indicates the name of certain table, and Table contains its' columns
-     * and rows in separate lists. In case of broken database, the only returned table name is "ERROR".
+     * @return A map in which String-object indicates the name of certain table,
+     * and Table contains its' columns and rows in separate lists. In case of
+     * broken database, the only returned table name is "ERROR".
      */
     public Map<String, Table> performUpdateQuery(Long databaseId, String updateQuery) {
         HashMap<String, Table> listedDatabase = new HashMap<>();
@@ -98,7 +100,9 @@ public class DatabaseService {
         Connection connection = null;
         String query = database.getDatabaseSchema();
 
-        if (updateQuery != null) query += updateQuery;
+        if (updateQuery != null) {
+            query += updateQuery;
+        }
 
         try {
             connection = createConnectionToDatabase(database.getName(), query);
@@ -135,9 +139,9 @@ public class DatabaseService {
      * Performs a query in the selected database.
      *
      * @param databaseId ID of the selected database
-     * @param sqlQuery   the query. Syntax must be correct in order this to work!
-     * @return a table-object, which contains separately its' columns and rows. In case of sql error, returned table
-     * will be named as the exception.
+     * @param sqlQuery the query. Syntax must be correct in order this to work!
+     * @return a table-object, which contains separately its' columns and rows.
+     * In case of sql error, returned table will be named as the exception.
      */
     public Map<String, Table> performQuery(Long databaseId, String sqlQuery) {
 
@@ -219,7 +223,6 @@ public class DatabaseService {
             }
             rows.add(row);
         }
-
 
         return rows;
     }
@@ -304,8 +307,19 @@ public class DatabaseService {
             conn.close();
             return null;
         }
-        
 
         return conn;
+    }
+
+    @Transactional
+    public Boolean deleteDatabase(Long databaseId) {
+        try {
+            Database database = databaseRepository.findOne(databaseId);
+            database.setDeleted(true);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -111,20 +111,20 @@ public class RestExportControllerTest {
 
         pastQueryRepository.deleteAll();
 
-        if (taskRepository.findByNameOrderByNameDesc("Export test 1").isEmpty()) {
+        if (taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 1").isEmpty()) {
             task1 = new Task();
             task1.setName("Export test 1");
             task1 = taskRepository.save(task1);
         } else {
-            task1 = taskRepository.findByNameOrderByNameDesc("Export test 1").get(0);
+            task1 = taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 1").get(0);
         }
 
-        if (taskRepository.findByNameOrderByNameDesc("Export test 2").isEmpty()) {
+        if (taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 2").isEmpty()) {
             task2 = new Task();
             task2.setName("Export test 2");
             task2 = taskRepository.save(task2);
         } else {
-            task2 = taskRepository.findByNameOrderByNameDesc("Export test 2").get(0);
+            task2 = taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 2").get(0);
         }
 
         if (userRepository.findByUsername("admiini") == null) {

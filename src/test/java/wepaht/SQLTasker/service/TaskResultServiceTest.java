@@ -54,7 +54,7 @@ public class TaskResultServiceTest {
     public void setUp() {
         databaseService.createDatabase("testDatabase", "CREATE TABLE Wow(id integer);"
                 + "INSERT INTO Wow (id) VALUES (7);");
-        testDb = dbRepo.findByName("testDatabase").get(0);
+        testDb = dbRepo.findByNameAndDeletedFalse("testDatabase").get(0);
         
         correctQuery = "SELECT * FROM Wow;";
         testTask = new Task();

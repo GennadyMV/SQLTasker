@@ -110,7 +110,7 @@ public class TaskControllerTest {
                 + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
-        database = databaseRepository.findByName("testDatabase4").get(0);
+        database = databaseRepository.findByNameAndDeletedFalse("testDatabase4").get(0);
         if (userRepository.findByUsername("test") == null) {
             admin = new Account();
             admin.setUsername("test");
@@ -199,7 +199,7 @@ public class TaskControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
-        assertNotNull(taskRepository.findByNameOrderByNameDesc("SUGGESTION: " + taskName).get(0));
+        assertNotNull(taskRepository.findByNameAndDeletedFalseOrderByNameDesc("SUGGESTION: " + taskName).get(0));
     }
 
     @Test

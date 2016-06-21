@@ -57,4 +57,15 @@ public class DatabaseController {
 
         return "redirect:/databases";
     }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public String deleteDatabase(RedirectAttributes redirAttr, Long databaseId) {
+        if (databaseService.deleteDatabase(databaseId)) {
+            redirAttr.addFlashAttribute("messages", "Database deleted");
+        } else {
+            redirAttr.addFlashAttribute("messages", "No such database");
+        }
+        
+        return "redirect:/databases";
+    }
 }

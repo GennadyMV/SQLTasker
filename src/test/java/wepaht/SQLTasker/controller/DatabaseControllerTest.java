@@ -75,7 +75,7 @@ public class DatabaseControllerTest {
                 + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
-        testdatabase = dbRepository.findByName("testDatabase4").get(0);
+        testdatabase = dbRepository.findByNameAndDeletedFalse("testDatabase4").get(0);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class DatabaseControllerTest {
                 .andExpect(flash().attributeExists("messages"))
                 .andReturn();
 
-        List<Database> databases = dbRepository.findByName(dbName);
+        List<Database> databases = dbRepository.findByNameAndDeletedFalse(dbName);
 
         assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
     }
@@ -158,7 +158,7 @@ public class DatabaseControllerTest {
                 .andExpect(flash().attributeExists("messages"))
                 .andReturn();
 
-        List<Database> databases = dbRepository.findByName(dbName);
+        List<Database> databases = dbRepository.findByNameAndDeletedFalse(dbName);
 
         assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
     }

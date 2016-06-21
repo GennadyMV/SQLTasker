@@ -39,7 +39,13 @@ public class Task extends AbstractPersistable<Long> {
     private List<TaskFeedback> feedback;
     
     @ManyToOne
-    private Account owner; 
+    private Account owner;
+    
+    private Boolean deleted;
+    
+    public Task() {
+        this.deleted = false;
+    }
 
     /**
      * @return the name
@@ -121,5 +127,13 @@ public class Task extends AbstractPersistable<Long> {
 
     public void setOwner(Account owner) {
         this.owner = owner;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

@@ -43,7 +43,7 @@ public class TaskService {
         removeConnections(removing);
 
         try {
-            taskRepository.delete(taskId);
+            removing.setDeleted(true);
             return true;
         } catch (Exception e) {
         }

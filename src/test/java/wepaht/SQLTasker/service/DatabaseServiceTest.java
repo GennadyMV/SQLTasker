@@ -39,7 +39,7 @@ public class DatabaseServiceTest {
                 + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
-        biggerDatabase = dbRepository.findByName("testDatabase4").get(0);
+        biggerDatabase = dbRepository.findByNameAndDeletedFalse("testDatabase4").get(0);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class DatabaseServiceTest {
 
         dbService.createDatabase(testDbName, testDbCreateTable);
 
-        List<Database> databases = dbRepository.findByName(testDbName);
+        List<Database> databases = dbRepository.findByNameAndDeletedFalse(testDbName);
 
         assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(testDbCreateTable)).findFirst().isPresent());
     }
@@ -62,7 +62,7 @@ public class DatabaseServiceTest {
 
         dbService.createDatabase(testDbName, testDbIncorrectCreateTable);
 
-        List<Database> databases = dbRepository.findByName(testDbName);
+        List<Database> databases = dbRepository.findByNameAndDeletedFalse(testDbName);
 
         assertFalse(databases.stream().filter(db -> db.getDatabaseSchema().equals(testDbIncorrectCreateTable)).findFirst().isPresent());
     }
@@ -75,7 +75,7 @@ public class DatabaseServiceTest {
                 "INSERT INTO " + tableName + " (id) VALUES (7);";
 
         dbService.createDatabase(testDbName, testDbCreateTable);
-        Database testDb = dbRepository.findByName(testDbName).get(0);
+        Database testDb = dbRepository.findByNameAndDeletedFalse(testDbName).get(0);
 
         Map<String, Table> table = dbService.performUpdateQuery(testDb.getId(), null);
 
