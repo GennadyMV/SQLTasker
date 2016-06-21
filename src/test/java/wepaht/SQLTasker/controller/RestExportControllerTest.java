@@ -72,7 +72,7 @@ public class RestExportControllerTest {
 
     @Autowired
     TaskService taskService;
-    
+
     @Autowired
     SubmissionRepository submissionRepository;
 
@@ -101,42 +101,68 @@ public class RestExportControllerTest {
     private String authToken;
     private Task task1;
     private Task task2;
-    
+    private Account user;
+    private Account stud1;
+    private Account stud2;
+
     @Before
-    public void setUp() {this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
+    public void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
         pastQueryRepository.deleteAll();
 
-        task1 = new Task();
-        task1.setName("Export test 1");
-        task1 = taskRepository.save(task1);
-        task2 = new Task();
-        task2.setName("Export test 2");
-        task2 = taskRepository.save(task2);
+        if (taskRepository.findByNameOrderByNameDesc("Export test 1").isEmpty()) {
+            task1 = new Task();
+            task1.setName("Export test 1");
+            task1 = taskRepository.save(task1);
+        } else {
+            task1 = taskRepository.findByNameOrderByNameDesc("Export test 1").get(0);
+        }
 
-        userRepository.deleteAll();
-        Account user = new Account();
-        user.setRole("ADMIN");
-        user.setPassword("testi");
-        user.setUsername("admiini");
-        user = userRepository.save(user);
-        
-        Account stud1 = new Account();
-        stud1.setRole("STUDENT");
-        stud1.setPassword("testi");
-        stud1.setUsername(name1);
-        stud1 = userRepository.save(stud1);
-        
-        Account stud2 = new Account();
-        stud2.setRole("STUDENT");
-        stud2.setPassword("testi");
-        stud2.setUsername(name2);
-        stud2 = userRepository.save(stud2);
-        
+        if (taskRepository.findByNameOrderByNameDesc("Export test 2").isEmpty()) {
+            task2 = new Task();
+            task2.setName("Export test 2");
+            task2 = taskRepository.save(task2);
+        } else {
+            task2 = taskRepository.findByNameOrderByNameDesc("Export test 2").get(0);
+        }
+
+        if (userRepository.findByUsername("admiini") == null) {
+            user = new Account();
+            user.setRole("ADMIN");
+            user.setPassword("testi");
+            user.setUsername("admiini");
+            user = userRepository.save(user);
+        } else {
+            user = userRepository.findByUsername("admiini");
+        }
+
+        if (userRepository.findByUsername(name1) == null) {
+            stud1 = new Account();
+            stud1.setRole("STUDENT");
+            stud1.setPassword("testi");
+            stud1.setUsername(name1);
+            stud1 = userRepository.save(stud1);
+        } else {
+            stud1 = userRepository.findByUsername(name1);
+        }
+
+        if (userRepository.findByUsername(name2) == null) {
+            stud2 = new Account();
+            stud2.setRole("STUDENT");
+            stud2.setPassword("testi");
+            stud2.setUsername(name2);
+            stud2 = userRepository.save(stud2);
+        } else {
+            stud2 = userRepository.findByUsername(name2);
+        }
+
+        submissionRepository.deleteAll();
+
         submissionRepository.save(new Submission(stud1, task1, null, null, "SELECT 1;", Boolean.TRUE));
         submissionRepository.save(new Submission(stud1, task2, null, null, "SELECT 1;", Boolean.TRUE));
         submissionRepository.save(new Submission(stud2, task1, null, null, "SELECT 1;", Boolean.TRUE));
-        
+
         tokenRepository.deleteAll();
         AuthenticationToken token = new AuthenticationToken();
         token.setToken("");
@@ -151,8 +177,8 @@ public class RestExportControllerTest {
         submissionRepository.deleteAll();
         pastQueryRepository.deleteAll();
         tokenRepository.deleteAll();
-        categoryRepository.deleteAll();
-        taskRepository.deleteAll();
+//        categoryRepository.deleteAll();
+//        taskRepository.deleteAll();
     }
 
     @Test

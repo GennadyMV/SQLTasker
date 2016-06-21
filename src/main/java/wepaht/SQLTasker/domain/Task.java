@@ -37,6 +37,9 @@ public class Task extends AbstractPersistable<Long> {
     
     @OneToMany(mappedBy = "task")
     private List<TaskFeedback> feedback;
+    
+    @ManyToOne
+    private Account owner; 
 
     /**
      * @return the name
@@ -110,5 +113,13 @@ public class Task extends AbstractPersistable<Long> {
 
     public void setFeedback(List<TaskFeedback> feedback) {
         this.feedback = feedback;
+    }
+
+    public Account getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Account owner) {
+        this.owner = owner;
     }
 }

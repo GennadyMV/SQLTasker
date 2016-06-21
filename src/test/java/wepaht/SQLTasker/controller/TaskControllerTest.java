@@ -111,11 +111,14 @@ public class TaskControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
         database = databaseRepository.findByName("testDatabase4").get(0);
-        admin = new Account();
-        admin.setUsername("test");
-        admin.setPassword("test");
-        admin.setRole("ADMIN");
-        admin = userRepository.save(admin);
+        if (userRepository.findByUsername("test") == null) {
+            admin = new Account();
+            admin.setUsername("test");
+            admin.setPassword("test");
+            admin.setRole("ADMIN");
+            admin = userRepository.save(admin);
+        }
+
         when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);
 
         category = new Category();
@@ -125,10 +128,11 @@ public class TaskControllerTest {
 
     @After
     public void tearDown() {
-        userRepository.deleteAll();
+//        userRepository.deleteAll();
         try {
             categoryRepository.deleteAll();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
     }
 
