@@ -9,12 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.CourseRepository;
 
 @Service
@@ -42,7 +43,7 @@ public class CourseService {
 
     public String courseListing(Model model) {
 
-        Account user = accountService.getAuthenticatedUser();
+        TmcAccount user = accountService.getAuthenticatedUser();
         if (user.getRole().equals("STUDENT")) {
             model.addAttribute("courses", getActiveCourses());
         } else {
@@ -125,12 +126,12 @@ public class CourseService {
     public String getCourse(Model model, Long courseId) {
         Course course = repository.findOne(courseId);
         List<CategoryDetail> details = getActiveCategories(course);
-        Account user = accountService.getAuthenticatedUser();
-        
+        TmcAccount user = accountService.getAuthenticatedUser();
+
         if (!isActiveCourse(user, course)) {
             return "redirect:/courses";
         }
-        
+
         model.addAttribute("course", course);
         model.addAttribute("points", pointService.getCoursePoints(course));
         if (!details.isEmpty()) {
@@ -220,13 +221,14 @@ public class CourseService {
         List<String> messages = new ArrayList<>();
 
         try {
-            List<Account> students = course.getStudents();
-            Account currentUser = accountService.getAuthenticatedUser();
+            List<TmcAccount> students = course.getStudents();
+            TmcAccount currentUser = accountService.getAuthenticatedUser();
             if (!students.contains(currentUser)) {
                 course.getStudents().add(currentUser);
             }
             messages.add("Joined to course " + course.getName());
         } catch (Exception e) {
+            System.out.println(course.getName());
             messages.add("Could not join course " + course.getName());
         }
 
@@ -238,7 +240,7 @@ public class CourseService {
         return redirectCourses + "/{id}";
     }
 
-    public boolean addStudentToCourse(Account student, Course course) {
+    public boolean addStudentToCourse(TmcAccount student, Course course) {
         try {
             if (course.getStudents() == null) {
                 course.setStudents(Arrays.asList(student));
@@ -259,7 +261,7 @@ public class CourseService {
         Course course = repository.findOne(id);
 
         try {
-            Account student = accountService.getAuthenticatedUser();
+            TmcAccount student = accountService.getAuthenticatedUser();
             course.getStudents().remove(student);
             messages.add("You have left course " + course.getName());
         } catch (Exception e) {
@@ -303,7 +305,7 @@ public class CourseService {
 
         boolean hasCategory = courseHasCategory(course, category);
         boolean categoryIsActive = isCategoryActive(course, category);
-        
+
         if (!hasCategory || !categoryIsActive) {
             return noSuchCategoryInCourse(course, redirectAttributes);
         }
@@ -326,7 +328,7 @@ public class CourseService {
         Course course = repository.findOne(courseId);
         Category category = categoryService.getCategoryById(categoryId);
         Task task = taskService.getTaskById(taskId);
-        
+
         boolean courseHasCategory = courseHasCategory(course, category);
         boolean categoryIsActive = isCategoryActive(course, category);
 
@@ -338,9 +340,11 @@ public class CourseService {
             return noSuchTaskInCategory(course, category, redirectAttr);
         }
 
-        model.addAttribute("course", course);
-        model.addAttribute("category", category);
-        model.addAttribute("task", task);
+        if (model != null) {
+            model.addAttribute("course", course);
+            model.addAttribute("category", category);
+            model.addAttribute("task", task);
+        }
 
         return "task";
     }
@@ -360,27 +364,35 @@ public class CourseService {
 
     public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long categoryId, Long taskId) {
         Course course = repository.findOne(courseId);
-        Account loggedUser = accountService.getAuthenticatedUser();
+        TmcAccount loggedUser = accountService.getAuthenticatedUser();
         String redirectAddress = "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
 
         if (course.getStudents().contains(loggedUser)) {
             List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<>(), taskId, query, categoryId, courseId);
-            redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
-            redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
-            if ((Boolean) messagesAndQueryResult.get(2)) redirectAddress = redirectAddress + "/feedback";
+            if (redirectAttr != null) {
+                redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
+                redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
+            }            
+            if ((Boolean) messagesAndQueryResult.get(2)) {
+                redirectAddress = redirectAddress + "/feedback";
+            }
         } else {
-            redirectAttr.addFlashAttribute("messages", "You have not joined course " + course.getName());
+            if (redirectAttr != null) redirectAttr.addFlashAttribute("messages", "You have not joined course " + course.getName());
         }
 
-        redirectAttr.addAttribute("taskId", taskId);
-        redirectAttr.addAttribute("categoryId", categoryId);
-        redirectAttr.addAttribute("courseId", courseId);
+        if (redirectAttr != null) {
+            redirectAttr.addAttribute("taskId", taskId);
+            redirectAttr.addAttribute("categoryId", categoryId);
+            redirectAttr.addAttribute("courseId", courseId);
+        }
 
         return redirectAddress;
     }
 
     public Course getCourseById(Long id) {
-        if (id == null) return null;
+        if (id == null) {
+            return null;
+        }
         return repository.findOne(id);
     }
 
@@ -389,30 +401,32 @@ public class CourseService {
         return repository.findByStartsBeforeAndExpiresAfter(date);
     }
 
-    private boolean isActiveCourse(Account user, Course course) {
+    private boolean isActiveCourse(TmcAccount user, Course course) {
         LocalDate now = LocalDate.now();
         if (user.getRole().equals("STUDENT")) {
-            return (course.getStarts() == null || (course.getStarts() != null && (course.getStarts().isBefore(now) || course.getStarts().equals(now)))) &&
-                    (course.getExpires() == null || (course.getExpires() != null && (course.getExpires().isAfter(now) || course.getExpires().equals(now))));
+            return (course.getStarts() == null || (course.getStarts() != null && (course.getStarts().isBefore(now) || course.getStarts().equals(now))))
+                    && (course.getExpires() == null || (course.getExpires() != null && (course.getExpires().isAfter(now) || course.getExpires().equals(now))));
         }
-        
+
         return true;
     }
 
     private List<CategoryDetail> getActiveCategories(Course course) {
-        Account user = accountService.getAuthenticatedUser();
-        if (user.getRole().equals("STUDENT")) return categoryDetailsService.getActiveCategoryDetailsBycourse(course);
-        
+        TmcAccount user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals("STUDENT")) {
+            return categoryDetailsService.getActiveCategoryDetailsBycourse(course);
+        }
+
         return categoryDetailsService.getCourseCategoryDetails(course);
     }
 
     private boolean isCategoryActive(Course course, Category category) {
-        Account account = accountService.getAuthenticatedUser();
-        
+        TmcAccount account = accountService.getAuthenticatedUser();
+
         if (account.getRole().equals("STUDENT")) {
             return categoryDetailsService.isCategoryActive(course, category);
         }
-        
+
         return true;
     }
 }

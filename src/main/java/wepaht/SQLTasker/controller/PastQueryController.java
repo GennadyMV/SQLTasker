@@ -1,7 +1,6 @@
 package wepaht.SQLTasker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,10 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wepaht.SQLTasker.domain.PastQuery;
-import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.repository.TaskRepository;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.AccountService;
 
@@ -33,7 +30,7 @@ public class PastQueryController {
     AccountService userService;
 
     @Autowired
-    AccountRepository userRepository;
+    LocalAccountRepository userRepository;
 
     @RequestMapping(method = RequestMethod.GET)
     public String getPage(Model model) {
@@ -43,7 +40,6 @@ public class PastQueryController {
     }
 
     @Transactional
-    @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.POST)
     public String getPastQuery(RedirectAttributes redirectAttributes,
             @RequestParam(required = false) Long taskId,
@@ -61,7 +57,6 @@ public class PastQueryController {
         return "redirect:/queries";
     }
 
-    @Secured("ROLE_STUDENT")
     @RequestMapping(value = "/student", method = RequestMethod.POST)
     public String getPastQueryByUsername(RedirectAttributes redirectAttributes) {
         String loggedUsername = userService.getAuthenticatedUser().getUsername();

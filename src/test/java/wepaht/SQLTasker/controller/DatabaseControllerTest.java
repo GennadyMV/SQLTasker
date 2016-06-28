@@ -14,7 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.repository.DatabaseRepository;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class DatabaseControllerTest {
     private DatabaseService dbService;
 
     @Autowired
-    private AccountRepository userRepository;
+    private LocalAccountRepository userRepository;
     
     @Mock
     AccountService userServiceMock;

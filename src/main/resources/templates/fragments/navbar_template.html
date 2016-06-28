@@ -15,7 +15,7 @@ and open the template in the editor.
 <div th:fragment="navbar">
     <h1 id="sql-h1">SQL-TASKER</h1>
 
-    <nav sec:authorize="hasRole('ROLE_STUDENT')">
+    <nav sec:authorize="isAuthenticated()">
         <ul id="sql-ul">
             <li id="sql-li"><a id="sql-a" sec:authentication="name" th:href="@{/profile}">Username</a></li>
             <li id="sql-li"><a id="sql-a" th:href="@{/courses}">Courses</a></li>
@@ -23,7 +23,7 @@ and open the template in the editor.
             <li id="sql-li"><a id="sql-a" th:href="@{/queries}">Queries</a></li>
             <li id="sql-li"><a id="sql-a" th:href="@{/points}">Points</a></li>
             <li id="sql-li"><a id="sql-a" th:href="@{/databases}">Databases</a></li>
-            <li id="sql-li" sec:authorize="hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/tasks}">Tasks</a></li>
+            <li id="sql-li" sec:authorize="hasRole('ROLE_ADMIN')"><a id="sql-a" th:href="@{/tasks}">Tasks</a></li>
             <li id="sql-li" sec:authorize="!hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/tasks/suggest}">Suggest Task</a></li>
             <li id="sql-li" sec:authorize="hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/users}">Users</a></li>
             <li id="sql-li"><a id="sql-a" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>

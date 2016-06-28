@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import wepaht.SQLTasker.Application;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
@@ -56,7 +56,7 @@ public class SubmissionServiceTest {
     private Task testTask;
     private Category testCategory;
     private Course testCourse;
-    private Account testAccount;
+    private LocalAccount testAccount;
     private CategoryDetail testDetail;
     
     public SubmissionServiceTest() {
@@ -76,7 +76,7 @@ public class SubmissionServiceTest {
         testTask = mock(Task.class);
         testCategory = mock(Category.class);
         testCourse = mock(Course.class);
-        testAccount = mock(Account.class);
+        testAccount = mock(LocalAccount.class);
         testDetail = mock(CategoryDetail.class);
     }
     

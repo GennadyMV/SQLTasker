@@ -14,7 +14,7 @@ public class AuthenticationToken extends AbstractPersistable<Long>{
     private String token;
 
     @OneToOne
-    private Account user;
+    private TmcAccount user;
 
     public String getToken() {
         return token;
@@ -24,11 +24,11 @@ public class AuthenticationToken extends AbstractPersistable<Long>{
         this.token = RandomStringUtils.randomAlphabetic(30);
     }
 
-    public Account getUser() {
+    public TmcAccount getUser() {
         return user;
     }
 
-    public void setUser(Account user) {
+    public void setUser(TmcAccount user) {
         this.user = user;
     }
 }

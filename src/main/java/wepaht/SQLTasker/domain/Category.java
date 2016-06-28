@@ -20,7 +20,7 @@ public class Category extends AbstractPersistable<Long> {
     private List<Course> courses;
     
     @ManyToOne
-    private Account owner;
+    private TmcAccount owner;
     
     @OneToMany(mappedBy = "category", orphanRemoval = true)
     private List<CategoryDetail> details;
@@ -107,11 +107,11 @@ public class Category extends AbstractPersistable<Long> {
         this.submissions = submissions;
     }
 
-    public Account getOwner() {
+    public TmcAccount getOwner() {
         return owner;
     }
 
-    public void setOwner(Account owner) {
+    public void setOwner(TmcAccount owner) {
         this.owner = owner;
     }
 

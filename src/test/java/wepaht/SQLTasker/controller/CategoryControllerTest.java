@@ -22,10 +22,10 @@ import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Task;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
 import wepaht.SQLTasker.service.AccountService;
 
@@ -39,6 +39,7 @@ import org.junit.Assert;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -51,6 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.service.CourseService;
@@ -74,7 +76,7 @@ public class CategoryControllerTest {
     private WebApplicationContext webAppContext;
 
     @Autowired
-    private AccountRepository userRepository;
+    private LocalAccountRepository userRepository;
 
     @Autowired
     private TaskService taskService;
@@ -98,7 +100,7 @@ public class CategoryControllerTest {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Database database;
     private MockMvc mockMvc;
-    private Account user;
+    private TmcAccount user;
 
     @Before
     public void setUp() {
@@ -115,11 +117,10 @@ public class CategoryControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
 
-        user = new Account();
-        user.setUsername("stud");
-        user.setPassword("test");
-        user.setRole("STUDENT");
-        user = userRepository.save(user);
+        user = mock(TmcAccount.class);
+        when(user.getUsername()).thenReturn("stud");
+        when(user.getRole()).thenReturn("STUDENT");
+        when(user.getId()).thenReturn(45l);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(user);
     }
 
@@ -182,22 +183,6 @@ public class CategoryControllerTest {
 
         List<Category> categoryList = categoryRepository.findAll();
         assertTrue(categoryList.stream().filter(cat -> cat.getName().equals("create new category")).findFirst().isPresent());
-    }
-
-    @Test
-    public void categoryCannotBeCreatedWihtoutAdmin() throws Exception {
-        Category category = createCategory();
-        category.setName("creation fails without permissions");
-
-        mockMvc.perform(post(URI)
-                .param("name", category.getName())
-                .param("description", category.getDescription())
-                .with(user("teacher").roles("TEACHER")).with(csrf()))
-                .andExpect(status().isForbidden())
-                .andReturn();
-
-        List<Category> categoryList = categoryRepository.findAll();
-        assertFalse(categoryList.stream().filter(cat -> cat.getName().equals("creation fails without permissions")).findFirst().isPresent());
     }
 
     @Test

@@ -9,8 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
-import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.domain.LocalAccount;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +19,14 @@ import java.util.List;
 public class JpaAuthenticationProvider implements AuthenticationProvider{
 
     @Autowired
-    private AccountRepository userRepository;
+    private LocalAccountRepository userRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
 
-        Account user = userRepository.findByUsernameAndDeletedFalse(username);
+        LocalAccount user = userRepository.findByUsernameAndDeletedFalse(username);
 
         if (user == null || !BCrypt.hashpw(password, user.getSalt()).equals(user.getPassword())) {
             throw new AuthenticationException("Unable to authenticate user " + username){};

@@ -1,11 +1,11 @@
 package wepaht.SQLTasker.controller;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.controller.TaskController;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Task;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -21,35 +21,30 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.TagRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
-
 import java.util.List;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.hasSize;
-
 import static org.junit.Assert.*;
-
-import wepaht.SQLTasker.repository.AccountRepository;
+import static org.mockito.Mockito.mock;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import wepaht.SQLTasker.domain.Category;
+import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CategoryRepository;
-
+import wepaht.SQLTasker.repository.TmcAccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.AccountService;
 
@@ -77,13 +72,16 @@ public class TaskControllerTest {
     private PastQueryService pastQueryService;
 
     @Autowired
-    private AccountRepository userRepository;
+    private LocalAccountRepository userRepository;
 
     @Autowired
     private TagRepository tagRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
+    
+    @Autowired
+    private TmcAccountRepository tmcAccountRepo;
 
     @Mock
     AccountService userServiceMock;
@@ -93,7 +91,7 @@ public class TaskControllerTest {
 
     private MockMvc mockMvc = null;
     private Database database = null;
-    private Account admin = null;
+    private TmcAccount admin = null;
     private Category category = null;
 
     @Before
@@ -111,14 +109,11 @@ public class TaskControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
         database = databaseRepository.findByNameAndDeletedFalse("testDatabase4").get(0);
-        if (userRepository.findByUsernameAndDeletedFalse("test") == null) {
-            admin = new Account();
-            admin.setUsername("test");
-            admin.setPassword("test");
-            admin.setRole("ADMIN");
-            admin = userRepository.save(admin);
-        }
-
+        
+        admin = mock(TmcAccount.class);
+        when(admin.getUsername()).thenReturn("test");
+        when(admin.getRole()).thenReturn("ADMIN");
+        
         when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);
 
         category = new Category();
@@ -167,39 +162,24 @@ public class TaskControllerTest {
     public void createTask() throws Exception {
         String taskName = "testTask";
         Long databaseId = database.getId();
+        TmcAccount testAccount = new TmcAccount();
+        testAccount.setUsername("herpi");
+        testAccount.setRole(ROLE_STUDENT);
+        testAccount.setCourses(new ArrayList<>());
+        testAccount = tmcAccountRepo.save(testAccount);
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(testAccount);
+        
         mockMvc.perform(post(API_URI).param("name", taskName)
                 .param("description", "To test creation of a task with a database")
                 .param("solution", "select * from persons;")
                 .param("databaseId", databaseId.toString())
-                .with(user("test").roles("ADMIN")).with(csrf()))
+                .with(user("herpi").roles(ROLE_STUDENT)).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
         List<Task> tasks = taskRepository.findAll();
 
         assertTrue(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
-    }
-
-    @Test
-    public void studentCanSuggestTask() throws Exception {
-        Account student = new Account();
-        student.setUsername("suggestingstudent");
-        student.setPassword("student");
-        student.setRole("STUDENT");
-        student = userRepository.save(student);
-        when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
-
-        String taskName = "testTask";
-        Long databaseId = database.getId();
-        mockMvc.perform(post(API_URI).param("name", taskName)
-                .param("description", "To test suggestion")
-                .param("solution", "select * from persons;")
-                .param("databaseId", databaseId.toString())
-                .with(user("suggestingstudent").roles("STUDENT")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        assertNotNull(taskRepository.findByNameAndDeletedFalseOrderByNameDesc("SUGGESTION: " + taskName).get(0));
     }
 
     @Test

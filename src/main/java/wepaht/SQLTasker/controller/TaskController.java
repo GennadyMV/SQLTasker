@@ -21,11 +21,12 @@ import wepaht.SQLTasker.repository.TaskRepository;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
 
 import wepaht.SQLTasker.repository.TagRepository;
 import wepaht.SQLTasker.service.CategoryService;
@@ -92,53 +93,9 @@ public class TaskController {
                              @RequestParam(required= false) List<Long> categoryIds,
                              BindingResult result) {
 
-        if(databaseId==null){
-            redirectAttributes.addFlashAttribute("messages", "You didn't choose a database!");
-
-            return "redirect:/tasks";
-
-        }
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("messages", "Error!");
-
-            return "redirect:/tasks";
-
-        }
-        if (task == null) {
-            redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
-            return "redirect:/tasks";
-        }
-
-        Database db = databaseRepository.findOne(databaseId);
-        task.setDatabase(db);
-        if(categoryIds!=null) {
-            categoryService.setTaskToCategories(task, categoryIds);
-        }
-        if (task.getSolution() != null || !task.getSolution().isEmpty()) {
-            if (!databaseService.isValidQuery(db, task.getSolution())) {
-                redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
-                return "redirect:/tasks";
-            }
-        }
-
-        Account user = userService.getAuthenticatedUser();
-        task.setOwner(user);
-        if (user.getRole().equals("STUDENT")||user.getRole().equals("TEACHER")) {
-            task.setDescription(task.getDescription()+" SUGGESTED BY "+user.getUsername());
-            task.setName("SUGGESTION: " + task.getName());
-            taskRepository.save(task);
-            redirectAttributes.addFlashAttribute("messages", "Task has been suggested");
-
-            return "redirect:/tasks";
-        }
-
-        taskRepository.save(task);
-        redirectAttributes.addFlashAttribute("messages", "Task has been created");
-
-        return "redirect:/tasks";
+        return taskService.createTask(redirectAttributes, task, databaseId, categoryIds, result);
     }
 
-    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String getTask(@PathVariable Long id, Model model) throws Exception {
         Task task = taskRepository.findOne(id);
@@ -156,7 +113,6 @@ public class TaskController {
         return "task";
     }
 
-    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getTaskEditor(@PathVariable Long id, Model model) {
         List<Tag> tags = tagRepository.findByTaskId(id);
@@ -179,7 +135,6 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
-    @Secured("ROLE_ADMIN")
     @Transactional
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
     public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
@@ -220,7 +175,6 @@ public class TaskController {
         return "redirect:/categories/{categoryId}/tasks/{id}";
     }
     
-    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "/{id}/tags", method = RequestMethod.POST)
     public String addTag(@PathVariable Long id, @RequestParam() String name,
             RedirectAttributes redirectAttributes) throws Exception {
@@ -233,7 +187,6 @@ public class TaskController {
         return "redirect:/tasks/{id}/edit";
     }
     
-    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "/{id}/tags", method = RequestMethod.DELETE)
     public String removeTag(@PathVariable Long id, @RequestParam() String name,
             RedirectAttributes redirectAttributes) throws Exception {

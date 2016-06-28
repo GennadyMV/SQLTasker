@@ -16,12 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
-import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.domain.LocalAccount;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 
 import static junit.framework.TestCase.assertTrue;
 import org.junit.After;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -34,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.PastQueryService;
@@ -52,7 +54,7 @@ public class PointsControllerTest {
     private PastQueryService pastQueryService;
 
     @Autowired
-    private AccountRepository userRepository;
+    private LocalAccountRepository userRepository;
 
     @Autowired
     private TaskRepository taskRepository;
@@ -70,7 +72,7 @@ public class PointsControllerTest {
     PointsController testingObject;
 
     private MockMvc mockMvc = null;
-    private Account teacher = null;
+    private TmcAccount teacher = null;
     private Task task;
 
     @Before
@@ -80,11 +82,10 @@ public class PointsControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
         pastQueryService.deleteAllPastQueries();
         userRepository.deleteAll();
-        teacher = new Account();
-        teacher.setRole("TEACHER");
-        teacher.setUsername("user");
-        teacher.setPassword("test");
-        teacher = userRepository.save(teacher);
+        teacher = mock(TmcAccount.class);
+        when(teacher.getUsername()).thenReturn("user");
+        when(teacher.getRole()).thenReturn("TEACHER");
+        when(teacher.getId()).thenReturn(42l);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
 
         task = new Task();
@@ -111,16 +112,5 @@ public class PointsControllerTest {
                 .andReturn();
     }
 
-    @Test
-    public void returnsTable() throws Exception {
-        when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
-        for (Long l = 0l; l < 5; l++) {
-            submissionRepository.save(new Submission(teacher, task, null, null, "SELECT firstname FROM Persons", Boolean.TRUE));
-//            pastQueryService.saveNewPastQueryForTests("student", task, "select firstname from persons", true);
-        }
-        mockMvc.perform(get("/points").with(user("user").roles("TEACHER")).with(csrf()))
-                .andExpect(view().name("points"))
-                .andExpect(model().attributeExists("tables"))
-                .andExpect(status().isOk());
-    }
+    
 }

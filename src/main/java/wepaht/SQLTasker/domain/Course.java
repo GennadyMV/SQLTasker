@@ -29,7 +29,7 @@ public class Course extends AbstractPersistable<Long>{
     private LocalDate expires;
     
     @ManyToMany
-    private List<Account> students;
+    private List<TmcAccount> students;
     
     @OneToMany(mappedBy = "course", orphanRemoval = true)
     private List<CategoryDetail> details;
@@ -83,11 +83,11 @@ public class Course extends AbstractPersistable<Long>{
         this.expires = expires;
     }
 
-    public List<Account> getStudents() {
+    public List<TmcAccount> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Account> students) {
+    public void setStudents(List<TmcAccount> students) {
         this.students = students;
     }
 

@@ -18,10 +18,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.AuthenticationToken;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
 import wepaht.SQLTasker.repository.PastQueryRepository;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
 
 import java.io.IOException;
@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
@@ -53,7 +54,7 @@ import wepaht.SQLTasker.service.TaskService;
 public class RestExportControllerTest {
 
     @Autowired
-    AccountRepository userRepository;
+    LocalAccountRepository userRepository;
 
     @Autowired
     AuthenticationTokenRepository tokenRepository;
@@ -101,9 +102,9 @@ public class RestExportControllerTest {
     private String authToken;
     private Task task1;
     private Task task2;
-    private Account user;
-    private Account stud1;
-    private Account stud2;
+    private TmcAccount user;
+    private TmcAccount stud1;
+    private TmcAccount stud2;
 
     @Before
     public void setUp() {
@@ -127,36 +128,18 @@ public class RestExportControllerTest {
             task2 = taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 2").get(0);
         }
 
-        if (userRepository.findByUsernameAndDeletedFalse("admiini") == null) {
-            user = new Account();
-            user.setRole("ADMIN");
-            user.setPassword("testi");
-            user.setUsername("admiini");
-            user = userRepository.save(user);
-        } else {
-            user = userRepository.findByUsernameAndDeletedFalse("admiini");
-        }
-
-        if (userRepository.findByUsernameAndDeletedFalse(name1) == null) {
-            stud1 = new Account();
-            stud1.setRole("STUDENT");
-            stud1.setPassword("testi");
-            stud1.setUsername(name1);
-            stud1 = userRepository.save(stud1);
-        } else {
-            stud1 = userRepository.findByUsernameAndDeletedFalse(name1);
-        }
-
-        if (userRepository.findByUsernameAndDeletedFalse(name2) == null) {
-            stud2 = new Account();
-            stud2.setRole("STUDENT");
-            stud2.setPassword("testi");
-            stud2.setUsername(name2);
-            stud2 = userRepository.save(stud2);
-        } else {
-            stud2 = userRepository.findByUsernameAndDeletedFalse(name2);
-        }
-
+        user = mock(TmcAccount.class);
+        when(user.getUsername()).thenReturn("admiini");
+        when(user.getRole()).thenReturn("ADMIN");
+        
+        stud1 = mock(TmcAccount.class);
+        when(stud1.getUsername()).thenReturn(name1);
+        when(stud1.getRole()).thenReturn("STUDENT");
+        
+        stud2 = mock(TmcAccount.class);
+        when(stud2.getUsername()).thenReturn(name2);
+        when(stud2.getRole()).thenReturn("STUDENT");
+        
         submissionRepository.deleteAll();
 
         submissionRepository.save(new Submission(stud1, task1, null, null, "SELECT 1;", Boolean.TRUE));

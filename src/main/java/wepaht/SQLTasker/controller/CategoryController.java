@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Task;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.AccountService;
@@ -39,14 +39,11 @@ public class CategoryController {
     @RequestMapping(method = RequestMethod.GET)
     @Transactional
     public String getCategories(Model model) {
-        Account user = userService.getAuthenticatedUser();
-
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("tasks", taskRepository.findAll());
         return "categories";
     }
 
-    @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(
             RedirectAttributes redirectAttributes,
@@ -86,7 +83,6 @@ public class CategoryController {
         return "category";
     }
 
-    @Secured("ROLE_ADMIN")
     @Transactional
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeCategory(@PathVariable Long id,
@@ -97,7 +93,6 @@ public class CategoryController {
         return "redirect:/categories";
     }
 
-    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
     public String updateCategory(@PathVariable Long id, RedirectAttributes redirectAttributes,
             @RequestParam String name,
@@ -124,7 +119,6 @@ public class CategoryController {
         return "redirect:/categories/{id}";
     }
 
-    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getEditCategoryPage(@PathVariable Long id,
             Model model) {
@@ -139,7 +133,6 @@ public class CategoryController {
             Model model, RedirectAttributes redirectAttributes) {
 
         Category category = categoryRepository.findOne(id);
-        Account user = userService.getAuthenticatedUser();
         LocalDate now = LocalDate.now();
 
         Task task = taskRepository.findOne(taskId);
@@ -150,7 +143,6 @@ public class CategoryController {
         return "task";
     }
 
-    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public String changeCategoryTaskOrder(RedirectAttributes redirectAttributes,
             @PathVariable Long id,

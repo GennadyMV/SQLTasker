@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Task;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.domain.TmcAccount;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
@@ -58,7 +60,7 @@ import wepaht.SQLTasker.service.CourseService;
 public class CourseControllerTest {
 
     @Autowired
-    AccountRepository accountRepository;
+    LocalAccountRepository accountRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -92,8 +94,8 @@ public class CourseControllerTest {
 
     private MockMvc mockMvc;
     private String URI = "/courses";
-    private Account student;
-    private Account teacher;
+    private TmcAccount student;
+    private TmcAccount teacher;
 
     public CourseControllerTest() {
     }
@@ -112,18 +114,15 @@ public class CourseControllerTest {
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
-        accountRepository.deleteAll();
-        student = new Account();
-        student.setUsername("student");
-        student.setPassword("student");
-        student.setRole("STUDENT");
-        student = accountRepository.save(student);
+        student = mock(TmcAccount.class);
+        when(student.getUsername()).thenReturn("student");
+        when(student.getRole()).thenReturn("STUDENT");
+        when(student.getId()).thenReturn(43l);
 
-        teacher = new Account();
-        teacher.setUsername("teacher");
-        teacher.setPassword("teacher");
-        teacher.setRole("TEACHER");
-        teacher = accountRepository.save(teacher);
+        teacher = mock(TmcAccount.class);
+        when(teacher.getUsername()).thenReturn("teacher");
+        when(teacher.getRole()).thenReturn("TEACHER");
+        when(teacher.getId()).thenReturn(44l);
     }
 
     @After
@@ -363,22 +362,6 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testUserCanJoinCourse() throws Exception {
-        Course course = createTestCourse("Join this");
-
-        BDDMockito.given(accountServiceMock.getAuthenticatedUser()).willReturn(student);
-
-        mockMvc.perform(post(URI + "/" + course.getId() + "/join")
-                .with(user("student").roles("STUDENT"))
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        List<Account> students = courseRepository.getCourseStudents(course);
-        assertTrue(students.contains(student));
-    }
-
-    @Test
     public void testUserCannotJoinMultipleTimesToSameCourse() throws Exception {
         Course course = createTestCourse("Join this");
 
@@ -398,7 +381,7 @@ public class CourseControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
-        List<Account> students = courseRepository.getCourseStudents(course);
+        List<TmcAccount> students = courseRepository.getCourseStudents(course);
         assertEquals(courseStudentCountAtBeginning + 1, students.size());
     }
 
@@ -414,7 +397,7 @@ public class CourseControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
-        List<Account> students = courseRepository.getCourseStudents(course);
+        List<TmcAccount> students = courseRepository.getCourseStudents(course);
         assertFalse(students.contains(student));
     }
 
@@ -469,25 +452,6 @@ public class CourseControllerTest {
     }
     
     @Test
-    public void testTaskIsAccessableThroughCourseAndCategory() throws Exception {
-        Database database = createTestDatabase("Access");
-        Task task = createTestTask("This place", database);
-        Category category = createTestCategory("From here", Arrays.asList(task));
-        Course course = new Course();
-        course.setName("From hererer");
-        course.setCourseCategories(Arrays.asList(category));
-        course.setStudents(Arrays.asList(student));
-        courseRepository.save(course);
-        when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
-        
-        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
-                .with(user("student").roles("STUDENT")))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("category", "course", "task"))
-                .andReturn();
-    }
-    
-    @Test
     public void testCategoryAccessedThroughCourseMustBelongToCourse2() throws Exception {
         Database database = createTestDatabase("Moonshine");
         Task task = createTestTask("In a side role", database);
@@ -519,27 +483,6 @@ public class CourseControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(model().attributeDoesNotExist("task"))
                 .andExpect(flash().attributeExists("messages"))
-                .andReturn();
-    }
-    
-    @Test
-    public void testQueryCanBeSentToTaskAccessedThroughCourseAndCategory() throws Exception{
-        Database database = createTestDatabase("Pokemon master");
-        Task task = createTestTask("Query to this", database);
-        Category category = createTestCategory("From here", Arrays.asList(task));
-        Course course = new Course();
-        course.setName("From this");
-        course.setCourseCategories(Arrays.asList(category));
-        course.setStudents(Arrays.asList(student));
-        course = courseRepository.save(course);
-        
-        //{courseId}/category/{categoryId}/task/{taskId}/query
-        
-        mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/query")
-                .param("query", "SELECT 1;")
-                .with(user("student").roles("STUDENT")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attributeExists("messages", "tables"))
                 .andReturn();
     }
     

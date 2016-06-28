@@ -10,7 +10,8 @@ import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.*;
 import org.springframework.transaction.annotation.Transactional;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
+import wepaht.SQLTasker.domain.TmcAccount;
 
 @Service
 public class DatabaseService {
@@ -60,7 +61,7 @@ public class DatabaseService {
     public boolean createDatabase(String name, String createTable) {
         try {
             Database db = new Database();
-            Account user = null;
+            TmcAccount user = null;
             try {
                 user = accountService.getAuthenticatedUser();
             } catch (Exception e) {
@@ -321,5 +322,9 @@ public class DatabaseService {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    public Database getDatabase(Long id) {
+        return databaseRepository.findOne(id);
     }
 }

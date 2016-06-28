@@ -4,12 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 
 @Service
@@ -35,11 +36,11 @@ public class SubmissionService {
         return repository.findAll();
     }
     
-    public Integer getAccountPoints(Account account) {
+    public Integer getAccountPoints(TmcAccount account) {
         return repository.getPointsByAccount(account);
     }
     
-    public List getAccountSubmissions(Account account) {
+    public List getAccountSubmissions(TmcAccount account) {
         return repository.getTaskNameAndPointsByAccount(account);
     }
     
@@ -51,15 +52,15 @@ public class SubmissionService {
         return repository.exportAllPoints();
     }
 
-    int getAccountCoursePoints(Account account, Course course) {
+    int getAccountCoursePoints(TmcAccount account, Course course) {
         return repository.getPointsByAccountAndCourse(account, course);
     }
 
-    Integer getAccountCourseCategoryPoints(Account account, Course course, Category category) {
+    Integer getAccountCourseCategoryPoints(TmcAccount account, Course course, Category category) {
         return repository.getPointsByAccountAndCourseAncCategory(account, course, category);
     }
 
-    List<Submission> getSubmissionByAccountAndCourseAndCategoryAndTaskAndPoints(Account account, Course course, Category category, Task task, Boolean points) {
+    List<Submission> getSubmissionByAccountAndCourseAndCategoryAndTaskAndPoints(TmcAccount account, Course course, Category category, Task task, Boolean points) {
         return repository.findByAccountAndCourseAndCategoryAndTaskAndPoints(account, course, category, task, points);
     }
 

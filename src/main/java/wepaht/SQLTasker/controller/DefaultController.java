@@ -6,11 +6,12 @@
 package wepaht.SQLTasker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.AccountService;
 import wepaht.SQLTasker.service.SubmissionService;
 import wepaht.SQLTasker.service.TaskFeedbackService;
@@ -22,7 +23,7 @@ public class DefaultController {
     AccountService userService;
     
     @Autowired
-    AccountRepository userRepository;
+    LocalAccountRepository userRepository;
     
     @Autowired
     SubmissionService submissionService;
@@ -31,7 +32,7 @@ public class DefaultController {
     TaskFeedbackService feedbackService;
     
     @RequestMapping(value="/", method=RequestMethod.GET)
-    public String hello(Model model){
+    public String hello(Model model, Authentication auth){
         
         model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("submissions", submissionService.listAllSubmissions());

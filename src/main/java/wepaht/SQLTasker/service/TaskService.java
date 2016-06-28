@@ -3,13 +3,20 @@ package wepaht.SQLTasker.service;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service
@@ -35,6 +42,9 @@ public class TaskService {
 
     @Autowired
     private CategoryDetailService categoryDetailService;
+    
+    @Autowired
+    private AccountService accountService;
 
     @Transactional
     public boolean removeTask(Long taskId) {
@@ -99,5 +109,64 @@ public class TaskService {
         }
 
         return Arrays.asList(messages, databaseService.performQuery(task.getDatabase().getId(), query), isCorrect);
+    }
+    
+    public String createTask(RedirectAttributes redirectAttributes,
+                             Task task,
+                             Long databaseId,
+                             List<Long> categoryIds,
+                             BindingResult result) {
+        if (isDatabaseNull(databaseId, redirectAttributes)) return "redirect:/tasks";
+        if (isErrorsInTask(result, redirectAttributes)) return "redirect:/tasks";
+        if (isTaskNull(task, redirectAttributes)) return "redirect:/tasks";
+
+        Database db = databaseService.getDatabase(databaseId);
+        task.setDatabase(db);
+        if(isInvalidSolution(task, db, redirectAttributes)) return "redirect:/tasks";
+
+        if (categoryIds != null) categoryService.setTaskToCategories(task, categoryIds);
+            
+        TmcAccount user = accountService.getAuthenticatedUser();
+        task.setOwner(user);
+
+        taskRepository.save(task);
+        if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "Task has been created");
+
+        return "redirect:/tasks";
+    }
+
+    private boolean isDatabaseNull(Long databaseId, RedirectAttributes redirectAttributes) {
+        if (databaseId==null) {
+            if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "You didn't choose a database!");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isErrorsInTask(BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            List<Object> messages = Arrays.asList("Error!", result.getAllErrors());
+            if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", messages);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isTaskNull(Task task, RedirectAttributes redirectAttributes) {
+        if (task == null) {
+            if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isInvalidSolution(Task task, Database db, RedirectAttributes redirectAttributes) {
+        if (task.getSolution() != null || !task.getSolution().isEmpty()) {
+            if (!databaseService.isValidQuery(db, task.getSolution())) {
+                if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
+                return true;
+            }
+        }
+        return false;
     }
 }

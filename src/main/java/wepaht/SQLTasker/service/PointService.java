@@ -4,11 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.SQLTasker.domain.Table;
 import java.util.*;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.PointHolder;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service
@@ -26,7 +27,7 @@ public class PointService {
     public Table pointsTable;
 
     public Integer getPointsByUsername(String username) {
-        Account account = accountService.getAccountByUsername(username);
+        TmcAccount account = accountService.getAccountByUsername(username);
         return submissionService.getAccountPoints(account);
     }
 
@@ -57,16 +58,16 @@ public class PointService {
     }
 
     public int getCoursePoints(Course course) {
-        Account account = accountService.getAuthenticatedUser();
+        TmcAccount account = accountService.getAuthenticatedUser();
         return submissionService.getAccountCoursePoints(account, course);
     }
 
     public Integer getCourseCategoryPoints(Course course, Category category) {
-        Account account = accountService.getAuthenticatedUser();
+        TmcAccount account = accountService.getAuthenticatedUser();
         return submissionService.getAccountCourseCategoryPoints(account, course, category);
     }
     
-    public boolean hasUserDoneTaskCorrectly(Account account, Course course, Category category, Task task) {
+    public boolean hasUserDoneTaskCorrectly(TmcAccount account, Course course, Category category, Task task) {
         return submissionService.getSubmissionByAccountAndCourseAndCategoryAndTaskAndPoints(account, course, category, task, (boolean) true).size() > 0;
     }
 }

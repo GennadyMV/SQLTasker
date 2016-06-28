@@ -17,7 +17,7 @@ public class Database extends AbstractPersistable<Long> {
     private String databaseSchema;
     
     @ManyToOne
-    private Account owner;
+    private TmcAccount owner;
     
     private Boolean deleted;
     
@@ -57,11 +57,11 @@ public class Database extends AbstractPersistable<Long> {
         this.databaseSchema = databaseSchema;
     }
 
-    public Account getOwner() {
+    public TmcAccount getOwner() {
         return owner;
     }
 
-    public void setOwner(Account owner) {
+    public void setOwner(TmcAccount owner) {
         this.owner = owner;
     }
 

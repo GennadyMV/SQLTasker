@@ -10,7 +10,7 @@ public class Submission extends AbstractPersistable<Long> {
     
     @NotNull
     @ManyToOne
-    private Account account;
+    private TmcAccount account;
     
     @ManyToOne
     private Task task;
@@ -28,7 +28,7 @@ public class Submission extends AbstractPersistable<Long> {
         
     }
     
-    public Submission(Account account, Task task, Category category, Course course, String query, Boolean points) {
+    public Submission(TmcAccount account, Task task, Category category, Course course, String query, Boolean points) {
         this.account = account;
         this.task = task;
         this.category = category;
@@ -37,11 +37,11 @@ public class Submission extends AbstractPersistable<Long> {
         this.points = points;
     }
 
-    public Account getAccount() {
+    public TmcAccount getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(TmcAccount account) {
         this.account = account;
     }
 

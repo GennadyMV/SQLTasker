@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import wepaht.SQLTasker.domain.Category;
-import wepaht.SQLTasker.domain.Account;
+import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CategoryRepository;
-import wepaht.SQLTasker.repository.AccountRepository;
+import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.repository.DatabaseRepository;
@@ -46,7 +46,7 @@ public class DevProfile {
     private DatabaseRepository databaseRepository;
 
     @Autowired
-    private AccountRepository userRepository;
+    private LocalAccountRepository userRepository;
     
     @Autowired
     private CategoryRepository categoryRepository;
@@ -86,17 +86,17 @@ public class DevProfile {
             categoryService.setCategoryToTask(category.getId(), task);
         }        
         
-        Account student = new Account();
+        LocalAccount student = new LocalAccount();
         student.setUsername("student");
         student.setPassword("student");
         student.setRole("STUDENT");
 
-        Account teacher = new Account();
+        LocalAccount teacher = new LocalAccount();
         teacher.setUsername("admin");
         teacher.setPassword("admin");
         teacher.setRole("ADMIN");
 
-        Account assistant = new Account();
+        LocalAccount assistant = new LocalAccount();
         assistant.setUsername("teacher");
         assistant.setPassword("teacher");
         assistant.setRole("TEACHER");
