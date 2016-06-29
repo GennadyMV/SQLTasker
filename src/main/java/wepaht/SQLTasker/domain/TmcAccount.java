@@ -10,24 +10,25 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import org.springframework.data.jpa.domain.AbstractPersistable;
+import static wepaht.SQLTasker.library.StringLibrary.*;
 
 /**
  *
  * @author mcraty
  */
 @Entity
-public class TmcAccount extends AbstractPersistable<Long> implements Account{
-    
+public class TmcAccount extends AbstractPersistable<Long> implements Account {
+
     @ManyToMany(mappedBy = "students")
     private List<Course> courses;
-    
+
     @Column(unique = true)
     private String username;
-    
+
     private String accountRole;
-    
+
     private Boolean deleted;
-    
+
     public TmcAccount() {
         deleted = false;
     }
@@ -59,7 +60,9 @@ public class TmcAccount extends AbstractPersistable<Long> implements Account{
 
     @Override
     public void setRole(String role) {
-        this.accountRole = role;
+        if (role.equals(ROLE_STUDENT) || role.equals(ROLE_TEACHER) || role.equals(ROLE_ADMIN)) {
+            this.accountRole = role;
+        }
     }
 
     @Override

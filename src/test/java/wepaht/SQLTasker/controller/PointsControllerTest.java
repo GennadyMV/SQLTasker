@@ -1,6 +1,5 @@
 package wepaht.SQLTasker.controller;
 
-import java.util.ArrayList;
 import wepaht.SQLTasker.controller.PointsController;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,24 +15,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
-import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.repository.LocalAccountRepository;
-
-import static junit.framework.TestCase.assertTrue;
 import org.junit.After;
-import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.SubmissionRepository;

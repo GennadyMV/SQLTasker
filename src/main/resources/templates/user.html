@@ -15,8 +15,6 @@ and open the template in the editor.
 
         <h2>
             <span th:text="${editedUser.username}">User name</span>
-            | Points:
-            <span th:text="${points}">User points</span>
         </h2>
 
         <ul>
@@ -33,7 +31,7 @@ and open the template in the editor.
             </li>
         </ul>
 
-        <div sec:authorize="hasRole('ROLE_TEACHER')">
+        <div>
             <p>To export points you need to include a token in your post-request</p>
             <div th:if="${token}">
                 <label><b>Your export-token: </b></label>
@@ -71,7 +69,7 @@ and open the template in the editor.
             </div>
         </div>
 
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <div>
             <a th:href="@{/users}">Back to user listing</a>
         </div>
 

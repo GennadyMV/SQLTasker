@@ -1,11 +1,9 @@
 package wepaht.SQLTasker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.LocalAccount;
@@ -14,20 +12,16 @@ import wepaht.SQLTasker.service.PastQueryService;
 import wepaht.SQLTasker.service.PointService;
 import wepaht.SQLTasker.service.AccountService;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.library.StringLibrary.*;
 
 @Controller
 public class AccountController {
 
     private String[] roles = {"STUDENT", "TEACHER", "ADMIN"};
-
-    @Autowired
-    LocalAccountRepository userRepository;
 
     @Autowired
     AccountService userService;
@@ -39,22 +33,13 @@ public class AccountController {
     PastQueryService pastQueryService;
 
     @RequestMapping(value = "users", method = RequestMethod.GET)
-    public String list(Model model) {
-        model.addAttribute("users", userRepository.findAll());
-        model.addAttribute("roles", roles);
-        model.addAttribute("students", userRepository.findByAccountRoleAndDeletedFalse("STUDENT"));
-        model.addAttribute("teachers", userRepository.findByAccountRoleAndDeletedFalse("TEACHER"));
-        model.addAttribute("admins", userRepository.findByAccountRoleAndDeletedFalse("ADMIN"));
-        return "users";
+    public String list(Model model, RedirectAttributes redirAttr) {
+        return userService.listAllAccounts(model, redirAttr);
     }
 
     @RequestMapping(value = "users/{id}", method = RequestMethod.GET)
-    public String getUser(Model model, @PathVariable Long id) {
-        LocalAccount editedUser = userRepository.findOne(id);
-        model.addAttribute("editedUser", editedUser);
-        model.addAttribute("roles", roles);
-        model.addAttribute("points", pointService.getPointsByUsername(editedUser.getUsername()));
-        return "user";
+    public String getUser(Model model, RedirectAttributes redirAttr, @PathVariable Long id) {
+        return userService.getUser(model, redirAttr, id);
     }
 
     @RequestMapping(value = "profile", method = RequestMethod.GET)
