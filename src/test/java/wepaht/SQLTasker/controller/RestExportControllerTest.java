@@ -41,9 +41,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_ADMIN;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
+import wepaht.SQLTasker.repository.TmcAccountRepository;
 import wepaht.SQLTasker.service.AccountService;
 import wepaht.SQLTasker.service.SubmissionService;
 import wepaht.SQLTasker.service.TaskService;
@@ -54,7 +57,7 @@ import wepaht.SQLTasker.service.TaskService;
 public class RestExportControllerTest {
 
     @Autowired
-    LocalAccountRepository userRepository;
+    TmcAccountRepository accountRepo;
 
     @Autowired
     AuthenticationTokenRepository tokenRepository;
@@ -128,17 +131,29 @@ public class RestExportControllerTest {
             task2 = taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 2").get(0);
         }
 
-        user = mock(TmcAccount.class);
-        when(user.getUsername()).thenReturn("admiini");
-        when(user.getRole()).thenReturn("ADMIN");
+        user = accountRepo.findByUsernameAndDeletedFalse("admiini");
+        if (user == null) {
+            user = new TmcAccount();
+            user.setUsername("admiini");
+            user.setRole(ROLE_ADMIN);
+            user = accountRepo.save(user);
+        }
         
-        stud1 = mock(TmcAccount.class);
-        when(stud1.getUsername()).thenReturn(name1);
-        when(stud1.getRole()).thenReturn("STUDENT");
+        stud1 = accountRepo.findByUsernameAndDeletedFalse(name1);
+        if (stud1 == null) {
+            stud1 = new TmcAccount();
+            stud1.setUsername(name1);
+            stud1.setRole(ROLE_STUDENT);
+            stud1 = accountRepo.save(stud1);
+        }
         
-        stud2 = mock(TmcAccount.class);
-        when(stud2.getUsername()).thenReturn(name2);
-        when(stud2.getRole()).thenReturn("STUDENT");
+        stud2 = accountRepo.findByUsernameAndDeletedFalse(name2);
+        if (stud2 == null) {
+            stud2 = new TmcAccount();
+            stud2.setUsername(name2);
+            stud2.setRole(ROLE_STUDENT);
+            stud2 = accountRepo.save(stud2);
+        }
         
         submissionRepository.deleteAll();
 

@@ -159,30 +159,6 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void createTask() throws Exception {
-        String taskName = "testTask";
-        Long databaseId = database.getId();
-        TmcAccount testAccount = new TmcAccount();
-        testAccount.setUsername("herpi");
-        testAccount.setRole(ROLE_STUDENT);
-        testAccount.setCourses(new ArrayList<>());
-        testAccount = tmcAccountRepo.save(testAccount);
-        when(userServiceMock.getAuthenticatedUser()).thenReturn(testAccount);
-        
-        mockMvc.perform(post(API_URI).param("name", taskName)
-                .param("description", "To test creation of a task with a database")
-                .param("solution", "select * from persons;")
-                .param("databaseId", databaseId.toString())
-                .with(user("herpi").roles(ROLE_STUDENT)).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        List<Task> tasks = taskRepository.findAll();
-
-        assertTrue(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
-    }
-
-    @Test
     public void querysTableIsSeen() throws Exception {
         Task testTask = randomTask();
         testTask = taskRepository.save(testTask);

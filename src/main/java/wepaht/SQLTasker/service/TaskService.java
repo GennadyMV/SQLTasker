@@ -42,7 +42,7 @@ public class TaskService {
 
     @Autowired
     private CategoryDetailService categoryDetailService;
-    
+
     @Autowired
     private AccountService accountService;
 
@@ -103,58 +103,78 @@ public class TaskService {
         Course course = courseService.getCourseById(courseId);
 
         Boolean isCorrect = submissionService.createNewSubmissionAndCheckPoints(task, query, category, course);
-        
+
         if (isCorrect) {
             messages.add("Your answer is correct");
         }
 
         return Arrays.asList(messages, databaseService.performQuery(task.getDatabase().getId(), query), isCorrect);
     }
-    
+
     public String createTask(RedirectAttributes redirectAttributes,
-                             Task task,
-                             Long databaseId,
-                             List<Long> categoryIds,
-                             BindingResult result) {
-        if (isDatabaseNull(databaseId, redirectAttributes)) return "redirect:/tasks";
-        if (isErrorsInTask(result, redirectAttributes)) return "redirect:/tasks";
-        if (isTaskNull(task, redirectAttributes)) return "redirect:/tasks";
+            Task task,
+            Long databaseId,
+            List<Long> categoryIds,
+            BindingResult result) {
+        if (isDatabaseNull(databaseId, redirectAttributes)) {
+            return "redirect:/tasks";
+        }
+        if (isErrorsInTask(result, redirectAttributes)) {
+            return "redirect:/tasks";
+        }
+        if (isTaskNull(task, redirectAttributes)) {
+            return "redirect:/tasks";
+        }
 
         Database db = databaseService.getDatabase(databaseId);
         task.setDatabase(db);
-        if(isInvalidSolution(task, db, redirectAttributes)) return "redirect:/tasks";
+        if (isInvalidSolution(task, db, redirectAttributes)) {
+            return "redirect:/tasks";
+        }
 
-        if (categoryIds != null) categoryService.setTaskToCategories(task, categoryIds);
-            
+        if (categoryIds != null) {
+            categoryService.setTaskToCategories(task, categoryIds);
+        }
+
         TmcAccount user = accountService.getAuthenticatedUser();
         task.setOwner(user);
 
         taskRepository.save(task);
-        if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "Task has been created");
+        if (redirectAttributes != null) {
+            redirectAttributes.addFlashAttribute("messages", "Task has been created");
+        }
 
         return "redirect:/tasks";
     }
 
     private boolean isDatabaseNull(Long databaseId, RedirectAttributes redirectAttributes) {
-        if (databaseId==null) {
-            if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "You didn't choose a database!");
+        if (databaseId == null) {
+            if (redirectAttributes != null) {
+                redirectAttributes.addFlashAttribute("messages", "You didn't choose a database!");
+            }
             return true;
         }
         return false;
     }
 
     private boolean isErrorsInTask(BindingResult result, RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            List<Object> messages = Arrays.asList("Error!", result.getAllErrors());
-            if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", messages);
-            return true;
+        if (result != null) {
+            if (result.hasErrors()) {
+                List<Object> messages = Arrays.asList("Error!", result.getAllErrors());
+                if (redirectAttributes != null) {
+                    redirectAttributes.addFlashAttribute("messages", messages);
+                }
+                return true;
+            }
         }
         return false;
     }
 
     private boolean isTaskNull(Task task, RedirectAttributes redirectAttributes) {
         if (task == null) {
-            if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
+            if (redirectAttributes != null) {
+                redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
+            }
             return true;
         }
         return false;
@@ -163,7 +183,9 @@ public class TaskService {
     private boolean isInvalidSolution(Task task, Database db, RedirectAttributes redirectAttributes) {
         if (task.getSolution() != null || !task.getSolution().isEmpty()) {
             if (!databaseService.isValidQuery(db, task.getSolution())) {
-                if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
+                if (redirectAttributes != null) {
+                    redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
+                }
                 return true;
             }
         }
