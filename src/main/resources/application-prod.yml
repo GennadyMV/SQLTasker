@@ -1,0 +1,14 @@
+security:
+  oauth2:
+    client:
+      client: sql_trainer
+      client_version: 0.0.0
+      clientId: f0ad4711139fef3f77497aaa825a3974d02ba36a93dde78310f59bb300a948f9
+      clientSecret: a42521a5fb63147222be35d0c0eb9f5d7f39797d7f19297056d44ced19e548ec
+      accessTokenUri: https://tmc.mooc.fi/staging/oauth/token
+      userAuthorizationUri: https://tmc.mooc.fi/staging/oauth/authorize
+      tokenName: access_token
+      authenticationScheme: query
+      clientAuthenticationScheme: form
+    resource:
+      userInfoUri: https://tmc.mooc.fi/staging/api/beta/participant/
