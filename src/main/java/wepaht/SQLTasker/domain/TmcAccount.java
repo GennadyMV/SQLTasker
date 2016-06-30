@@ -22,7 +22,6 @@ public class TmcAccount extends AbstractPersistable<Long> implements Account {
     @ManyToMany(mappedBy = "students")
     private List<Course> courses;
 
-    @Column(unique = true)
     private String username;
 
     private String accountRole;

@@ -1,6 +1,8 @@
 package wepaht.SQLTasker.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,12 +29,11 @@ public class AccountService {
     private PointService pointService;
 
     public TmcAccount getAuthenticatedUser() {
-        Authentication auth = null;
-        try {
-            auth = SecurityContextHolder.getContext().getAuthentication();
-        } catch (Exception e) {
-            return null;
-        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getPrincipal().toString();
+        
+        if (!auth.isAuthenticated() || username.equals("anonymousUser")) return null;
+        
         TmcAccount user = tmcRepo.findByUsernameAndDeletedFalse(auth.getPrincipal().toString());
         if (user == null) {
             user = new TmcAccount();
@@ -77,7 +78,7 @@ public class AccountService {
 
     public String listAllAccounts(Model model, RedirectAttributes redirAttr) {
         if (isUserStudent()) {
-            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED);
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return REDIRECT_DEFAULT;
         }
         
@@ -89,13 +90,18 @@ public class AccountService {
     }
 
     public String getUser(Model model, RedirectAttributes redirAttr, Long id) {
-        if (isUserStudent()) {
-            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED);
+        TmcAccount user = getAuthenticatedUser();
+        
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return REDIRECT_DEFAULT;
         }
         
-        model.addAttribute("editedUser", getUserById(id));
-        model.addAttribute("roles", Arrays.asList(ROLE_STUDENT, ROLE_TEACHER, ROLE_ADMIN));
+        TmcAccount fetched = getUserById(id);
+        model.addAttribute("editedUser", fetched);
+        
+        if (user.getRole().equals(ROLE_ADMIN)) model.addAttribute(ATTRIBUTE_ROLES, Arrays.asList(ROLE_STUDENT, ROLE_TEACHER, ROLE_ADMIN));
+        if (user.getRole().equals(ROLE_TEACHER)) model.addAttribute(ATTRIBUTE_ROLES, Arrays.asList(ROLE_STUDENT, ROLE_TEACHER));
         
         return VIEW_USER;
     }
@@ -110,5 +116,63 @@ public class AccountService {
         if (user != null) return user.getRole().equals(ROLE_STUDENT);
         
         return true;
+    }
+
+    public String editUser(RedirectAttributes redirAttr, Long accountId, String role) {
+        List<String> messages = new ArrayList<>();
+        TmcAccount user = getAuthenticatedUser();
+        TmcAccount fetched = getUserById(accountId);
+        
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            return REDIRECT_DEFAULT;
+        }
+        
+        if (hasLowerAuthority(user, fetched)) {
+            messages.add(MESSAGE_UNAUTHORIZED_ACTION + ": editing admin is not allowed");
+        } else {
+            fetched.setRole(role);
+            tmcRepo.save(fetched);
+            messages.add(MESSAGE_SUCCESSFUL_ACTION + " for user " + fetched.getUsername());
+        }
+        
+        redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, messages);
+        
+        return REDIRECT_DEFAULT;
+    }
+
+    private boolean hasLowerAuthority(TmcAccount user, TmcAccount fetched) {
+        return user.getRole().equals(ROLE_TEACHER) && fetched.getRole().equals(ROLE_ADMIN);
+    }
+
+    public String getProfile(Model model) {
+        TmcAccount user = getAuthenticatedUser();
+        
+        if(user.getRole().equals(ROLE_ADMIN)) model.addAttribute(ATTRIBUTE_ROLES, Arrays.asList(ROLE_STUDENT, ROLE_TEACHER));
+        else if(user.getRole().equals(ROLE_TEACHER)) model.addAttribute(ATTRIBUTE_ROLES, ROLE_STUDENT);
+        model.addAttribute(ATTRIBUTE_EDITEDUSER, user);
+        model.addAttribute(ATTRIBUTE_TOKEN, getToken());
+        
+        return VIEW_USER;
+    }
+    
+    public String deleteAccount(RedirectAttributes redirAttr, Long accountId) {
+        TmcAccount user = getAuthenticatedUser();
+        TmcAccount deleting = getUserById(accountId);
+        
+        if (user.equals(deleting)||user.getRole().equals(ROLE_TEACHER)||user.getRole().equals(ROLE_ADMIN)) {
+            deleting.setDeleted(Boolean.TRUE);
+            tmcRepo.save(deleting);
+            
+            if (user.equals(deleting)) {
+                customLogout();
+            }
+            
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": user " + deleting.getUsername() + " deleted");
+        } else {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+        }
+        
+        return REDIRECT_DEFAULT;
     }
 }

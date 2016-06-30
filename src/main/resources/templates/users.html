@@ -5,31 +5,31 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Users</title>
-</head>
-<body>
-<div th:include="fragments/navbar_template :: navbar"></div>
+    <head>
+        <title>Users</title>
+    </head>
+    <body>
+        <div th:include="fragments/navbar_template :: navbar"></div>
 
-<div th:include="fragments/messages_template :: messages"></div>
+        <div th:include="fragments/messages_template :: messages"></div>
 
-<div class="get-in-touch">
-    <h2>List of users</h2>
-    <div th:each="user : ${admins}">
-        <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
-                th:text="${user.accountRole}">User Role</span></h3>
-    </div>
-    <div th:each="user : ${teachers}">
-        <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
-                th:text="${user.accountRole}">User Role</span></h3>
-    </div>
-    <div th:each="user : ${students}">
-        <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
-                th:text="${user.accountRole}">User Role</span></h3>
-    </div>
-</div>
+        <div class="get-in-touch">
+            <h2>List of users</h2>
+            <div th:each="user : ${admins}">
+                <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
+                        th:text="${user.role}">User Role</span></h3>
+            </div>
+            <div th:each="user : ${teachers}">
+                <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
+                        th:text="${user.role}">User Role</span></h3>
+            </div>
+            <div th:each="user : ${students}">
+                <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
+                        th:text="${user.role}">User Role</span></h3>
+            </div>
+        </div>
 
-<div th:include="fragments/footer_template :: footer"></div>
-<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-</body>
+        <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+    </body>
 </html>

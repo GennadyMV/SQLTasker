@@ -16,6 +16,11 @@ public abstract class StringLibrary {
     public static final String ATTRIBUTE_STUDENTS = "students";
     public static final String ATTRIBUTE_TEACHERS = "teachers";
     public static final String ATTRIBUTE_ADMINS = "admins";
+    public static final String ATTRIBUTE_ROLES = "roles";
+    public static final String ATTRIBUTE_EDITEDUSER = "editedUser";
+    public static final String ATTRIBUTE_TOKEN = "token";
     
-    public static final String MESSAGE_UNAUTHORIZED = "Unauthorized access";
+    public static final String MESSAGE_UNAUTHORIZED_ACCESS = "Unauthorized access";
+    public static final String MESSAGE_UNAUTHORIZED_ACTION = "Unauhtorized action";
+    public static final String MESSAGE_SUCCESSFUL_ACTION = "Action succesful";
 }

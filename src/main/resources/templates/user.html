@@ -19,19 +19,19 @@ and open the template in the editor.
 
         <ul>
             <li id="sql-li">
-                <form sec:authorize="hasRole('ROLE_ADMIN')" th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+                <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
                     <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
                 </form>
             </li>
 
-            <li id="sql-li">
+            <li id="sql-li" th:if="${editedUser.role} != 'STUDENT'">
                 <form method="POST" th:action="@{/profile/token}">
                     <input id="sql-input" type="submit" th:value="createToken" Onclick="return Confirm();"></input>
                 </form>
             </li>
         </ul>
 
-        <div>
+        <div th:if="${editedUser.role} != 'STUDENT'">
             <p>To export points you need to include a token in your post-request</p>
             <div th:if="${token}">
                 <label><b>Your export-token: </b></label>
@@ -44,27 +44,17 @@ and open the template in the editor.
             <div class="get-in-touch-text-boxs">
                 <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
 
-                    <div class="get-in-touch-text-box" th:not="${editedUser.id.equals(user.id)}">
-                        <span>Username:</span>
-                        <input type="text" name="username" th:value="${editedUser.username}"/>
-                    </div>
-
                     <div class="get-in-touch-text-box">
                         <span>Role:</span>
                         <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
                                checked="checked"/>
-                        <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
-                               th:text="${role}" th:value="${role}"/>
+                        <div th:if="${roles}">
+                            <input type="radio" th:each="role : ${roles}" name="role"
+                                   th:text="${role}" th:value="${role}"/>
+                        </div>
                     </div>
-
-                    <div class="get-in-touch-text-box">
-                        <span>New password:</span>
-                        <input type="password" name="password"></input>
-                        <span>Retype new password:</span>
-                        <input type="password" name="repassword"></input>
-                    </div>
-
-                    <input type="submit" value="Save edits"/>
+                    
+                    <input type="submit" value="Submit"/>
                 </form>
             </div>
         </div>

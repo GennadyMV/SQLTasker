@@ -17,12 +17,16 @@ import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
+import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_ADMIN;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
+import wepaht.SQLTasker.repository.TmcAccountRepository;
 import wepaht.SQLTasker.service.CategoryDetailService;
 import wepaht.SQLTasker.service.CategoryService;
 import wepaht.SQLTasker.service.CourseService;
@@ -46,7 +50,7 @@ public class DevProfile {
     private DatabaseRepository databaseRepository;
 
     @Autowired
-    private LocalAccountRepository userRepository;
+    private TmcAccountRepository userRepository;
     
     @Autowired
     private CategoryRepository categoryRepository;
@@ -84,26 +88,7 @@ public class DevProfile {
             Task task = randomTask();
             taskRepository.save(task);
             categoryService.setCategoryToTask(category.getId(), task);
-        }        
-        
-        LocalAccount student = new LocalAccount();
-        student.setUsername("student");
-        student.setPassword("student");
-        student.setRole("STUDENT");
-
-        LocalAccount teacher = new LocalAccount();
-        teacher.setUsername("admin");
-        teacher.setPassword("admin");
-        teacher.setRole("ADMIN");
-
-        LocalAccount assistant = new LocalAccount();
-        assistant.setUsername("teacher");
-        assistant.setPassword("teacher");
-        assistant.setRole("TEACHER");
-
-        userRepository.save(student);
-        userRepository.save(teacher);
-        userRepository.save(assistant);
+        }
         
         Course course = new Course();
         course.setName("Test course");
@@ -113,6 +98,19 @@ public class DevProfile {
         
         CategoryDetail details = new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX);
         detailRepository.save(details);
+        
+        TmcAccount student = new TmcAccount();
+        student.setUsername("sqldummy");
+        student.setRole(ROLE_STUDENT);
+        student.setDeleted(false);
+        
+        TmcAccount admin = new TmcAccount();
+        admin.setUsername("mcraty");
+        admin.setRole(ROLE_ADMIN);
+        admin.setDeleted(false);
+        
+        userRepository.save(student);
+        userRepository.save(admin);
 //        courseService.createCourse(null, "Test course", null, null, "Dis a test", Arrays.asList(category.getId()));
     }
 

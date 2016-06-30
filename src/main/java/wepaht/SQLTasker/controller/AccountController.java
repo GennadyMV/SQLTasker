@@ -44,45 +44,14 @@ public class AccountController {
 
     @RequestMapping(value = "profile", method = RequestMethod.GET)
     public String getProfile(Model model) {
-        Account user = userService.getAuthenticatedUser();
-        model.addAttribute("editedUser", user);
-        model.addAttribute("roles", roles);
-        model.addAttribute("user", user);
-        model.addAttribute("points", pointService.getPointsByUsername(user.getUsername()));
-        model.addAttribute("token", userService.getToken());
-
-        return "user";
+        return userService.getProfile(model);
     }
 
     @Transactional
     @RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
     public String update(@PathVariable Long id, RedirectAttributes redirectAttributes,
             @RequestParam(required = false) String role) {
-
-        String redirectAddress = "redirect:/";
-        List<String> messages = new ArrayList<>();
-
-        TmcAccount loggedUser = userService.getAuthenticatedUser();
-        LocalAccount userToBeEdited = userRepository.getOne(id);
-
-        String loggedRole = loggedUser.getRole();
-
-        if (loggedRole.equals("ADMIN") || loggedUser.getId().equals(userToBeEdited.getId())) {
-            if(loggedUser.getRole().equals("ADMIN") && loggedUser.getId().equals(userToBeEdited.getId()) && !loggedUser.getRole().equals(role)){
-                redirectAttributes.addFlashAttribute("messages", "Admins cannot demote themselves");
-            }
-
-            if (loggedUser.getRole().equals("ADMIN")) {
-                userToBeEdited.setRole(role);
-            }
-
-            messages.add("User modified!");
-        } else {
-            messages.add("User modification failed!");
-        }
-
-        redirectAttributes.addFlashAttribute("messages", messages);
-        return redirectAddress;
+        return userService.editUser(redirectAttributes, id, role);
     }
 
     @RequestMapping(value = "register", method = RequestMethod.GET)
@@ -96,5 +65,11 @@ public class AccountController {
         userService.createToken();
         redirectAttributes.addFlashAttribute("messages", "New token created successfully!");
         return "redirect:/profile";
+    }
+    
+    @RequestMapping(value = "users/{accountId}", method = RequestMethod.DELETE)
+    public String delete(RedirectAttributes redirAttr, @PathVariable Long accountId) {
+        
+        return userService.deleteAccount(redirAttr, accountId);
     }
 }
