@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
@@ -16,6 +17,10 @@ import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACTION;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CourseRepository;
 
 @Service
@@ -43,7 +48,7 @@ public class CourseService {
 
     public String courseListing(Model model) {
 
-        TmcAccount user = accountService.getAuthenticatedUser();
+        Account user = accountService.getAuthenticatedUser();
         if (user.getRole().equals("STUDENT")) {
             model.addAttribute("courses", getActiveCourses());
         } else {
@@ -54,6 +59,12 @@ public class CourseService {
     }
 
     public String createCourse(RedirectAttributes redirectAttributes, String name, String starts, String expires, String description, List<Long> categoryIds) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (redirectAttributes != null) redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            return redirectCourses;
+        }
+        
         String redirectAddress = redirectCourses;
         List<String> messages = new ArrayList<>();
         Course course = new Course();
@@ -65,7 +76,7 @@ public class CourseService {
         redirectAddress = saveCourse(course, messages, redirectAttributes, redirectAddress);
 
         if (redirectAttributes != null) {
-            redirectAttributes.addFlashAttribute("messages", messages);
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, messages);
         }
 
         return redirectAddress;
@@ -116,19 +127,27 @@ public class CourseService {
         return course;
     }
 
-    public String courseCreateForm(Model model) {
+    public String courseCreateForm(Model model, RedirectAttributes redirAttr) {
+        Account user = accountService.getAuthenticatedUser();
+        
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            return "redirect:/courses";
+        }
+        
         model.addAttribute("categories", categoryService.findAllCategories());
         model.addAttribute("actionURL", "/courses");
         return "courseForm";
     }
 
     @Transactional
-    public String getCourse(Model model, Long courseId) {
+    public String getCourse(Model model, RedirectAttributes redirAttr, Long courseId) {
         Course course = repository.findOne(courseId);
         List<CategoryDetail> details = getActiveCategories(course);
         TmcAccount user = accountService.getAuthenticatedUser();
 
-        if (!isActiveCourse(user, course)) {
+        if (course==null||!isActiveCourse(user, course)) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return "redirect:/courses";
         }
 
@@ -143,7 +162,18 @@ public class CourseService {
     @Transactional
     public String deleteCourse(RedirectAttributes redirectAttributes, Long course) {
         List<String> messages = new ArrayList<>();
-
+        Account user = accountService.getAuthenticatedUser();
+        
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            messages.add(MESSAGE_UNAUTHORIZED_ACTION);
+            if (redirectAttributes != null) {
+                redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, messages);
+                redirectAttributes.addAttribute("courseId", course);
+            }
+            
+            return "redirect:/courses/{courseId}";
+        }
+        
         try {
             Course deletingCourse = repository.findOne(course);
             if (deletingCourse.getSubmissions() != null) {
@@ -164,7 +194,15 @@ public class CourseService {
         return redirectCourses;
     }
 
-    public String editForm(Model model, Long courseId) {
+    public String editForm(Model model, RedirectAttributes redirAttr, Long courseId) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (redirAttr != null) {
+                redirAttr.addAttribute("courseId", courseId);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            }
+            return "redirect:/courses/{courseId}";
+        }
         Course course = repository.findOne(courseId);
 
         model.addAttribute("id", courseId);
@@ -175,7 +213,15 @@ public class CourseService {
         return "courseForm";
     }
 
-    public String editCourse(RedirectAttributes redirectAttributes, Long id, String name, String starts, String expires, String description, List<Long> categoryIds) {
+    public String editCourse(RedirectAttributes redirAttr, Long id, String name, String starts, String expires, String description, List<Long> categoryIds) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (redirAttr != null) {
+                redirAttr.addAttribute("courseId", id);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            }
+            return "redirect:/courses/{courseId}";
+        }
         String redirectAddress = redirectCourses + "/" + id;
         List<String> messages = new ArrayList<>();
         Course course = repository.findOne(id);
@@ -184,7 +230,7 @@ public class CourseService {
         course = setDates(course, starts, expires, messages);
         course.setCourseCategories(categoryService.findCategoriesByIds(categoryIds));
 
-        redirectAddress = saveEditCourse(course, messages, redirectAddress, redirectAttributes);
+        redirectAddress = saveEditCourse(course, messages, redirectAddress, redirAttr);
 
         return redirectAddress;
     }
@@ -216,9 +262,17 @@ public class CourseService {
     }
 
     @Transactional
-    public String joinCourse(RedirectAttributes redirectAttributes, Long id) {
+    public String joinCourse(RedirectAttributes redirAttr, Long id) {
         Course course = repository.findOne(id);
         List<String> messages = new ArrayList<>();
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT) && !isActiveCourse(user, course)) {
+            if (redirAttr != null) {
+                redirAttr.addAttribute("courseId", id);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            }
+            return "redirect:/courses/{courseId}";
+        }
 
         try {
             List<TmcAccount> students = course.getStudents();
@@ -232,9 +286,9 @@ public class CourseService {
             messages.add("Could not join course " + course.getName());
         }
 
-        if (redirectAttributes != null) {
-            redirectAttributes.addFlashAttribute("messages", messages);
-            redirectAttributes.addAttribute("id", id);
+        if (redirAttr != null) {
+            redirAttr.addFlashAttribute("messages", messages);
+            redirAttr.addAttribute("id", id);
         }
 
         return redirectCourses + "/{id}";
@@ -273,7 +327,15 @@ public class CourseService {
     }
 
     @Transactional
-    public String getCategoryDetails(Model model, Long id) {
+    public String getCategoryDetails(Model model, RedirectAttributes redirAttr, Long id) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (redirAttr != null) {
+                redirAttr.addAttribute("courseId", id);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            }
+            return "redirect:/courses/{courseId}";
+        }
         Course course = repository.findOne(id);
         CategoryDetailsWrapper wrapper = new CategoryDetailsWrapper();
         wrapper.setCategoryDetailsList((ArrayList<CategoryDetail>) categoryDetailsService.categoriesToCategoryDetails(course.getCourseCategories(), course));
@@ -286,15 +348,23 @@ public class CourseService {
         return "categoryDetails";
     }
 
-    public String setCategoryDetails(RedirectAttributes redirectAttributes, List<CategoryDetail> categoryDetailsList, Long id) {
+    public String setCategoryDetails(RedirectAttributes redirAttr, List<CategoryDetail> categoryDetailsList, Long id) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (redirAttr != null) {
+                redirAttr.addAttribute("courseId", id);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            }
+            return "redirect:/courses/{courseId}";
+        }
         String redirectAddress = redirectCourses + "/{id}";
         List<String> messages = new ArrayList<>();
         Course course = repository.findOne(id);
         int detailsSaved = categoryDetailsService.saveCategoryDetailsList(categoryDetailsList);
         messages.add(detailsSaved + " category details saved");
 
-        redirectAttributes.addFlashAttribute("messages", messages);
-        redirectAttributes.addFlashAttribute("id", id);
+        redirAttr.addFlashAttribute("messages", messages);
+        redirAttr.addFlashAttribute("id", id);
 
         return redirectAddress;
     }
@@ -401,7 +471,7 @@ public class CourseService {
         return repository.findByStartsBeforeAndExpiresAfter(date);
     }
 
-    private boolean isActiveCourse(TmcAccount user, Course course) {
+    private boolean isActiveCourse(Account user, Course course) {
         LocalDate now = LocalDate.now();
         if (user.getRole().equals("STUDENT")) {
             return (course.getStarts() == null || (course.getStarts() != null && (course.getStarts().isBefore(now) || course.getStarts().equals(now))))

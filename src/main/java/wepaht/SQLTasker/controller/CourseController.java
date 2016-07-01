@@ -36,8 +36,8 @@ public class CourseController {
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String getCourse(Model model, @PathVariable Long id) {
-        return courseService.getCourse(model, id);
+    public String getCourse(Model model, RedirectAttributes redirAttr, @PathVariable Long id) {
+        return courseService.getCourse(model, redirAttr, id);
     }
     
     @RequestMapping(method = RequestMethod.POST)
@@ -52,8 +52,8 @@ public class CourseController {
     }
     
     @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public String getCreateCourse(Model model) {
-        return courseService.courseCreateForm(model);
+    public String getCreateCourse(Model model, RedirectAttributes redirAttr) {
+        return courseService.courseCreateForm(model, redirAttr);
     }
     
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
@@ -62,8 +62,8 @@ public class CourseController {
     }
     
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
-    public String getEditCourse(Model model, @PathVariable Long id) {
-        return courseService.editForm(model, id);
+    public String getEditCourse(Model model, RedirectAttributes redirAttr, @PathVariable Long id) {
+        return courseService.editForm(model, redirAttr, id);
     }
     
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
@@ -90,8 +90,8 @@ public class CourseController {
     }
     
     @RequestMapping(value = "/{id}/details", method = RequestMethod.GET)
-    public String getCategoryDetails(Model model, @PathVariable Long id, @ModelAttribute("wrapper") CategoryDetailsWrapper wrapper) {
-        return courseService.getCategoryDetails(model, id);
+    public String getCategoryDetails(Model model, RedirectAttributes redirAttr, @PathVariable Long id, @ModelAttribute("wrapper") CategoryDetailsWrapper wrapper) {
+        return courseService.getCategoryDetails(model, redirAttr, id);
     }
     
     @RequestMapping(value = "/{id}/details", method = RequestMethod.POST)
