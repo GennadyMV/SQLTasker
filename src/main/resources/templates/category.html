@@ -9,7 +9,7 @@
         <div th:include="fragments/scripts :: confirmScript"></div>
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <ul sec:authorize="hasRole('ROLE_ADMIN')">
+        <ul>
             <li id="sql-li">
                 <form th:method="DELETE" th:action="@{/categories/{id} (id=${category.id})}">
                     <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
@@ -40,7 +40,7 @@
             <div th:each="task : ${taskList}">
                 <h4 th:if="${course != null}"><a th:text="${task.name}" th:href="@{/courses/{courseId}/category/{categoryId}/task/{taskId} (courseId = ${course.id}, categoryId = ${category.id}, taskId = ${task.id})}">Task name</a></h4>
                 <h4 th:if="${course == null}"><a th:text="${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</a></h4>
-                <div sec:authorize="hasRole('ROLE_TEACHER')">
+                <div>
                     <form th:method="POST" th:action="@{/categories/{id} (id = ${category.id})}">
                         <input id="taskId" name="taskId" type="hidden" th:value="${task.id}"></input>
                         <input type="submit" th:value="'Switch ' + ${task.name} + ' with next task'"></input>

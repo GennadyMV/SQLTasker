@@ -85,46 +85,25 @@ public class CategoryController {
 
     @Transactional
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public String removeCategory(@PathVariable Long id,
+    public String delete(@PathVariable Long id,
             RedirectAttributes redirectAttributes) throws Exception {
         
-        categoryService.deleteCategory(id);
-        redirectAttributes.addFlashAttribute("messages", "Category deleted!");
-        return "redirect:/categories";
+        return categoryService.deleteCategory(redirectAttributes, id);
     }
 
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
-    public String updateCategory(@PathVariable Long id, RedirectAttributes redirectAttributes,
+    public String update(@PathVariable Long id, RedirectAttributes redirectAttributes,
             @RequestParam String name,
             @RequestParam String description,
             @RequestParam(required = false) List<Long> taskIds) {
-        Category oldCategory = categoryRepository.findOne(id);
-        oldCategory.setName(name);
-        oldCategory.setDescription(description);
-        List<Task> tasks = new ArrayList<>();
-        if (taskIds != null) {
-            for (Long taskId : taskIds) {
-                tasks.add(taskRepository.findOne(taskId));
-            }
-        }
-        categoryService.setCategoryToTasks(oldCategory, tasks);
-
-        try {
-            categoryRepository.save(oldCategory);
-        } catch (Exception e) {
-            return redirectMessage("Category update failed", redirectAttributes);
-        }
-
-        redirectAttributes.addFlashAttribute("messages", "Category modified!");
-        return "redirect:/categories/{id}";
+        
+        return categoryService.updateCategory(redirectAttributes, id, name, description, taskIds);
     }
 
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
-    public String getEditCategoryPage(@PathVariable Long id,
-            Model model) {
-        model.addAttribute("category", categoryRepository.findOne(id));
-        model.addAttribute("allTasks", taskRepository.findAll());
-        return "categoryEdit";
+    public String getEditForm(@PathVariable Long id,
+            Model model, RedirectAttributes redirAttr) {
+        return categoryService.getEditForm(model, redirAttr, id);
     }
 
     @RequestMapping(value = "/{id}/tasks/{taskId}", method = RequestMethod.GET)
@@ -144,7 +123,7 @@ public class CategoryController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public String changeCategoryTaskOrder(RedirectAttributes redirectAttributes,
+    public String reorderTasks(RedirectAttributes redirectAttributes,
             @PathVariable Long id,
             @RequestParam Long taskId) {
 
@@ -154,7 +133,7 @@ public class CategoryController {
 
         redirectAttributes.addAttribute("categoryId", id);
 
-        return "redirect:/categories/{categoryId}";
+        return categoryService.reorderTask(redirectAttributes, id, taskId);
     }
 
     private String redirectMessage(String message, RedirectAttributes ra) {

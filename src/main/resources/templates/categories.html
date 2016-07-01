@@ -10,7 +10,7 @@
         <div th:include="fragments/navbar_template :: navbar"></div>
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div class="get-in-touch" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="get-in-touch">
             <h2>Create new category</h2>
 
             <form method="POST" th:action="@{/categories}">
