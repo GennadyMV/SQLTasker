@@ -34,10 +34,6 @@ public class DefaultController {
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String hello(Model model, Authentication auth){
         
-        model.addAttribute("user", userService.getAuthenticatedUser());
-        model.addAttribute("submissions", submissionService.listAllSubmissions());
-        model.addAttribute("feedback", feedbackService.listAllFeedback());
-        
         return "index";
     }
 }

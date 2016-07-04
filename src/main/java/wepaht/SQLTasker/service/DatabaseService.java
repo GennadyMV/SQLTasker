@@ -10,8 +10,15 @@ import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.*;
 import org.springframework.transaction.annotation.Transactional;
-import wepaht.SQLTasker.domain.LocalAccount;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACTION;
+import static wepaht.SQLTasker.library.StringLibrary.REDIRECT_DEFAULT;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
+import static wepaht.SQLTasker.library.StringLibrary.VIEW_DATABASES;
 
 @Service
 public class DatabaseService {
@@ -317,14 +324,45 @@ public class DatabaseService {
         try {
             Database database = databaseRepository.findOne(databaseId);
             database.setDeleted(true);
-
             return true;
         } catch (Exception e) {
             return false;
         }
     }
-    
+
     public Database getDatabase(Long id) {
         return databaseRepository.findOne(id);
+    }
+
+    public String listDatabases(Model model) {
+        TmcAccount owner = accountService.getAuthenticatedUser();
+        if (owner.getRole().equals(ROLE_STUDENT)) {
+            model.addAttribute("databases", databaseRepository.findByOwnerAndDeletedFalse(owner));
+        } else {
+            model.addAttribute("databases", databaseRepository.findAll());
+        }
+        return VIEW_DATABASES;
+    }
+
+    public String deleteDatabaseById(RedirectAttributes redirAttr, Long databaseId) {
+        String redirectAddress = "redirect:/databases";
+        TmcAccount user = accountService.getAuthenticatedUser();
+        Database db = databaseRepository.findOne(databaseId);
+        if (user.getRole().equals(ROLE_STUDENT) && (db == null || db.getOwner() == null || !db.getOwner().equals(user))) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            return redirectAddress;
+        } else {
+            if (deleteDatabase(databaseId)) {
+                redirAttr.addFlashAttribute("messages", "Database deleted");
+            } else {
+                redirAttr.addFlashAttribute("messages", "No such database");
+            }
+        }
+
+        return redirectAddress;
+    }
+
+    List<Database> findAllDatabases() {
+        return databaseRepository.findAll();
     }
 }

@@ -8,10 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TaskFeedback;
+import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.library.StringLibrary.REDIRECT_DEFAULT;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.TaskFeedbackRepository;
 
 @Service
@@ -86,7 +91,12 @@ public class TaskFeedbackService {
         repository.save(taskFeedback);
     }
 
-    public String getAllFeedback(Model model) {
+    public String getAllFeedback(Model model, RedirectAttributes redirAttr) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            return REDIRECT_DEFAULT;
+        }
         model.addAttribute("feedback", listAllFeedback());
         
         return "feedbackList";

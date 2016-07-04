@@ -1,22 +1,24 @@
 package wepaht.SQLTasker.service;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
-import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
+import wepaht.SQLTasker.library.StringLibrary;
+import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.library.StringLibrary.REDIRECT_DEFAULT;
+import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service
@@ -24,9 +26,6 @@ public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
-
-    @Autowired
-    private TaskResultService taskResultService;
 
     @Autowired
     private DatabaseService databaseService;
@@ -39,9 +38,6 @@ public class TaskService {
 
     @Autowired
     private SubmissionService submissionService;
-
-    @Autowired
-    private CategoryDetailService categoryDetailService;
 
     @Autowired
     private AccountService accountService;
@@ -196,7 +192,21 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public List<Task> getAllTasks() {
+    public List<Task> findAllTasks() {
         return taskRepository.findAll();
+    }
+
+    public String listTasks(Model model, RedirectAttributes redirAttr) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            return REDIRECT_DEFAULT;
+        }
+        
+        model.addAttribute("tasks", taskRepository.findAll());
+        model.addAttribute("databases", databaseService.findAllDatabases());
+        model.addAttribute("categories", categoryService.findAllCategories());
+        
+        return "tasks";
     }
 }

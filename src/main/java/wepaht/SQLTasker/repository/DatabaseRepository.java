@@ -7,6 +7,7 @@ import wepaht.SQLTasker.domain.Database;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import wepaht.SQLTasker.domain.TmcAccount;
 
 @RestResource(exported = false)
 public interface DatabaseRepository extends JpaRepository<Database, Long>{
@@ -20,4 +21,6 @@ public interface DatabaseRepository extends JpaRepository<Database, Long>{
     public List<Database> findAll();
     
     public List<Database> findByNameAndDeletedFalse(String name);
+
+    public List<Database> findByOwnerAndDeletedFalse(TmcAccount owner);
 }

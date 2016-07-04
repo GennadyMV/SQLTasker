@@ -175,7 +175,7 @@ public class CategoryService {
         }
         
         model.addAttribute(ATTRIBUTE_CATEGORY, category);
-        model.addAttribute("allTasks", taskService.getAllTasks());
+        model.addAttribute("allTasks", taskService.findAllTasks());
         
         return VIEW_CATEGORY_EDIT;
     }

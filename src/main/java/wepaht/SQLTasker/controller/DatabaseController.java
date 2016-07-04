@@ -29,11 +29,7 @@ public class DatabaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String listDatabases(Model model) {
-        List<Database> databases = databaseRepository.findAll();
-        model.addAttribute("user", userService.getAuthenticatedUser());
-        model.addAttribute("databases", databases);
-
-        return "databases";
+        return databaseService.listDatabases(model);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -60,12 +56,6 @@ public class DatabaseController {
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String deleteDatabase(RedirectAttributes redirAttr, Long databaseId) {
-        if (databaseService.deleteDatabase(databaseId)) {
-            redirAttr.addFlashAttribute("messages", "Database deleted");
-        } else {
-            redirAttr.addFlashAttribute("messages", "No such database");
-        }
-        
-        return "redirect:/databases";
+        return databaseService.deleteDatabaseById(redirAttr, databaseId);
     }
 }

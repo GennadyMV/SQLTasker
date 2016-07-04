@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
@@ -144,7 +143,7 @@ public class CourseService {
     public String getCourse(Model model, RedirectAttributes redirAttr, Long courseId) {
         Course course = repository.findOne(courseId);
         List<CategoryDetail> details = getActiveCategories(course);
-        TmcAccount user = accountService.getAuthenticatedUser();
+        Account user = accountService.getAuthenticatedUser();
 
         if (course==null||!isActiveCourse(user, course)) {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
@@ -275,11 +274,7 @@ public class CourseService {
         }
 
         try {
-            List<TmcAccount> students = course.getStudents();
-            TmcAccount currentUser = accountService.getAuthenticatedUser();
-            if (!students.contains(currentUser)) {
-                course.getStudents().add(currentUser);
-            }
+            accountService.addUserToCourse(course);
             messages.add("Joined to course " + course.getName());
         } catch (Exception e) {
             System.out.println(course.getName());
@@ -294,29 +289,13 @@ public class CourseService {
         return redirectCourses + "/{id}";
     }
 
-    public boolean addStudentToCourse(TmcAccount student, Course course) {
-        try {
-            if (course.getStudents() == null) {
-                course.setStudents(Arrays.asList(student));
-            } else {
-                course.getStudents().add(student);
-            }
-            repository.save(course);
-            return true;
-        } catch (Exception e) {
-        }
-
-        return false;
-    }
-
     @Transactional
     public String leaveCourse(RedirectAttributes redirectAttributes, Long id) {
         List<String> messages = new ArrayList<>();
         Course course = repository.findOne(id);
 
         try {
-            TmcAccount student = accountService.getAuthenticatedUser();
-            course.getStudents().remove(student);
+            accountService.removeUserFromCourse(course);            
             messages.add("You have left course " + course.getName());
         } catch (Exception e) {
             messages.add("You failed to leave course" + course.getName());

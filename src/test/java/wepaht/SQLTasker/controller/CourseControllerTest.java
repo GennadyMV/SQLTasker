@@ -140,6 +140,14 @@ public class CourseControllerTest {
 
         return courseRepository.save(course);
     }
+    
+    private Course createTestCourse(String name, TmcAccount user) {
+        Course course = new Course();
+        course.setName(name);
+        course.setStudents(Arrays.asList(user));
+        
+        return courseRepository.save(course);
+    }
 
     private Category createTestCategory(String name) {
         Category category = new Category();
@@ -387,8 +395,7 @@ public class CourseControllerTest {
 
     @Test
     public void testUserCanLeaveJoinedCourse() throws Exception {
-        Course course = createTestCourse("Leave dis");
-        courseService.addStudentToCourse(student, course);
+        Course course = createTestCourse("Leave dis", student);        
         BDDMockito.given(accountServiceMock.getAuthenticatedUser()).willReturn(student);
 
         mockMvc.perform(post(URI + "/" + course.getId() + "/leave")

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.service.TaskFeedbackService;
 
 @Controller
@@ -15,7 +16,7 @@ public class FeedbackController {
     private TaskFeedbackService feedbackService;
     
     @RequestMapping(method = RequestMethod.GET)
-    public String getAllFeedback(Model model) {
-        return feedbackService.getAllFeedback(model);
+    public String getAllFeedback(Model model, RedirectAttributes redirAttr) {
+        return feedbackService.getAllFeedback(model, redirAttr);
     }
 }

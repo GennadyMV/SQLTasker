@@ -7,6 +7,7 @@ import wepaht.SQLTasker.domain.Category;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import wepaht.SQLTasker.domain.TmcAccount;
 
 @RestResource(exported = false)
 public interface CategoryRepository extends JpaRepository<Category, Long> {
@@ -18,4 +19,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Override
     @Query("SELECT c FROM Category c WHERE c.deleted=false")
     List<Category> findAll();
+    
+    List<Category> findByOwnerAndDeletedFalse(TmcAccount owner);
 }

@@ -79,11 +79,10 @@ public class TaskController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String listTasks(Model model) {
-        model.addAttribute("tasks", taskRepository.findAll());
-        model.addAttribute("databases", databaseRepository.findAll());
-        model.addAttribute("categories", categoryRepository.findAll());
-        return "tasks";
+    public String listAll(Model model, RedirectAttributes redirAttr) {
+        
+        
+        return taskService.listTasks(model, redirAttr);
     }
 
     @RequestMapping(method = RequestMethod.POST)
