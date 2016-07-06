@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
-public class Task extends AbstractPersistable<Long> {
+public class Task extends AbstractPersistable<Long> implements Owned {
     @ManyToMany(mappedBy = "taskList", fetch = FetchType.EAGER)
     private List<Category> categories;
 
@@ -42,6 +42,9 @@ public class Task extends AbstractPersistable<Long> {
     
     @ManyToOne
     private TmcAccount owner;
+    
+    @OneToMany(orphanRemoval = true, mappedBy = "task")
+    private List<Tag> tags;
     
     private Boolean deleted;
     
@@ -123,10 +126,12 @@ public class Task extends AbstractPersistable<Long> {
         this.feedback = feedback;
     }
 
+    @Override
     public TmcAccount getOwner() {
         return owner;
     }
 
+    @Override
     public void setOwner(TmcAccount owner) {
         this.owner = owner;
     }
@@ -137,5 +142,13 @@ public class Task extends AbstractPersistable<Long> {
 
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

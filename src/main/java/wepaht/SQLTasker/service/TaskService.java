@@ -2,6 +2,7 @@ package wepaht.SQLTasker.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,15 +13,19 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Database;
+import wepaht.SQLTasker.domain.Table;
+import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.library.ConstantString;
 import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
 import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
 import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
 import static wepaht.SQLTasker.library.ConstantString.REDIRECT_DEFAULT;
 import static wepaht.SQLTasker.library.ConstantString.REDIRECT_TASKS;
 import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
+import static wepaht.SQLTasker.library.ConstantString.VIEW_TASK;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service
@@ -43,6 +48,9 @@ public class TaskService {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private TagService tagService;
 
     @Transactional
     public boolean removeTask(Long taskId) {
@@ -108,13 +116,13 @@ public class TaskService {
 
         return Arrays.asList(messages, databaseService.performQuery(task.getDatabase().getId(), query), isCorrect);
     }
-    
+
     public Task createTask(Task task) {
         if (isInvalidSolution(task, task.getDatabase(), null)) {
             return null;
         }
         task.setOwner(accountService.getAuthenticatedUser());
-        
+
         task = taskRepository.save(task);
         return task;
     }
@@ -126,11 +134,13 @@ public class TaskService {
             BindingResult result) {
         Account user = accountService.getAuthenticatedUser();
         if (user.getRole().equals(ROLE_STUDENT)) {
-            if (redirectAttributes != null) redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, 
-                    MESSAGE_UNAUTHORIZED_ACTION + ": student can create tasks to their own categories");
+            if (redirectAttributes != null) {
+                redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES,
+                        MESSAGE_UNAUTHORIZED_ACTION + ": student can create tasks to their own categories");
+            }
             return REDIRECT_TASKS;
         }
-        
+
         if (isDatabaseNull(databaseId, redirectAttributes)) {
             return REDIRECT_TASKS;
         }
@@ -151,7 +161,6 @@ public class TaskService {
             categoryService.setTaskToCategories(task, categoryIds);
         }
 
-        
         task.setOwner(accountService.getAuthenticatedUser());
 
         taskRepository.save(task);
@@ -221,15 +230,108 @@ public class TaskService {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return REDIRECT_DEFAULT;
         }
-        
+
         model.addAttribute("tasks", taskRepository.findAll());
-        model.addAttribute("databases", databaseService.findAllDatabases());
+        model.addAttribute("databases", databaseService.getAllDatabases());
         model.addAttribute("categories", categoryService.findAllCategories());
-        
+
         return "tasks";
     }
 
     List<Task> findAllOwnTasks() {
         return taskRepository.findByOwnerAndDeletedFalse(accountService.getAuthenticatedUser());
+    }
+
+    @Transactional
+    public String removeTask(RedirectAttributes redirectAttributes, Long id) {
+        Account user = accountService.getAuthenticatedUser();
+        Task task = taskRepository.findOne(id);
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+        } else {
+            task.setDeleted(Boolean.TRUE);
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
+        }
+
+        return REDIRECT_DEFAULT;
+    }
+
+    public String getOneTask(Model model, RedirectAttributes redirAttr, Long id, Map<Long, String> queries) {
+        Task task = taskRepository.findOne(id);
+        Account user = accountService.getAuthenticatedUser();
+        String redirectAddress = VIEW_TASK;
+
+        if (!user.getRole().equals(ROLE_STUDENT)) {
+            if (!queries.containsKey(id)) {
+                model.addAttribute("queryResults", new Table("dummy"));
+            }
+
+            List<Tag> tags = tagService.getTagsByTask(task);
+            model.addAttribute("tags", tags);
+            model.addAttribute("task", task);
+            model.addAttribute("database", task.getDatabase());
+        } else {
+            redirectAddress = REDIRECT_DEFAULT;
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+        }
+
+        return redirectAddress;
+    }
+
+    public String getEditForm(Model model, RedirectAttributes redirAttr, Long id) {
+        Task task = taskRepository.findOne(id);
+        Account user = accountService.getAuthenticatedUser();
+        String redirectAddress;
+
+        if (!user.getRole().equals(ROLE_STUDENT)) {
+            redirectAddress = setEditForm(model, task);
+        } else {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            redirectAddress = REDIRECT_DEFAULT;
+        }
+
+        return redirectAddress;
+    }
+
+    public String setEditForm(Model model, Task task) {
+        String redirectAddress;
+        model.addAttribute("tags", tagService.getTagsByTask(task));
+        model.addAttribute("task", task);
+        model.addAttribute("databases", databaseService.getAllDatabases());
+        redirectAddress = "editTask";
+        return redirectAddress;
+    }
+
+    public String editTask(RedirectAttributes redirectAttributes, Long id, Long databaseId, String name, String solution, String description) {
+        String redirectAddress = "redirect:/tasks/{id}";
+        Account user = accountService.getAuthenticatedUser();
+
+        if (!user.getRole().equals(ROLE_STUDENT)) {
+            if (!updateTask(id, solution, redirectAttributes, redirectAddress, description, name)) return redirectAddress;
+
+            redirectAttributes.addAttribute("id", id);
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Task modified!");
+        } else {
+            redirectAddress = REDIRECT_DEFAULT;
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+        }
+        return redirectAddress;
+    }
+
+    @Transactional
+    public boolean updateTask(Long taskId, String solution, RedirectAttributes redirectAttributes, String redirectAddress, String description, String name) {
+        Database db = databaseService.getDatabase(taskId);
+        if (solution != null || !solution.isEmpty()) {
+            if (!databaseService.isValidQuery(db, solution)) {
+                redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Task update failed due to invalid solution");
+                return false;
+            }
+        }
+        Task oldtask = taskRepository.getOne(taskId);
+        oldtask.setDatabase(db);
+        oldtask.setDescription(description);
+        oldtask.setName(name);
+        oldtask.setSolution(solution);
+        return true;
     }
 }

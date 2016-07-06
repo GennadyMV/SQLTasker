@@ -116,7 +116,6 @@ public class CategoryController {
             Model model, RedirectAttributes redirectAttributes) {
 
         Category category = categoryRepository.findOne(id);
-        LocalDate now = LocalDate.now();
 
         Task task = taskRepository.findOne(taskId);
         model.addAttribute("task", task);
@@ -141,6 +140,11 @@ public class CategoryController {
         }
         return categoryService.createTaskToCategory(redirAttr, model, categoryId, task);
     }
+    
+    @RequestMapping(value = "/{categoryId}/tasks/{taskId}", method = RequestMethod.DELETE)
+    public String deleteTask(RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId) {
+        return categoryService.deleteTask(redirAttr, categoryId, taskId);
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public String reorderTasks(RedirectAttributes redirectAttributes,
@@ -154,6 +158,19 @@ public class CategoryController {
         redirectAttributes.addAttribute("categoryId", id);
 
         return categoryService.reorderTask(redirectAttributes, id, taskId);
+    }
+    
+    @RequestMapping(value = "/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.GET)
+    public String getEditTaskForm(Model model, RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId) {
+        return categoryService.getEditTaskForm(model, redirAttr, categoryId, taskId);
+    }
+    
+    public String editTask(RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId, 
+            @RequestParam Long databaseId,
+            @RequestParam String name,
+            @RequestParam String solution,
+            @RequestParam String description) {
+        return categoryService.editTask(redirAttr, categoryId, taskId, databaseId, name, solution, description);
     }
 
     private String redirectMessage(String message, RedirectAttributes ra) {

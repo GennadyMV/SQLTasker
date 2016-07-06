@@ -7,7 +7,7 @@ import wepaht.SQLTasker.domain.Task;
 
 public interface TagRepository extends JpaRepository<Tag,Long> {
     
-    List findByTaskId(Long taskId);
+    List findByTask(Task task);
     List findByName(String name);
-    Tag findByNameAndTaskId(String name, Long taskId);
+    Tag findByNameAndTask(String name, Task task);
 }

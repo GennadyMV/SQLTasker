@@ -362,7 +362,7 @@ public class DatabaseService {
         return redirectAddress;
     }
 
-    public List<Database> findAllDatabases() {
+    public List<Database> getAllDatabases() {
         return databaseRepository.findAll();
     }
 }

@@ -256,7 +256,7 @@ public class TaskControllerTest {
         Tag tag = new Tag();
         String tagName = "Diz iz ded";
         tag.setName(tagName);
-        tag.setTaskId(task.getId());
+        tag.setTask(task);
         tag = tagRepository.save(tag);
 
         mockMvc.perform(delete(API_URI + "/" + task.getId() + "/tags").param("name", tagName)

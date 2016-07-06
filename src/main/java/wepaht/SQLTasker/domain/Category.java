@@ -8,7 +8,7 @@ import java.util.List;
 
 
 @Entity
-public class Category extends AbstractPersistable<Long> {
+public class Category extends AbstractPersistable<Long> implements Owned{
 
     @NotBlank
     private String name;
@@ -107,10 +107,12 @@ public class Category extends AbstractPersistable<Long> {
         this.submissions = submissions;
     }
 
+    @Override
     public TmcAccount getOwner() {
         return owner;
     }
 
+    @Override
     public void setOwner(TmcAccount owner) {
         this.owner = owner;
     }

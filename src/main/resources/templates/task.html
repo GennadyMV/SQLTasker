@@ -14,14 +14,14 @@ and open the template in the editor.
         <div th:include="fragments/messages_template :: messages"></div>
 
         <div>
-            <ul sec:authorize="hasRole('ROLE_ADMIN')">
+            <ul>
                 <li id="sql-li1">
-                    <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
+                    <form th:method="DELETE" th:action="@{ {current} (current=${#httpServletRequest.requestURI})}">
                         <input id="sql-input1" type="submit" value="delete task" Onclick="return Confirm();"/>
                     </form>
                 </li>
                 <li id="sql-li2">
-                    <form th:method="GET" th:action="@{/tasks/{id}/edit (id=${task.id})}">
+                    <form th:method="GET" th:action="@{ {current}/edit (current=${#httpServletRequest.requestURI})}">
                         <input id="sql-input2" type="submit" value="edit task" Onclick="return Confirm();"/>
                     </form>
                 </li>

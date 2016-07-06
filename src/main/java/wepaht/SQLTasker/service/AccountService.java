@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.AuthenticationToken;
 import wepaht.SQLTasker.domain.Course;
+import wepaht.SQLTasker.domain.Owned;
 import wepaht.SQLTasker.domain.TmcAccount;
 import static wepaht.SQLTasker.library.ConstantString.*;
 import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
@@ -206,5 +207,14 @@ public class AccountService {
         if (course.getStudents() != null && course.getStudents().contains(student)) {
             course.getStudents().remove(student);
         }        
+    }
+    
+    public Boolean isOwned(Owned ownedObject) {
+        TmcAccount user = getAuthenticatedUser();
+        return ownedObject.getOwner() != null && ownedObject.getOwner().equals(user);
+    }
+    
+    public Boolean isOwned(Owned ownedObject, Account user) {
+        return ownedObject.getOwner() != null && ownedObject.getOwner().equals(user);
     }
 }

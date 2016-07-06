@@ -13,15 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Course;
-import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_CATEGORY;
-import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_FAILED_ACTION;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
-import static wepaht.SQLTasker.library.ConstantString.REDIRECT_CATEGORIES;
-import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
-import static wepaht.SQLTasker.library.ConstantString.VIEW_CATEGORY_EDIT;
+import static wepaht.SQLTasker.library.ConstantString.*;
 
 @Service
 public class CategoryService {
@@ -40,6 +32,9 @@ public class CategoryService {
 
     @Autowired
     private DatabaseService dbService;
+
+    @Autowired
+    private TagService tagService;
 
     /**
      * Adds task to categorys' task list.
@@ -176,7 +171,15 @@ public class CategoryService {
         }
 
         model.addAttribute(ATTRIBUTE_CATEGORY, category);
-        model.addAttribute("allTasks", taskService.findAllTasks());
+
+        List<Task> tasks;
+
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            tasks = category.getTaskList();
+        } else {
+            tasks = taskService.findAllTasks();
+        }
+        model.addAttribute("allTasks", tasks);
 
         return VIEW_CATEGORY_EDIT;
     }
@@ -249,9 +252,9 @@ public class CategoryService {
             redirAttr.addAttribute("categoryId", categoryId);
             return "redirect:/categories/{categoryId}";
         }
-        
+
         model.addAttribute("categoryId", categoryId);
-        model.addAttribute("databases", dbService.findAllDatabases());
+        model.addAttribute("databases", dbService.getAllDatabases());
         model.addAttribute("category", Arrays.asList(category.getId()));
         model.addAttribute("task", task);
         return "taskForm";
@@ -278,7 +281,7 @@ public class CategoryService {
         } catch (Exception e) {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_FAILED_ACTION + ": " + e.toString());
         }
-        
+
         setTaskToCategories(task, Arrays.asList(categoryId));
 
         return "redirect:/categories/{categoryId}";
@@ -286,13 +289,75 @@ public class CategoryService {
 
     public String listAllCategories(Model model) {
         Account user = accountService.getAuthenticatedUser();
-        
+
         model.addAttribute("categories", categoryRepository.findAll());
-        if (user.getRole().equals(ROLE_STUDENT)) {
-            model.addAttribute("tasks", taskService.findAllOwnTasks());
-        } else {
+        if (!user.getRole().equals(ROLE_STUDENT)) {
             model.addAttribute("tasks", taskService.findAllTasks());
-        }        
+        }
         return "categories";
+    }
+
+    public String deleteTask(RedirectAttributes redirAttr, Long categoryId, Long taskId) {
+        Account user = accountService.getAuthenticatedUser();
+        Category category = categoryRepository.findOne(categoryId);
+        Task task = taskService.getTaskById(taskId);
+
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (!accountService.isOwned(category) || !accountService.isOwned(task)) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            } else {
+                removeTaskFromCategory(category, task);
+                tagService.createTag(TAG_HIDDEN, task);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
+            }
+        } else {
+            taskService.removeTask(taskId);
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
+        }
+
+        redirAttr.addAttribute("categoryId", categoryId);
+        return "redirect:/categories/{categoryId}";
+    }
+
+    public String getEditTaskForm(Model model, RedirectAttributes redirAttr, Long categoryId, Long taskId) {
+        Account user = accountService.getAuthenticatedUser();
+        Category category = categoryRepository.findOne(categoryId);
+        Task task = taskService.getTaskById(taskId);
+
+        String redirectAddress;
+
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (accountService.isOwned(category, user) && accountService.isOwned(task, user)) {
+                redirectAddress = taskService.setEditForm(model, task);
+            } else {
+                redirAttr.addAttribute("categoryId", categoryId);
+                redirAttr.addAttribute("taskId", taskId);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+                redirectAddress = "redirect:/categories/{categoryId}/tasks/{taskId}";
+            }
+        } else {
+            redirectAddress = taskService.setEditForm(model, task);
+        }
+
+        return redirectAddress;
+    }
+
+    public String editTask(RedirectAttributes redirAttr, Long categoryId, Long taskId, Long databaseId, String name, String solution, String description) {
+        String redirectAddress = "redirect:/categories/{categoryId}/tasks/{taskId}";
+        Account user = accountService.getAuthenticatedUser();
+        Category category = categoryRepository.findOne(taskId);
+        Task task = taskService.getTaskById(taskId);
+        redirAttr.addAttribute("categoryId", categoryId);
+        redirAttr.addAttribute("taskId", taskId);
+
+        if (user.getRole().equals(ROLE_STUDENT) && (!accountService.isOwned(task, user) || !accountService.isOwned(category, user))) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);            
+        } else {
+            if (taskService.updateTask(taskId, solution, redirAttr, redirectAddress, description, name)) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": updated task " + task.getName());
+            }
+        }
+
+        return redirectAddress;
     }
 }

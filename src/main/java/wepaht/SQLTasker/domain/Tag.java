@@ -1,6 +1,7 @@
 package wepaht.SQLTasker.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -9,7 +10,9 @@ public class Tag extends AbstractPersistable<Long> {
     
     @NotBlank
     private String name;
-    private Long taskId;
+    
+    @ManyToOne
+    private Task task;
 
     /**
      * @return the name
@@ -22,20 +25,20 @@ public class Tag extends AbstractPersistable<Long> {
      * @param name the name to set
      */
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toUpperCase();
     }
 
     /**
      * @return the taskId
      */
-    public Long getTaskId() {
-        return taskId;
+    public Task getTask() {
+        return task;
     }
 
     /**
-     * @param taskId the taskId to set
+     * @param task the task to set
      */
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
+    public void setTask(Task task) {
+        this.task = task;
     }
 }

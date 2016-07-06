@@ -31,4 +31,6 @@ public abstract class ConstantString {
     public static final String MESSAGE_UNAUTHORIZED_ACTION = "Unauhtorized action";
     public static final String MESSAGE_SUCCESSFUL_ACTION = "Action succesful";
     public static final String MESSAGE_FAILED_ACTION = "Action failed";
+    
+    public static final String TAG_HIDDEN = "HIDDEN";
 }
