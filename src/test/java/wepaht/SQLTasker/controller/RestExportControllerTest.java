@@ -41,8 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.StringLibrary.ROLE_ADMIN;
-import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_ADMIN;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;

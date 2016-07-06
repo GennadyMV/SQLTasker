@@ -27,9 +27,11 @@ public class Task extends AbstractPersistable<Long> {
     private String name;
     private String description;
 
+    @NotNull
     private String solution;
 
     @ManyToOne
+    @NotNull
     private Database database;
     
     @OneToMany(mappedBy = "task")

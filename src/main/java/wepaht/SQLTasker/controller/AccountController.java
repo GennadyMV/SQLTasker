@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.StringLibrary.*;
+import static wepaht.SQLTasker.library.ConstantString.*;
 
 @Controller
 public class AccountController {

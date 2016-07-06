@@ -12,6 +12,7 @@ import wepaht.SQLTasker.domain.Task;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import wepaht.SQLTasker.domain.TmcAccount;
 
 @RestResource(exported = false)
 public interface TaskRepository extends JpaRepository<Task,Long> {
@@ -27,4 +28,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 
     @Query("SELECT t.id FROM Task t WHERE t.deleted=false")
     List<Long> findAllTaskIds();
+
+    public List<Task> findByOwnerAndDeletedFalse(TmcAccount authenticatedUser);
 }

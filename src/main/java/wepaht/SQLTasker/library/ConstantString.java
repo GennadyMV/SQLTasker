@@ -1,6 +1,6 @@
 package wepaht.SQLTasker.library;
 
-public abstract class StringLibrary {
+public abstract class ConstantString {
     
     public static final String ROLE_STUDENT = "STUDENT";
     public static final String ROLE_TEACHER = "TEACHER";
@@ -14,6 +14,7 @@ public abstract class StringLibrary {
     
     public static final String REDIRECT_DEFAULT = "redirect:/";
     public static final String REDIRECT_CATEGORIES = "redirect:/categories";
+    public static final String REDIRECT_TASKS = "redirect:/tasks";
     
     public static final String ATTRIBUTE_CATEGORIES = "categories";
     public static final String ATTRIBUTE_CATEGORY = "category";

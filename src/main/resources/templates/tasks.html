@@ -8,9 +8,8 @@
         <div th:include="fragments/messages_template :: messages"></div>
 
         <div class="get-in-touch">
-            <h2 sec:authorize="hasRole('ROLE_ADMIN')">Create new task</h2>
-            <h2 sec:authorize="!hasRole('ROLE_ADMIN')">Suggest a task</h2>
-
+            <h2>Create new task</h2>
+            
             <form method="POST" th:action="@{/tasks}">
                 <div class="get-in-touch-text-boxs">
 
@@ -28,13 +27,13 @@
                         <span>Solution</span>
                         <textarea name="solution"></textarea>
                     </div>
-                    <div sec:authorize="hasRole('ROLE_ADMIN')">
+                    <div>
                         <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
                                 data-toggle="modal" data-target="#categoryModal">
                             Select Categories
                         </button>
                     </div>
-                    <div class="modal fade" id="categoryModal" role="dialog" sec:authorize="hasRole('ROLE_ADMIN')" >
+                    <div class="modal fade" id="categoryModal" role="dialog">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -69,13 +68,13 @@
                     </ul>
 
 
-                    <input sec:authorize="hasRole('ROLE_ADMIN')" type="submit" value="Create task"/>
-                    <input sec:authorize="!hasRole('ROLE_ADMIN')" type="submit" value="Submit suggestion"/>
+                    <input type="submit" value="Create task"/>
+                    <input type="submit" value="Submit suggestion"/>
                 </div>
             </form>
         </div>
 
-        <div class="get-in-touch" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="get-in-touch">
             <h2>List of tasks</h2>
 
             <div th:each="task: ${tasks}">

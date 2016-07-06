@@ -16,10 +16,10 @@ import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_MESSAGES;
-import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACCESS;
-import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACTION;
-import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
+import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CourseRepository;
 
 @Service

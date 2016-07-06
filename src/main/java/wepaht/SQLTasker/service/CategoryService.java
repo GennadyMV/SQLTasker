@@ -8,25 +8,20 @@ import org.springframework.transaction.annotation.Transactional;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.repository.CategoryRepository;
-import wepaht.SQLTasker.repository.TaskRepository;
-
 import java.util.List;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.domain.Submission;
-import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.library.StringLibrary;
-import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_CATEGORY;
-import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_MESSAGES;
-import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_FAILED_ACTION;
-import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_SUCCESSFUL_ACTION;
-import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACCESS;
-import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACTION;
-import static wepaht.SQLTasker.library.StringLibrary.REDIRECT_CATEGORIES;
-import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
-import static wepaht.SQLTasker.library.StringLibrary.VIEW_CATEGORY_EDIT;
+import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_CATEGORY;
+import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_FAILED_ACTION;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
+import static wepaht.SQLTasker.library.ConstantString.REDIRECT_CATEGORIES;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
+import static wepaht.SQLTasker.library.ConstantString.VIEW_CATEGORY_EDIT;
 
 @Service
 public class CategoryService {
@@ -36,15 +31,16 @@ public class CategoryService {
 
     @Autowired
     private TaskService taskService;
-    
+
     @Autowired
     private CourseService courseService;
-    
+
     @Autowired
     private AccountService accountService;
 
     @Autowired
-    private CategoryDetailService categoryDetailService;
+    private DatabaseService dbService;
+
     /**
      * Adds task to categorys' task list.
      *
@@ -120,7 +116,7 @@ public class CategoryService {
         }
         return null;
     }
-    
+
     public List<Category> findAllCategories() {
         return categoryRepository.findAll();
     }
@@ -130,35 +126,40 @@ public class CategoryService {
         Category deleting = categoryRepository.findOne(id);
         List<Course> courses = deleting.getCourses();
         if (courses != null) {
-            if (!courses.isEmpty()) courseService.removeCategoryFromCourses(courses, deleting);
+            if (!courses.isEmpty()) {
+                courseService.removeCategoryFromCourses(courses, deleting);
+            }
         }
-        
-        if (deleting.getSubmissions() != null)deleting.getSubmissions().stream().forEach((sub) -> {
-            sub.setCategory(null);
-        });
-        
+
+        if (deleting.getSubmissions() != null) {
+            deleting.getSubmissions().stream().forEach((sub) -> {
+                sub.setCategory(null);
+            });
+        }
+
         try {
             deleting.setDeleted(true);
-        } catch (Exception e) {}        
+        } catch (Exception e) {
+        }
     }
 
     Category getCategoryById(Long categoryId) {
         return categoryRepository.findOne(categoryId);
     }
-    
+
     public boolean categoryHasTask(Category category, Task task) {
         return category.getTaskList().contains(task);
     }
 
     public String deleteCategory(RedirectAttributes redirectAttributes, Long id) {
         Account user = accountService.getAuthenticatedUser();
-        
+
         if (user.getRole().equals(ROLE_STUDENT)) {
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
-            
+
             return REDIRECT_CATEGORIES;
         }
-        
+
         deleteCategory(id);
         redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Category deleted!");
         return REDIRECT_CATEGORIES;
@@ -167,16 +168,16 @@ public class CategoryService {
     public String getEditForm(Model model, RedirectAttributes redirAttr, Long categoryId) {
         Account user = accountService.getAuthenticatedUser();
         Category category = categoryRepository.findOne(categoryId);
-        
-        if (user.getRole().equals(ROLE_STUDENT) && (category.getOwner() == null||!category.getOwner().equals(user))) {
+
+        if (user.getRole().equals(ROLE_STUDENT) && (category.getOwner() == null || !category.getOwner().equals(user))) {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             redirAttr.addAttribute("id", categoryId);
             return "redirect:/categories/{id}";
         }
-        
+
         model.addAttribute(ATTRIBUTE_CATEGORY, category);
         model.addAttribute("allTasks", taskService.findAllTasks());
-        
+
         return VIEW_CATEGORY_EDIT;
     }
 
@@ -184,13 +185,13 @@ public class CategoryService {
         Account user = accountService.getAuthenticatedUser();
         List<String> messages = new ArrayList<>();
         Category editing = categoryRepository.findOne(id);
-        
+
         if (user.getRole().equals(ROLE_STUDENT) && !editing.getOwner().equals(user)) {
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
             redirectAttributes.addAttribute("id", id);
             return "redirect:/categories/{id}";
         }
-        
+
         editing = editCategory(editing, name, description, taskIds, id);
         messages = saveCategory(editing, messages);
 
@@ -220,7 +221,7 @@ public class CategoryService {
             }
         }
         setCategoryToTasks(editing, tasks);
-        
+
         return editing;
     }
 
@@ -228,15 +229,70 @@ public class CategoryService {
         Account user = accountService.getAuthenticatedUser();
         Category category = categoryRepository.findOne(id);
         Task task = taskService.getTaskById(taskId);
-        
-        if (user.getRole().equals(ROLE_STUDENT) && (category.getOwner() == null||!category.getOwner().equals(user))) {
+
+        if (user.getRole().equals(ROLE_STUDENT) && (category.getOwner() == null || !category.getOwner().equals(user))) {
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
         } else {
             setCategoryTaskFurther(category, task);
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION);
         }
-        
+
         redirectAttributes.addAttribute("categoryId", id);
         return "redirect:/categories/{categoryId}";
+    }
+
+    public String getCreateTaskToCategoryForm(Model model, RedirectAttributes redirAttr, Long categoryId, Task task) {
+        Account user = accountService.getAuthenticatedUser();
+        Category category = categoryRepository.findOne(categoryId);
+        if (user.getRole().equals(ROLE_STUDENT) && (category == null || category.getOwner() == null || !category.getOwner().equals(user))) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            redirAttr.addAttribute("categoryId", categoryId);
+            return "redirect:/categories/{categoryId}";
+        }
+        
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("databases", dbService.findAllDatabases());
+        model.addAttribute("category", Arrays.asList(category.getId()));
+        model.addAttribute("task", task);
+        return "taskForm";
+    }
+
+    @Transactional
+    public String createTaskToCategory(RedirectAttributes redirAttr, Model model, Long categoryId, Task task) {
+        Account user = accountService.getAuthenticatedUser();
+        Category category = categoryRepository.findOne(categoryId);
+        if (user.getRole().equals(ROLE_STUDENT) && (category == null || category.getOwner() == null || !category.getOwner().equals(user))) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            redirAttr.addAttribute("categoryId", categoryId);
+            return "redirect:/categories/{categoryId}";
+        }
+
+        try {
+            task = taskService.createTask(task);
+            if (task != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION);
+            } else {
+                model.addAttribute(ATTRIBUTE_MESSAGES, MESSAGE_FAILED_ACTION + ": invalid task solution");
+                return getCreateTaskToCategoryForm(model, redirAttr, categoryId, new Task());
+            }
+        } catch (Exception e) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_FAILED_ACTION + ": " + e.toString());
+        }
+        
+        setTaskToCategories(task, Arrays.asList(categoryId));
+
+        return "redirect:/categories/{categoryId}";
+    }
+
+    public String listAllCategories(Model model) {
+        Account user = accountService.getAuthenticatedUser();
+        
+        model.addAttribute("categories", categoryRepository.findAll());
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            model.addAttribute("tasks", taskService.findAllOwnTasks());
+        } else {
+            model.addAttribute("tasks", taskService.findAllTasks());
+        }        
+        return "categories";
     }
 }

@@ -17,8 +17,11 @@ import wepaht.SQLTasker.service.AccountService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import wepaht.SQLTasker.service.CategoryService;
+import wepaht.SQLTasker.service.DatabaseService;
 
 @Controller
 @RequestMapping("categories")
@@ -35,17 +38,18 @@ public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
+    
+    @Autowired
+    private DatabaseService dbService;
 
     @RequestMapping(method = RequestMethod.GET)
     @Transactional
-    public String getCategories(Model model) {
-        model.addAttribute("categories", categoryRepository.findAll());
-        model.addAttribute("tasks", taskRepository.findAll());
-        return "categories";
+    public String listAll(Model model) {
+        return categoryService.listAllCategories(model);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String createCategory(
+    public String create(
             RedirectAttributes redirectAttributes,
             @RequestParam String name,
             @RequestParam String description,
@@ -74,7 +78,7 @@ public class CategoryController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String getCategory(@PathVariable Long id,
+    public String getOne(@PathVariable Long id,
             Model model) throws Exception {
         Category category = categoryRepository.findOne(id);
         List<Task> taskList = category.getTaskList();
@@ -120,6 +124,22 @@ public class CategoryController {
         model.addAttribute("category", category);
         model.addAttribute("next", categoryService.getNextTask(category, task));
         return "task";
+    }
+    
+    @RequestMapping(value = "/{categoryId}/tasks/create", method = RequestMethod.GET)
+    public String getTaskForm(Model model, 
+            RedirectAttributes redirAttr, 
+            @PathVariable Long categoryId, 
+            @ModelAttribute Task task) {
+        return categoryService.getCreateTaskToCategoryForm(model, redirAttr, categoryId, task);
+    }
+    
+    @RequestMapping(value="/{categoryId}/tasks", method = RequestMethod.POST)
+    public String createTask(RedirectAttributes redirAttr, Model model, @PathVariable Long categoryId, @Valid @ModelAttribute Task task, BindingResult result) {
+        if (result.hasErrors()) {
+            return categoryService.getCreateTaskToCategoryForm(model, redirAttr, categoryId, task);
+        }
+        return categoryService.createTaskToCategory(redirAttr, model, categoryId, task);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)

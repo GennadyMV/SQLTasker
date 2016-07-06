@@ -14,11 +14,13 @@ import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.library.StringLibrary;
-import static wepaht.SQLTasker.library.StringLibrary.ATTRIBUTE_MESSAGES;
-import static wepaht.SQLTasker.library.StringLibrary.MESSAGE_UNAUTHORIZED_ACCESS;
-import static wepaht.SQLTasker.library.StringLibrary.REDIRECT_DEFAULT;
-import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
+import wepaht.SQLTasker.library.ConstantString;
+import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
+import static wepaht.SQLTasker.library.ConstantString.REDIRECT_DEFAULT;
+import static wepaht.SQLTasker.library.ConstantString.REDIRECT_TASKS;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service
@@ -106,34 +108,51 @@ public class TaskService {
 
         return Arrays.asList(messages, databaseService.performQuery(task.getDatabase().getId(), query), isCorrect);
     }
+    
+    public Task createTask(Task task) {
+        if (isInvalidSolution(task, task.getDatabase(), null)) {
+            return null;
+        }
+        task.setOwner(accountService.getAuthenticatedUser());
+        
+        task = taskRepository.save(task);
+        return task;
+    }
 
     public String createTask(RedirectAttributes redirectAttributes,
             Task task,
             Long databaseId,
             List<Long> categoryIds,
             BindingResult result) {
+        Account user = accountService.getAuthenticatedUser();
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if (redirectAttributes != null) redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, 
+                    MESSAGE_UNAUTHORIZED_ACTION + ": student can create tasks to their own categories");
+            return REDIRECT_TASKS;
+        }
+        
         if (isDatabaseNull(databaseId, redirectAttributes)) {
-            return "redirect:/tasks";
+            return REDIRECT_TASKS;
         }
         if (isErrorsInTask(result, redirectAttributes)) {
-            return "redirect:/tasks";
+            return REDIRECT_TASKS;
         }
         if (isTaskNull(task, redirectAttributes)) {
-            return "redirect:/tasks";
+            return REDIRECT_TASKS;
         }
 
         Database db = databaseService.getDatabase(databaseId);
         task.setDatabase(db);
         if (isInvalidSolution(task, db, redirectAttributes)) {
-            return "redirect:/tasks";
+            return REDIRECT_TASKS;
         }
 
         if (categoryIds != null) {
             categoryService.setTaskToCategories(task, categoryIds);
         }
 
-        TmcAccount user = accountService.getAuthenticatedUser();
-        task.setOwner(user);
+        
+        task.setOwner(accountService.getAuthenticatedUser());
 
         taskRepository.save(task);
         if (redirectAttributes != null) {
@@ -208,5 +227,9 @@ public class TaskService {
         model.addAttribute("categories", categoryService.findAllCategories());
         
         return "tasks";
+    }
+
+    List<Task> findAllOwnTasks() {
+        return taskRepository.findByOwnerAndDeletedFalse(accountService.getAuthenticatedUser());
     }
 }

@@ -80,13 +80,11 @@ public class TaskController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String listAll(Model model, RedirectAttributes redirAttr) {
-        
-        
         return taskService.listTasks(model, redirAttr);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String createTask(RedirectAttributes redirectAttributes,
+    public String create(RedirectAttributes redirectAttributes,
                              @Valid @ModelAttribute Task task,
                              @RequestParam(required = false) Long databaseId,
                              @RequestParam(required= false) List<Long> categoryIds,
@@ -96,7 +94,7 @@ public class TaskController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String getTask(@PathVariable Long id, Model model) throws Exception {
+    public String getOne(@PathVariable Long id, Model model) throws Exception {
         Task task = taskRepository.findOne(id);
 
         if (queries.containsKey(id)) {
@@ -108,12 +106,12 @@ public class TaskController {
         model.addAttribute("tags", tags);        
         model.addAttribute("task", task);
         model.addAttribute("database", task.getDatabase());
-//        model.addAttribute("categoryId", 1);
+
         return "task";
     }
 
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
-    public String getTaskEditor(@PathVariable Long id, Model model) {
+    public String getEditForm(@PathVariable Long id, Model model) {
         List<Tag> tags = tagRepository.findByTaskId(id);
         model.addAttribute("tags", tags);
         model.addAttribute("task", taskRepository.findOne(id));

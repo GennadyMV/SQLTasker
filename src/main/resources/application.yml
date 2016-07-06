@@ -12,3 +12,9 @@ security:
       clientAuthenticationScheme: form
     resource:
       userInfoUri: https://tmc.mooc.fi/staging/api/beta/participant/
+    
+spring:
+    thymeleaf:
+      mode: HTML5
+      cache: false
+      templates_root: src/main/resources/templates/

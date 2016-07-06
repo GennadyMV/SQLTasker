@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.StringLibrary.ROLE_STUDENT;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TmcAccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
