@@ -1,0 +1,5 @@
+spring:
+    thymeleaf:
+      mode: HTML5
+      cache: false
+      templates_root: src/main/resources/templates/

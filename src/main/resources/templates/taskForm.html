@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Create Task</title>
+    </head>
+    <body>
+        <div id="navigationBar">
+            <div th:include="fragments/navbar_template :: navbar"></div>
+
+            <div th:include="fragments/messages_template :: messages"></div>
+        </div>
+
+        <div id="taskForm">
+            <h1>Create Task</h1>
+            <form method="POST" action="#" th:action="@{/categories/{catId}/tasks (catId=${categoryId})}" th:object="${task}">
+                <div id="taskName">
+                    <label>Name</label>
+                    <input type="text" th:field="*{name}"/>
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</p>
+                </div>
+
+                <div id="taskDescription">
+                    <label>Description</label>
+                    <input type="text" th:field="*{description}"/>
+                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Name error</p>
+                </div>
+
+                <div id="taskSolution">
+                    <label>Solution</label>
+                    <input type="text" th:field="*{solution}"/>
+                    <p th:if="${#fields.hasErrors('solution')}" th:errors="*{solution}">Solution error</p>
+                </div>
+
+                <div id="taskDatabase">
+                    <label>Database</label>
+                    <ul>
+                        <li th:each="db : ${databases}">
+                            <label th:text="${db.name}"></label>
+                            <input type="radio" th:field="*{database}" th:value="${db.id}"/>
+                        </li>
+                    </ul>
+                    <p th:if="${#fields.hasErrors('database')}" th:errors="*{database}">Database error</p>
+                </div>
+
+
+                <div id="taskCategories">
+                    <input type="hidden" th:field="*{categories}" th:value="${category}"/>
+                </div>
+
+                <div id="submitTask">
+                    <input type="submit"/>
+                </div>
+            </form>
+        </div>
+        <div id="imports">
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/bootstrap :: bootstrap"></div>
+            <div th:include="fragments/scripts :: searchScript"></div>
+            <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+        </div>
+
+    </body>
+</html>
