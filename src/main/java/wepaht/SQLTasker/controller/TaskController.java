@@ -134,23 +134,13 @@ public class TaskController {
     @RequestMapping(value = "/{id}/tags", method = RequestMethod.POST)
     public String addTag(@PathVariable Long id, @RequestParam() String name,
             RedirectAttributes redirectAttributes) throws Exception {
-        Tag tag = new Tag();
-        tag.setName(name);
-        tag.setTask(taskService.getTaskById(id));
-        tagRepository.save(tag);
-        redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("messages", "Tag added!");
-        return "redirect:/tasks/{id}/edit";
+        return taskService.addTag(redirectAttributes, id, name);
     }
 
     @RequestMapping(value = "/{id}/tags", method = RequestMethod.DELETE)
     public String removeTag(@PathVariable Long id, @RequestParam() String name,
             RedirectAttributes redirectAttributes) throws Exception {
-        Tag tag = tagRepository.findByNameAndTask(name, taskService.getTaskById(id));
-        tagRepository.delete(tag);
-        redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
-        return "redirect:/tasks/{id}/edit";
+        return taskService.deleteTag(redirectAttributes, id , name);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/suggest")

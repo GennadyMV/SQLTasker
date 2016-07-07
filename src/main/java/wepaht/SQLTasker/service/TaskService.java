@@ -307,7 +307,9 @@ public class TaskService {
         Account user = accountService.getAuthenticatedUser();
 
         if (!user.getRole().equals(ROLE_STUDENT)) {
-            if (!updateTask(id, solution, redirectAttributes, redirectAddress, description, name)) return redirectAddress;
+            if (!updateTask(id, solution, redirectAttributes, redirectAddress, description, name)) {
+                return redirectAddress;
+            }
 
             redirectAttributes.addAttribute("id", id);
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Task modified!");
@@ -333,5 +335,24 @@ public class TaskService {
         oldtask.setName(name);
         oldtask.setSolution(solution);
         return true;
+    }
+
+    public String addTag(RedirectAttributes redirectAttributes, Long id, String name) {
+        if (!accountService.isUserStudent()) {
+            Tag tag = tagService.createTag(name, getTaskById(id));
+            redirectAttributes.addAttribute("id", id);
+            redirectAttributes.addFlashAttribute("messages", "Tag added!");
+        }
+        return "redirect:/tasks/{id}/edit";
+    }
+
+    public String deleteTag(RedirectAttributes redirectAttributes, Long id, String name) {
+        if (!accountService.isUserStudent()) {
+            Tag tag = tagService.getTagByNameAndTask(name, getTaskById(id));
+            tagService.deleteTag(tag);
+            redirectAttributes.addAttribute("id", id);
+            redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
+        }
+        return "redirect:/tasks/{id}/edit";
     }
 }

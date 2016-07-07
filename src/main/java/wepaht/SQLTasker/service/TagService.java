@@ -23,4 +23,12 @@ public class TagService {
     public List<Tag> getTagsByTask(Task task) {
         return repository.findByTask(task);
     }
+
+    Tag getTagByNameAndTask(String name, Task task) {
+        return repository.findByNameAndTask(name, task);
+    }
+
+    void deleteTag(Tag tag) {
+        repository.delete(tag);
+    }
 }
