@@ -66,12 +66,9 @@ public class CourseService {
         
         String redirectAddress = redirectCourses;
         List<String> messages = new ArrayList<>();
-        Course course = new Course();
-        course.setName(name);
-        course.setDescription(description);
-        List<Category> categories = categoryService.findCategoriesByIds(categoryIds);
-        course.setCourseCategories(categories);
-        course = setDates(course, starts, expires, messages);
+        
+        Course course = setCourseAttributes(name, description, categoryIds, starts, expires, messages);
+        
         redirectAddress = saveCourse(course, messages, redirectAttributes, redirectAddress);
 
         if (redirectAttributes != null) {
@@ -79,6 +76,16 @@ public class CourseService {
         }
 
         return redirectAddress;
+    }
+
+    public Course setCourseAttributes(String name, String description, List<Long> categoryIds, String starts, String expires, List<String> messages) {
+        Course course = new Course();
+        course.setName(name);
+        course.setDescription(description);
+        List<Category> categories = categoryService.findCategoriesByIds(categoryIds);
+        course.setCourseCategories(categories);
+        course = setDates(course, starts, expires, messages);
+        return course;
     }
 
     private String saveCourse(Course course, List<String> messages, RedirectAttributes redirectAttributes, String redirectAddress) {
@@ -245,7 +252,7 @@ public class CourseService {
             messages.add("Course edit failed");
             redirectAddress = redirectAddress + "/edit";
         }
-        redirectAttributes.addFlashAttribute("messages", messages);
+        if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", messages);
         return redirectAddress;
     }
 
@@ -274,8 +281,10 @@ public class CourseService {
         }
 
         try {
-            accountService.addUserToCourse(course);
+            if (!course.getStudents().contains(user)) {
+            course.getStudents().add(accountService.getAuthenticatedUser());
             messages.add("Joined to course " + course.getName());
+            }
         } catch (Exception e) {
             System.out.println(course.getName());
             messages.add("Could not join course " + course.getName());
@@ -295,13 +304,13 @@ public class CourseService {
         Course course = repository.findOne(id);
 
         try {
-            accountService.removeUserFromCourse(course);            
+            course.getStudents().remove(accountService.getAuthenticatedUser());
             messages.add("You have left course " + course.getName());
         } catch (Exception e) {
             messages.add("You failed to leave course" + course.getName());
         }
 
-        redirectAttributes.addFlashAttribute("messages", messages);
+        if (redirectAttributes != null) redirectAttributes.addFlashAttribute("messages", messages);
         return redirectCourses;
     }
 

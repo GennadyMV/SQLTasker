@@ -7,6 +7,7 @@ import wepaht.SQLTasker.domain.Database;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
 
 @RestResource(exported = false)

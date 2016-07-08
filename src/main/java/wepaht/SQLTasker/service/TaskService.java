@@ -305,43 +305,50 @@ public class TaskService {
     public String editTask(RedirectAttributes redirectAttributes, Long id, Long databaseId, String name, String solution, String description) {
         String redirectAddress = "redirect:/tasks/{id}";
         Account user = accountService.getAuthenticatedUser();
+        Task task = taskRepository.findOne(id);
 
         if (!user.getRole().equals(ROLE_STUDENT)) {
-            if (!updateTask(id, solution, redirectAttributes, redirectAddress, description, name)) {
+            if (!updateTask(task, solution, redirectAttributes, redirectAddress, description, name, databaseId)) {
                 return redirectAddress;
             }
-
-            redirectAttributes.addAttribute("id", id);
-            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Task modified!");
+            if (redirectAttributes != null) {
+                redirectAttributes.addAttribute("id", id);
+                redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Task modified!");
+            }
         } else {
             redirectAddress = REDIRECT_DEFAULT;
-            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            if (redirectAttributes != null) redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
         }
         return redirectAddress;
     }
 
     @Transactional
-    public boolean updateTask(Long taskId, String solution, RedirectAttributes redirectAttributes, String redirectAddress, String description, String name) {
-        Database db = databaseService.getDatabase(taskId);
+    public boolean updateTask(Task task, String solution, RedirectAttributes redirectAttributes, String redirectAddress, String description, String name, Long databaseId) {
+        Database db = databaseService.getDatabase(databaseId);
         if (solution != null || !solution.isEmpty()) {
             if (!databaseService.isValidQuery(db, solution)) {
-                redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Task update failed due to invalid solution");
+                if (redirectAttributes != null) {
+                    redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, "Task update failed due to invalid solution");
+                }
                 return false;
             }
         }
-        Task oldtask = taskRepository.getOne(taskId);
-        oldtask.setDatabase(db);
-        oldtask.setDescription(description);
-        oldtask.setName(name);
-        oldtask.setSolution(solution);
+
+        task.setDatabase(db);
+        task.setDescription(description);
+        task.setName(name);
+        task.setSolution(solution);
+        task.setDatabase(db);
         return true;
     }
 
     public String addTag(RedirectAttributes redirectAttributes, Long id, String name) {
         if (!accountService.isUserStudent()) {
             Tag tag = tagService.createTag(name, getTaskById(id));
-            redirectAttributes.addAttribute("id", id);
-            redirectAttributes.addFlashAttribute("messages", "Tag added!");
+            if (redirectAttributes != null) {
+                redirectAttributes.addAttribute("id", id);
+                redirectAttributes.addFlashAttribute("messages", "Tag added!");
+            }
         }
         return "redirect:/tasks/{id}/edit";
     }
@@ -350,8 +357,10 @@ public class TaskService {
         if (!accountService.isUserStudent()) {
             Tag tag = tagService.getTagByNameAndTask(name, getTaskById(id));
             tagService.deleteTag(tag);
-            redirectAttributes.addAttribute("id", id);
-            redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
+            if (redirectAttributes != null) {
+                redirectAttributes.addAttribute("id", id);
+                redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
+            }
         }
         return "redirect:/tasks/{id}/edit";
     }

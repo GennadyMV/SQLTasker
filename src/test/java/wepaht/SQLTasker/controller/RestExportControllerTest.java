@@ -38,12 +38,14 @@ import org.mockito.MockitoAnnotations;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
 import static wepaht.SQLTasker.library.ConstantString.ROLE_ADMIN;
 import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CategoryRepository;
+import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.repository.TmcAccountRepository;
@@ -74,6 +76,9 @@ public class RestExportControllerTest {
     @Autowired
     TaskRepository taskRepository;
 
+    @Autowired
+    DatabaseRepository dbRepo;
+    
     @Autowired
     TaskService taskService;
 
@@ -108,6 +113,7 @@ public class RestExportControllerTest {
     private TmcAccount user;
     private TmcAccount stud1;
     private TmcAccount stud2;
+    private Database db;
 
     @Before
     public void setUp() {
@@ -115,9 +121,23 @@ public class RestExportControllerTest {
 
         pastQueryRepository.deleteAll();
 
+        db = new Database();
+        db.setName("Database");
+        db.setDatabaseSchema("CREATE TABLE Persons"
+                + "(PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255));"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (2, 'Raty', 'Matti', 'Rautalammintie', 'Helsinki');"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
+        db = dbRepo.save(db);
+        
         if (taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 1").isEmpty()) {
             task1 = new Task();
             task1.setName("Export test 1");
+            task1.setDatabase(db);
+            task1.setSolution("SELECT 1;");
             task1 = taskRepository.save(task1);
         } else {
             task1 = taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 1").get(0);
@@ -126,7 +146,9 @@ public class RestExportControllerTest {
         if (taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 2").isEmpty()) {
             task2 = new Task();
             task2.setName("Export test 2");
-            task2 = taskRepository.save(task2);
+            task2.setDatabase(db);
+            task2.setSolution("SELECT 1;");
+            task2 = taskRepository.save(task2);            
         } else {
             task2 = taskRepository.findByNameAndDeletedFalseOrderByNameDesc("Export test 2").get(0);
         }
@@ -138,7 +160,7 @@ public class RestExportControllerTest {
             user.setRole(ROLE_ADMIN);
             user = accountRepo.save(user);
         }
-        
+
         stud1 = accountRepo.findByUsernameAndDeletedFalse(name1);
         if (stud1 == null) {
             stud1 = new TmcAccount();
@@ -146,7 +168,7 @@ public class RestExportControllerTest {
             stud1.setRole(ROLE_STUDENT);
             stud1 = accountRepo.save(stud1);
         }
-        
+
         stud2 = accountRepo.findByUsernameAndDeletedFalse(name2);
         if (stud2 == null) {
             stud2 = new TmcAccount();
@@ -154,7 +176,7 @@ public class RestExportControllerTest {
             stud2.setRole(ROLE_STUDENT);
             stud2 = accountRepo.save(stud2);
         }
-        
+
         submissionRepository.deleteAll();
 
         submissionRepository.save(new Submission(stud1, task1, null, null, "SELECT 1;", Boolean.TRUE));

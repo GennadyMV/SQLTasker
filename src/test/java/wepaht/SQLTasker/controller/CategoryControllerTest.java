@@ -41,9 +41,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.springframework.context.annotation.Profile;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import org.springframework.test.context.ActiveProfiles;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -53,6 +55,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.TmcAccount;
+import wepaht.SQLTasker.library.ConstantString;
+import static wepaht.SQLTasker.library.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_ADMIN;
+import static wepaht.SQLTasker.library.ConstantString.ROLE_TEACHER;
 import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.service.CourseService;
@@ -61,6 +67,7 @@ import wepaht.SQLTasker.service.TaskService;
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
+@ActiveProfiles("test")
 public class CategoryControllerTest {
 
     @Autowired
@@ -117,11 +124,13 @@ public class CategoryControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
 
+        database = databaseService.getDatabaseByName("testDatabase4");
+        
         user = mock(TmcAccount.class);
         when(user.getUsername()).thenReturn("stud");
-        when(user.getRole()).thenReturn("STUDENT");
+        when(user.getRole()).thenReturn(ROLE_TEACHER);
         when(user.getId()).thenReturn(45l);
-        when(userServiceMock.getAuthenticatedUser()).thenReturn(user);
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(user);        
     }
 
     @After
@@ -144,11 +153,12 @@ public class CategoryControllerTest {
     }
 
     private Task randomTask() {
-        Task task = new Task();
-        task.setName(RandomStringUtils.randomAlphanumeric(10));
-        task.setDescription(RandomStringUtils.randomAlphabetic(30));
-        task.setDatabase(database);
-        return taskRepository.save(task);
+        Task randomTask = new Task();
+        randomTask.setName(RandomStringUtils.randomAlphanumeric(10));
+        randomTask.setDescription(RandomStringUtils.randomAlphabetic(30));
+        randomTask.setSolution("SELECT 1;");
+        randomTask.setDatabase(database);
+        return taskRepository.save(randomTask);
     }
 
     private Category createCategory() throws Exception {
@@ -183,23 +193,6 @@ public class CategoryControllerTest {
 
         List<Category> categoryList = categoryRepository.findAll();
         assertTrue(categoryList.stream().filter(cat -> cat.getName().equals("create new category")).findFirst().isPresent());
-    }
-
-    @Test
-    public void adminCanEditCreatedCategory() throws Exception {
-        Category category = createCategory();
-        category.setName("is editing possible?");
-        category = categoryRepository.save(createCategory());
-
-        mockMvc.perform(post(URI + "/" + category.getId() + "/edit")
-                .param("name", "editing is possible")
-                .param("description", category.getDescription())
-                .with(user("admin").roles("ADMIN")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Category modified!"))
-                .andReturn();
-
-        assertTrue(categoryRepository.findOne(category.getId()).getName().equals("editing is possible"));
     }
 
     @Test
@@ -242,135 +235,5 @@ public class CategoryControllerTest {
         List<Category> categories = (List) result.getModelAndView().getModel().get("categories");
 
         assertFalse(categories.stream().filter(cat -> cat.getName().equals(name)).findFirst().isPresent());
-    }
-
-    @Test
-    public void taskCanBeInMultipleCategories() throws Exception {
-        Category category1 = createCategory();
-        category1.setName("First Category");
-        category1 = categoryRepository.save(category1);
-        Category category2 = createCategory();
-        category2.setName("Second Category");
-        category2 = categoryRepository.save(category2);
-        Task task = randomTask();
-
-        mockMvc.perform(post(URI + "/" + category1.getId() + "/edit")
-                .param("name", "First Category")
-                .param("description", category1.getDescription())
-                .param("taskIds", task.getId().toString())
-                .with(user("admin").roles("ADMIN")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Category modified!"))
-                .andReturn();
-
-        mockMvc.perform(post(URI + "/" + category2.getId() + "/edit")
-                .param("name", "Second Category")
-                .param("description", category2.getDescription())
-                .param("taskIds", task.getId().toString())
-                .with(user("admin").roles("ADMIN")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Category modified!"))
-                .andReturn();
-
-        category1 = categoryRepository.findOne(category1.getId());
-        category2 = categoryRepository.findOne(category2.getId());
-        assertTrue(category1.getTaskList().contains(task) && category2.getTaskList().contains(task));
-    }
-
-    // categories/{id}/tasks/{taskId}
-    @Test
-    public void nextTaskExists() throws Exception {
-        Task task1 = randomTask();
-        Task task2 = randomTask();
-        Category category = createCategory();
-        category.getTaskList().add(task1);
-        category.getTaskList().add(task2);
-        category = categoryRepository.save(category);
-
-        mockMvc.perform(get(URI + "/" + category.getId() + "/tasks/" + task1.getId())
-                .with(user("stud").roles("STUDENT")).with(csrf()))
-                .andExpect(model().attributeExists("next"))
-                .andExpect(status().isOk())
-                .andReturn();
-    }
-
-    @Test
-    public void nextTaskIsNextTask() throws Exception {
-        Task task1 = randomTask();
-        Task task2 = randomTask();
-        Category category = createCategory();
-        category.getTaskList().add(task1);
-        category.getTaskList().add(task2);
-        category = categoryRepository.save(category);
-
-        mockMvc.perform(get(URI + "/" + category.getId() + "/tasks/" + task1.getId())
-                .with(user("stud").roles("STUDENT")).with(csrf()))
-                .andExpect(model().attribute("next", task2))
-                .andExpect(status().isOk())
-                .andReturn();
-    }
-
-    @Test
-    @Transactional
-    public void teacherCanReorderCategoryTasks() throws Exception {
-        user.setRole("TEACHER");
-//        userRepository.save(user);
-
-        Task task1 = randomTask();
-        Task task2 = randomTask();
-        Category category = createCategory();
-        category.getTaskList().add(task1);
-        category.getTaskList().add(task2);
-        category = categoryRepository.save(category);
-
-        mockMvc.perform(post(URI + "/" + category.getId())
-                .param("taskId", task1.getId().toString())
-                .with(user("stud").roles("TEACHER")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        Assert.assertEquals(task2.getId(), categoryRepository.findOne(category.getId()).getTaskList().get(0).getId());
-    }
-
-    @Test
-    @Transactional
-    public void testCategoryCanBeDeletedWhileInCourse() throws Exception {
-        user.setRole("ADMIN");
-//        userRepository.save(user);
-
-        Category category = createCategory();
-        category = categoryRepository.save(category);
-        Course course = new Course();
-        course.setName("delete category");
-        course.setCourseCategories(Arrays.asList(category));
-        courseService.saveCourse(course);
-
-        mockMvc.perform(delete(URI + "/" + category.getId())
-                .with(user("stud").roles("ADMIN"))
-                .with(csrf()))
-                .andReturn();
-
-        assertTrue(categoryRepository.findOne(category.getId()) == null);
-    }
-
-    @Test
-    public void testCategoryDetailIsDeletedWhenCategoryIsDeleted() throws Exception {
-        user.setRole("ADMIN");
-
-        Category category = createCategory();
-        category = categoryRepository.save(category);
-        Course course = new Course();
-        course.setName("delete category 2");
-        course.setCourseCategories(Arrays.asList(category));
-        courseService.saveCourse(course);
-        CategoryDetail detail = new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX);
-        detail = categoryDetailRepository.save(detail);
-
-        mockMvc.perform(delete(URI + "/" + category.getId())
-                .with(user("stud").roles("ADMIN"))
-                .with(csrf()))
-                .andReturn();
-
-        assertTrue(categoryDetailRepository.findOne(detail.getId()) == null);
     }
 }

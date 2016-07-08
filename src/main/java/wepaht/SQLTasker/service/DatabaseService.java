@@ -12,6 +12,7 @@ import java.util.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
 import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
 import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
@@ -332,6 +333,10 @@ public class DatabaseService {
 
     public Database getDatabase(Long id) {
         return databaseRepository.findOne(id);
+    }
+    
+    public Database getDatabaseByName(String name) {
+        return databaseRepository.findByNameAndDeletedFalse(name).get(0);
     }
 
     public String listDatabases(Model model) {

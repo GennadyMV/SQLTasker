@@ -70,13 +70,13 @@ public class CourseControllerTest {
 
     @Autowired
     CourseService courseService;
-    
+
     @Autowired
     DatabaseRepository databaseRepository;
-    
+
     @Autowired
     SubmissionRepository submissionrepository;
-    
+
     @Autowired
     TaskRepository taskRepository;
 
@@ -140,12 +140,12 @@ public class CourseControllerTest {
 
         return courseRepository.save(course);
     }
-    
+
     private Course createTestCourse(String name, TmcAccount user) {
         Course course = new Course();
         course.setName(name);
         course.setStudents(Arrays.asList(user));
-        
+
         return courseRepository.save(course);
     }
 
@@ -154,8 +154,8 @@ public class CourseControllerTest {
         category.setName(name);
 
         return categoryRepository.save(category);
-    }       
-    
+    }
+
     private Database createTestDatabase(String name) {
         Database database = new Database();
         database.setName(name);
@@ -163,7 +163,7 @@ public class CourseControllerTest {
         database = databaseRepository.save(database);
         return database;
     }
-    
+
     private Task createTestTask(String name, Database database) {
         Task task = new Task();
         task.setName(name);
@@ -179,7 +179,7 @@ public class CourseControllerTest {
 
         return categoryRepository.save(category);
     }
-    
+
     private Course createTestCourse(String name, Category category, LocalDate starts, LocalDate expires) {
         Course course = new Course();
         course.setName(name);
@@ -189,7 +189,7 @@ public class CourseControllerTest {
         course = courseRepository.save(course);
         return course;
     }
-    
+
     private Course createTestCourseWithMultipleCategories(String name, List<Category> categories, LocalDate starts, LocalDate expires) {
         Course course = new Course();
         course.setName(name);
@@ -213,7 +213,7 @@ public class CourseControllerTest {
         Course course1 = createTestCourse("listing courses1");
         Course course2 = createTestCourse("listing courses2");
         when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
-        
+
         mockMvc.perform(get(URI)
                 .with(user("student").roles("STUDENT"))
                 .with(csrf()))
@@ -226,65 +226,6 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testTeacherCanCreateCourse() throws Exception {
-        String name = "create course";
-
-        mockMvc.perform(post(URI).param("name", name)
-                .with(user("teach").roles("TEACHER"))
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        assertTrue(courseRepository.findAll().stream()
-                .filter(course -> course.getName().equals(name))
-                .findFirst().isPresent());
-    }
-
-    @Test
-    public void testTeacherCanCreateCourseWithAllParameters() throws Exception {
-        String name = "Create reel course";
-        String description = "Stuffs happen";
-        String starts = LocalDate.MIN.toString();
-        String expires = LocalDate.MAX.toString();
-
-        Category category = createTestCategory("test category");
-
-        mockMvc.perform(post(URI)
-                .param("name", name)
-                .param("description", description)
-                .param("starts", starts)
-                .param("expires", expires)
-                .param("categoryIds", category.getId().toString())
-                .with(user("teacher").roles("TEACHER"))
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        assertTrue(courseRepository.findAll().stream()
-                .filter(course -> course.getName().equals(name))
-                .findFirst().isPresent());
-    }
-
-    @Test
-    public void testTeacherCanNotSetInvalidExpireDate() throws Exception {
-        String name = "Incorrect dates";
-        String starts = "01-01-2017";
-        String expires = "01-01-2016";
-
-        mockMvc.perform(post(URI)
-                .param("name", name)
-                .param("starts", starts)
-                .param("expires", expires)
-                .with(user("teacher").roles("TEACHER")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        assertTrue(courseRepository.findAll().stream()
-                .filter(course -> course.getName().equals(name) && course.getExpires() == null)
-                .findFirst().isPresent());
-    }
-
-    @Test
     public void testCourseCanBeSeen() throws Exception {
         Course course = createTestCourse("Lookin at dis");
 
@@ -293,80 +234,6 @@ public class CourseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("course", course))
                 .andReturn();
-    }
-
-    @Test
-    public void testCourseCanBeDeleted() throws Exception {
-        Course course = createTestCourse("Deleting course");
-
-        mockMvc.perform(delete(URI + "/" + course.getId() + "/delete")
-                .with(user("teacher").roles("TEACHER"))
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        assertTrue(courseRepository.findOne(course.getId()) == null);
-    }
-
-    @Test
-    public void testCourseCanBeDeletedWithCourses() throws Exception {
-        Category category = createTestCategory("I'm a friend");
-        Course course = new Course();
-        course.setName("Deleting course with category");
-        course.setCourseCategories(Arrays.asList(category));
-        course = courseRepository.save(course);
-
-        mockMvc.perform(delete(URI + "/" + course.getId() + "/delete")
-                .with(user("teacher").roles("TEACHER"))
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        assertTrue(courseRepository.findOne(course.getId()) == null);
-    }
-
-    @Test
-    public void testCourseEditFormCanBeSeen() throws Exception {
-        Course course = createTestCourse("Spoon");
-
-        mockMvc.perform(get(URI + "/" + course.getId() + "/edit")
-                .with(user("teacher").roles("TEACHER"))
-                .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("course", course))
-                .andReturn();
-    }
-
-    @Test
-    public void testCourseCanBeEdited() throws Exception {
-        Course course = createTestCourse("Editing!");
-        Category category = createTestCategory("Hurr");
-        String name = "Edited!";
-        String description = "It is now edited";
-        LocalDate starts = LocalDate.now();
-        LocalDate expires = LocalDate.now().plusDays(8l);
-        String categoryIds = category.getId().toString();
-
-        mockMvc.perform(post(URI + "/" + course.getId() + "/edit")
-                .param("name", name)
-                .param("description", description)
-                .param("starts", starts.toString())
-                .param("expires", expires.toString())
-                .param("categoryIds", categoryIds)
-                .with(user("teacher").roles("TEACHER")).with(csrf()))
-                .andExpect(flash().attributeExists("messages"))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        course = courseRepository.findOne(course.getId());
-        List<Category> categories = courseRepository.getCourseCategories(course);
-
-        assertTrue(course.getName().equals(name)
-                && course.getDescription().equals(description)
-                && course.getStarts().equals(starts)
-                && course.getExpires().equals(expires)
-                && categories.contains(category)
-        );
     }
 
     @Test
@@ -394,62 +261,27 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testUserCanLeaveJoinedCourse() throws Exception {
-        Course course = createTestCourse("Leave dis", student);        
-        BDDMockito.given(accountServiceMock.getAuthenticatedUser()).willReturn(student);
-
-        mockMvc.perform(post(URI + "/" + course.getId() + "/leave")
-                .with(user("student").roles("STUDENT"))
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        List<TmcAccount> students = courseRepository.getCourseStudents(course);
-        assertFalse(students.contains(student));
-    }
-
-    @Test
-    public void testCategoryDetailIsDeletedWhenCourseIsDeleted() throws Exception {
-        Category category = createTestCategory("Whee");
-        Course course = new Course();
-        course.setName("Deleting");
-        course.setCourseCategories(Arrays.asList(category));
-        course = courseRepository.save(course);
-
-        CategoryDetail detail = categoryDetailsRepository.save(new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX));
-        int sizeBefore = categoryDetailsRepository.findAll().size();
-
-        mockMvc.perform(delete(URI + "/" + course.getId() + "/delete")
-                .with(user("teacher").roles("TEACHER"))
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        assertEquals(sizeBefore - 1, categoryDetailsRepository.findAll().size());
-    }
-    
-    @Test
     public void testCategoryIsAccessableThroughCourse() throws Exception {
         Category category = createTestCategory("Whee");
         Course course = new Course();
         course.setName("Here!");
         course.setCourseCategories(Arrays.asList(category));
         course = courseRepository.save(course);
-        
+
         mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("course", "category"))
                 .andReturn();
     }
-    
+
     @Test
     public void testCategoryAccessedThroughCourseMustBelongToCourse() throws Exception {
         Category category = createTestCategory("Is not in the course");
         Course course = new Course();
         course.setName("No categories");
         course = courseRepository.save(course);
-        
+
         mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
@@ -457,7 +289,7 @@ public class CourseControllerTest {
                 .andExpect(flash().attributeExists("messages"))
                 .andReturn();
     }
-    
+
     @Test
     public void testCategoryAccessedThroughCourseMustBelongToCourse2() throws Exception {
         Database database = createTestDatabase("Moonshine");
@@ -466,7 +298,7 @@ public class CourseControllerTest {
         Course course = new Course();
         course.setName("No categories");
         courseRepository.save(course);
-        
+
         mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
@@ -474,7 +306,7 @@ public class CourseControllerTest {
                 .andExpect(flash().attributeExists("messages"))
                 .andReturn();
     }
-    
+
     @Test
     public void testTaskAccessedThroughCourseAndCategoryMustBelongToCourse() throws Exception {
         Database database = createTestDatabase("Must belong");
@@ -484,7 +316,7 @@ public class CourseControllerTest {
         course.setName("Not important");
         course.setCourseCategories(Arrays.asList(category));
         courseRepository.save(course);
-        
+
         mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
@@ -492,14 +324,14 @@ public class CourseControllerTest {
                 .andExpect(flash().attributeExists("messages"))
                 .andReturn();
     }
-    
+
     @Test
     public void testQueryCanNotBeSentToTaskAccessedThroughCourseAndCategoryWhenNotJoinedToCourse() throws Exception {
         Database database = createTestDatabase("Pokemon master");
         Task task = createTestTask("Query to this", database);
         Category category = createTestCategory("From here", Arrays.asList(task));
         Course course = createTestCourse("From this", category, null, null);
-        
+
         mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/query")
                 .param("query", "SELECT 1;")
                 .with(user("student").roles("STUDENT")).with(csrf()))
@@ -513,37 +345,37 @@ public class CourseControllerTest {
         Task task = createTestTask("Feedback this", createTestDatabase("Durrr"));
         Category category = createTestCategory("In dis category", Arrays.asList(task));
         Course course = createTestCourse("Nerf this", category, null, null);
-        
+
         mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/feedback")
                 .with(user("student").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", 
-                        Matchers.anyOf(Matchers.contains("You have not done task " + task.getName() + " in course " + course.getName()))));
+                .andExpect(flash().attribute("messages",
+                                Matchers.anyOf(Matchers.contains("You have not done task " + task.getName() + " in course " + course.getName()))));
     }
-    
+
     @Test
     public void testStudentCanSeeOnlyActiveCourses() throws Exception {
         LocalDate now = LocalDate.now();
         Course course = createTestCourse("Active", null, now.minusDays(7l), now.plusDays(1l));
         Course course2 = createTestCourse("inactive", null, now.minusDays(7l), now.minusDays(1l));
         when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
-        
+
         mockMvc.perform(get(URI).with(user("student").roles("STUDENT")))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("courses", 
-                        Matchers.anyOf(Matchers.hasSize(1))));
+                .andExpect(model().attribute("courses",
+                                Matchers.anyOf(Matchers.hasSize(1))));
     }
-    
+
     @Test
     public void testStudentCanOnlyAccessActiveCourses() throws Exception {
         LocalDate now = LocalDate.now();
         Course course = createTestCourse("inactive", null, now.minusDays(7l), now.minusDays(1l));
-        
+
         mockMvc.perform(get(URI + "/" + course.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection());
     }
-    
+
     @Test
     public void testStudentCanSeeOnlyActiveCategories() throws Exception {
         LocalDate now = LocalDate.now();
@@ -552,25 +384,25 @@ public class CourseControllerTest {
         Course course = createTestCourseWithMultipleCategories("The course", Arrays.asList(category, category2), null, null);
         CategoryDetail detail1 = createTestDetail(course, category, null, null);
         CategoryDetail detail2 = createTestDetail(course, category2, now.plusDays(1l), null);
-        
+
         mockMvc.perform(get(URI + "/" + course.getId())
                 .with(user("student").roles("STUDENT")))
-                .andExpect(model().attribute("details", 
-                        Matchers.anyOf(Matchers.hasSize(1))));
+                .andExpect(model().attribute("details",
+                                Matchers.anyOf(Matchers.hasSize(1))));
     }
 
     private CategoryDetail createTestDetail(Course course, Category category, LocalDate starts, LocalDate expires) {
         CategoryDetail detail = new CategoryDetail(course, category, starts, expires);
         return categoryDetailsRepository.save(detail);
     }
-    
+
     @Test
     public void testStudentCannotAccessInactiveCourse() throws Exception {
         LocalDate now = LocalDate.now();
         Category category2 = createTestCategory("Inactive");
         Course course = createTestCourseWithMultipleCategories("The course", Arrays.asList(category2), null, null);
         CategoryDetail detail2 = createTestDetail(course, category2, now.plusDays(1l), null);
-        
+
         mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + detail2.getCategory().getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection());

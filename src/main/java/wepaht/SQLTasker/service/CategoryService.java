@@ -184,22 +184,26 @@ public class CategoryService {
         return VIEW_CATEGORY_EDIT;
     }
 
-    public String updateCategory(RedirectAttributes redirectAttributes, Long id, String name, String description, List<Long> taskIds) {
+    public String updateCategory(RedirectAttributes redirectAttributes, Long categoryId, String name, String description, List<Long> taskIds) {
         Account user = accountService.getAuthenticatedUser();
         List<String> messages = new ArrayList<>();
-        Category editing = categoryRepository.findOne(id);
+        Category editing = categoryRepository.findOne(categoryId);
 
-        if (user.getRole().equals(ROLE_STUDENT) && !editing.getOwner().equals(user)) {
-            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
-            redirectAttributes.addAttribute("id", id);
+        if (user.getRole().equals(ROLE_STUDENT) && (editing.getOwner() == null || !editing.getOwner().equals(user))) {
+            if (redirectAttributes != null) {
+                redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+                redirectAttributes.addAttribute("id", categoryId);
+            }
             return "redirect:/categories/{id}";
         }
 
-        editing = editCategory(editing, name, description, taskIds, id);
+        editing = editCategory(editing, name, description, taskIds, categoryId);
         messages = saveCategory(editing, messages);
 
-        redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, messages);
+        if (redirectAttributes != null) {
+            redirectAttributes.addAttribute("id", categoryId);
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, messages);
+        }
         return "redirect:/categories/{id}";
     }
 
@@ -351,9 +355,9 @@ public class CategoryService {
         redirAttr.addAttribute("taskId", taskId);
 
         if (user.getRole().equals(ROLE_STUDENT) && (!accountService.isOwned(task, user) || !accountService.isOwned(category, user))) {
-            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);            
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
         } else {
-            if (taskService.updateTask(taskId, solution, redirAttr, redirectAddress, description, name)) {
+            if (taskService.updateTask(task, solution, redirAttr, redirectAddress, description, name, databaseId)) {
                 redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": updated task " + task.getName());
             }
         }

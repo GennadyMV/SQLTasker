@@ -136,13 +136,8 @@ public class TaskControllerTest {
         task.setName(RandomStringUtils.randomAlphanumeric(10));
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
         task.setDatabase(database);
+        task.setSolution("SELECT 1;");
         return task;
-    }
-
-    @Test
-    public void statusIsOkTest() throws Exception {
-        mockMvc.perform(get(API_URI).with(user("user").roles("TEACHER")))
-                .andExpect(status().isOk());
     }
 
     @Test
@@ -182,40 +177,6 @@ public class TaskControllerTest {
                 .andReturn();
     }
 
-    @Test
-    public void deleteTask() throws Exception {
-        Task testTask = randomTask();
-        taskRepository.save(testTask);
-        assertNotNull(taskRepository.findOne(testTask.getId()));
-
-        mockMvc.perform(delete(API_URI + "/" + testTask.getId()).with(user("admin").roles("ADMIN")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Task deleted!"))
-                .andReturn();
-
-        assertNull(taskRepository.findOne(testTask.getId()));
-    }
-
-    @Test
-    public void editTask() throws Exception {
-
-        Task testTask = randomTask();
-        taskRepository.save(testTask);
-        assertNotNull(taskRepository.findOne(testTask.getId()));
-
-        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
-                .param("databaseId", "" + database.getId())
-                .param("name", "Test")
-                .param("solution", "SELECT * FROM persons;")
-                .param("description", "It works")
-                .with(user("admin").roles("ADMIN")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Task modified!"))
-                .andReturn();
-        testTask = taskRepository.findOne(testTask.getId());
-        assertEquals("Test", testTask.getName());
-    }
-
     //Update-, delete-, drop-, insert- and create-queries use the same method
     @Test
     public void updateTypeQuery() throws Exception {
@@ -229,44 +190,6 @@ public class TaskControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", hasSize(1)))
                 .andReturn();
-    }
-
-    @Test
-    public void teacherCanCreateTag() throws Exception {
-        Task task = randomTask();
-        task = taskRepository.save(task);
-        String tagName = "cool tag bro";
-
-        mockMvc.perform(post(API_URI + "/" + task.getId() + "/tags")
-                .param("name", tagName)
-                .with(user("teacher").roles("TEACHER")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", "Tag added!"))
-                .andReturn();
-
-        List<Tag> tags = tagRepository.findAll();
-
-        assertTrue(tags.stream().filter(tag -> tag.getName().equals(tagName)).findFirst().isPresent());
-    }
-
-    @Test
-    public void teacherCanDeleteTag() throws Exception {
-        Task task = randomTask();
-        task = taskRepository.save(task);
-        Tag tag = new Tag();
-        String tagName = "Diz iz ded";
-        tag.setName(tagName);
-        tag.setTask(task);
-        tag = tagRepository.save(tag);
-
-        mockMvc.perform(delete(API_URI + "/" + task.getId() + "/tags").param("name", tagName)
-                .with(user("teacher").roles("TEACHER")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        List<Tag> tags = tagRepository.findAll();
-
-        assertFalse(tags.stream().filter(t -> t.getName().equals(tagName)).findFirst().isPresent());
     }
 
     @Test
@@ -284,24 +207,5 @@ public class TaskControllerTest {
         List<Task> tasks = taskRepository.findAll();
 
         assertFalse(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
-    }
-
-    @Test
-    public void createdTaskNameIsNotNull() throws Exception {
-        Long databaseId = database.getId();
-
-        String description = "Name is not null";
-
-        mockMvc.perform(post(API_URI)
-                .param("description", description)
-                .param("solution", "select * from persons;")
-                .param("databaseId", databaseId.toString())
-                .with(user("test").roles("ADMIN")).with(csrf()))
-                //                .andExpect(status().is3xxRedirection())
-                .andReturn();
-
-        List<Task> tasks = taskRepository.findAll();
-
-        assertFalse(tasks.stream().filter(task -> task.getDescription().equals(description)).findFirst().isPresent());
     }
 }
