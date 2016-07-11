@@ -24,8 +24,8 @@ public class AccountController {
     private String[] roles = {"STUDENT", "TEACHER", "ADMIN"};
 
     @Autowired
-    AccountService userService;
-    
+    AccountService accountService;
+
     @Autowired
     PointService pointService;
 
@@ -34,42 +34,38 @@ public class AccountController {
 
     @RequestMapping(value = "users", method = RequestMethod.GET)
     public String list(Model model, RedirectAttributes redirAttr) {
-        return userService.listAllAccounts(model, redirAttr);
+        return accountService.listAllAccounts(model, redirAttr);
     }
 
     @RequestMapping(value = "users/{id}", method = RequestMethod.GET)
     public String getUser(Model model, RedirectAttributes redirAttr, @PathVariable Long id) {
-        return userService.getUser(model, redirAttr, id);
+        return accountService.getUser(model, redirAttr, id);
     }
 
     @RequestMapping(value = "profile", method = RequestMethod.GET)
     public String getProfile(Model model) {
-        return userService.getProfile(model);
+        return accountService.getProfile(model);
     }
 
     @Transactional
     @RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
     public String update(@PathVariable Long id, RedirectAttributes redirectAttributes,
             @RequestParam(required = false) String role) {
-        return userService.editUser(redirectAttributes, id, role);
-    }
-
-    @RequestMapping(value = "register", method = RequestMethod.GET)
-    public String viewRegister(Model model) {
-        model.addAttribute("user", userService.getAuthenticatedUser());
-        return "register";
+        return accountService.editUser(redirectAttributes, id, role);
     }
 
     @RequestMapping(value = "profile/token", method = RequestMethod.POST)
     public String createToken(RedirectAttributes redirectAttributes) {
-        userService.createToken();
-        redirectAttributes.addFlashAttribute("messages", "New token created successfully!");
+        if (!accountService.isUserStudent()) {
+            accountService.createToken();
+            redirectAttributes.addFlashAttribute("messages", "New token created successfully!");
+        }
         return "redirect:/profile";
     }
-    
+
     @RequestMapping(value = "users/{accountId}", method = RequestMethod.DELETE)
     public String delete(RedirectAttributes redirAttr, @PathVariable Long accountId) {
-        
-        return userService.deleteAccount(redirAttr, accountId);
+
+        return accountService.deleteAccount(redirAttr, accountId);
     }
 }
