@@ -28,7 +28,7 @@ import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.ConstantString.*;
+import static wepaht.SQLTasker.constant.ConstantString.*;
 import wepaht.SQLTasker.repository.CourseRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -55,10 +55,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.library.ConstantString;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
-import static wepaht.SQLTasker.library.ConstantString.ROLE_ADMIN;
-import static wepaht.SQLTasker.library.ConstantString.ROLE_TEACHER;
+import wepaht.SQLTasker.constant.ConstantString;
+import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
+import static wepaht.SQLTasker.constant.ConstantString.ROLE_ADMIN;
+import static wepaht.SQLTasker.constant.ConstantString.ROLE_TEACHER;
 import wepaht.SQLTasker.repository.CategoryDetailRepository;
 import wepaht.SQLTasker.repository.CourseRepository;
 import wepaht.SQLTasker.service.CourseService;

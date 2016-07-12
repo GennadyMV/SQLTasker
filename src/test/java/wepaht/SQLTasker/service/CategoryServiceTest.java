@@ -17,8 +17,8 @@ import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
-import static wepaht.SQLTasker.library.ConstantString.ROLE_TEACHER;
+import static wepaht.SQLTasker.constant.ConstantString.ROLE_STUDENT;
+import static wepaht.SQLTasker.constant.ConstantString.ROLE_TEACHER;
 import wepaht.SQLTasker.repository.CategoryRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)

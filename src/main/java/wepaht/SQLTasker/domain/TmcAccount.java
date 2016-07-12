@@ -10,7 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import org.springframework.data.jpa.domain.AbstractPersistable;
-import static wepaht.SQLTasker.library.ConstantString.*;
+import static wepaht.SQLTasker.constant.ConstantString.*;
 
 /**
  *

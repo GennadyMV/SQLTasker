@@ -15,7 +15,7 @@ import wepaht.SQLTasker.domain.AuthenticationToken;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Owned;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.ConstantString.*;
+import static wepaht.SQLTasker.constant.ConstantString.*;
 import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
 import wepaht.SQLTasker.repository.TmcAccountRepository;
 

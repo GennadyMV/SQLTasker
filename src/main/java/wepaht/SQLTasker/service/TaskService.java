@@ -17,15 +17,15 @@ import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.library.ConstantString;
-import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
-import static wepaht.SQLTasker.library.ConstantString.REDIRECT_DEFAULT;
-import static wepaht.SQLTasker.library.ConstantString.REDIRECT_TASKS;
-import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
-import static wepaht.SQLTasker.library.ConstantString.VIEW_TASK;
+import wepaht.SQLTasker.constant.ConstantString;
+import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
+import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
+import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
+import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_TASKS;
+import static wepaht.SQLTasker.constant.ConstantString.ROLE_STUDENT;
+import static wepaht.SQLTasker.constant.ConstantString.VIEW_TASK;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @Service

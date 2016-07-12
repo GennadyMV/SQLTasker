@@ -14,12 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.library.ConstantString.ATTRIBUTE_MESSAGES;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
-import static wepaht.SQLTasker.library.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
-import static wepaht.SQLTasker.library.ConstantString.REDIRECT_DEFAULT;
-import static wepaht.SQLTasker.library.ConstantString.ROLE_STUDENT;
-import static wepaht.SQLTasker.library.ConstantString.VIEW_DATABASES;
+import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACTION;
+import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
+import static wepaht.SQLTasker.constant.ConstantString.ROLE_STUDENT;
+import static wepaht.SQLTasker.constant.ConstantString.VIEW_DATABASES;
 
 @Service
 public class DatabaseService {

@@ -7,65 +7,69 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title th:text="${editedUser.username}">User Profile</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
         <div th:include="fragments/navbar_template :: navbar"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <h2>
-            <span th:text="${editedUser.username}">User name</span>
-        </h2>
-
-        <ul>
-            <li id="sql-li">
-                <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
-                    <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
-                </form>
-            </li>
-
-            <li id="sql-li" th:if="${editedUser.role} != 'STUDENT'">
-                <form method="POST" th:action="@{/profile/token}">
-                    <input id="sql-input" type="submit" th:value="createToken" Onclick="return Confirm();"></input>
-                </form>
-            </li>
-        </ul>
-
-        <div th:if="${editedUser.role} != 'STUDENT'">
-            <p>To export points you need to include a token in your post-request</p>
-            <div th:if="${token}">
-                <label><b>Your export-token: </b></label>
-                <p th:text="${token.token}"></p>
-            </div>
-        </div>
-
-        <div class="get-in-touch">
-            <h2>Edit user</h2>
-            <div class="get-in-touch-text-boxs">
-                <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
-
-                    <div class="get-in-touch-text-box">
-                        <span>Role:</span>
-                        <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
-                               checked="checked"/>
-                        <div th:if="${roles}">
-                            <input type="radio" th:each="role : ${roles}" name="role"
-                                   th:text="${role}" th:value="${role}"/>
-                        </div>
-                    </div>
-                    
-                    <input type="submit" value="Submit"/>
-                </form>
-            </div>
-        </div>
-
         <div>
-            <a th:href="@{/users}">Back to user listing</a>
+            <div class="page-header">
+                <h1>TMC-account <small th:text="${editedUser.username}"></small></h1>
+            </div>
+            
+
+            <ul>
+                <li id="sql-li">
+                    <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+                        <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
+                    </form>
+                </li>
+
+                <li id="sql-li" th:if="${editedUser.role} != 'STUDENT'">
+                    <form method="POST" th:action="@{/profile/token}">
+                        <input id="sql-input" type="submit" th:value="createToken" Onclick="return Confirm();"></input>
+                    </form>
+                </li>
+            </ul>
+
+            <div th:if="${editedUser.role} != 'STUDENT'">
+                <p>To export points you need to include a token in your post-request</p>
+                <div th:if="${token}">
+                    <label><b>Your export-token: </b></label>
+                    <p th:text="${token.token}"></p>
+                </div>
+            </div>
+
+            <div class="get-in-touch">
+                <h2>Edit user</h2>
+                <div class="get-in-touch-text-boxs">
+                    <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
+
+                        <div class="get-in-touch-text-box">
+                            <span>Role:</span>
+                            <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
+                                   checked="checked"/>
+                            <div th:if="${roles}">
+                                <input type="radio" th:each="role : ${roles}" name="role"
+                                       th:text="${role}" th:value="${role}"/>
+                            </div>
+                        </div>
+
+                        <input type="submit" value="Submit"/>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <a th:href="@{/users}">Back to user listing</a>
+            </div>
         </div>
+
 
         <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/scripts :: confirmScript"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+        <div th:include="fragments/scripts :: confirmScript"></div>        
     </body>
 
 </html>

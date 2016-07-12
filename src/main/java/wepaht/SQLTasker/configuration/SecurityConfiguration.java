@@ -11,12 +11,12 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 @EnableOAuth2Sso
 @EnableWebMvcSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login**", "/", "/register","/logout", "/export/**", "/static/**", "/bootstrap-3.3.6-dist/**").permitAll()
+                .antMatchers("/login**", "/", "/register", "/logout", "/export/**", "/static/**", "/bootstrap-3.3.6-dist/**").permitAll()
                 .anyRequest().authenticated();
 
         http.csrf().ignoringAntMatchers("/export/**");
@@ -25,11 +25,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 //                .loginProcessingUrl("/login")
 //                .defaultSuccessUrl("/categories")
 //                .permitAll();
-
         http.logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .permitAll()
                 .invalidateHttpSession(true);
     }
+
+    
 }

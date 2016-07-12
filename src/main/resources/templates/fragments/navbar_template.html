@@ -5,43 +5,50 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head>
-    <title>navbar_template</title>
-    <link href="../../bootstrap-3.3.6-dist/css/navbarmenu.css" th:href="@{/bootstrap-3.3.6-dist/css/navbarmenu.css}"
-          rel="stylesheet" type="text/css"/>
-</head>
+    <head>
+        <title>navbar_template</title>
+    </head>
 
-<body>
-<div th:fragment="navbar">
-    <h1 id="sql-h1">SQL-TASKER</h1>
+    <body>
+        <div th:fragment="navbar">
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" th:href="@{/}">SQL-Tasker</a>
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar-collapse-1" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
 
-    <nav sec:authorize="isAuthenticated()">
-        <ul id="sql-ul">
-            <li id="sql-li"><a id="sql-a" sec:authentication="name" th:href="@{/profile}">Username</a></li>
-            <li id="sql-li"><a id="sql-a" th:href="@{/courses}">Courses</a></li>
-            <li id="sql-li"><a id="sql-a" th:href="@{/categories}">Categories</a></li>
-            <li id="sql-li"><a id="sql-a" th:href="@{/queries}">Queries</a></li>
-            <li id="sql-li"><a id="sql-a" th:href="@{/points}">Points</a></li>
-            <li id="sql-li"><a id="sql-a" th:href="@{/databases}">Databases</a></li>
-            <li id="sql-li" sec:authorize="hasRole('ROLE_ADMIN')"><a id="sql-a" th:href="@{/tasks}">Tasks</a></li>
-            <li id="sql-li" sec:authorize="!hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/tasks/suggest}">Suggest Task</a></li>
-            <li id="sql-li" sec:authorize="hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/users}">Users</a></li>
-            <li id="sql-li"><a id="sql-a" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>
-            </li>
-        </ul>
-    </nav>
+                    <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+                        <ul class="nav navbar-nav navbar-left" sec:authorize="isAuthenticated()">
+                            <li th:each="nav : ${publicNav}"><a th:href="@{${nav.value}}" th:text="${nav.key}"></a></li>
+                            
+                            <li class="dropdown" th:if="${teacherNav}">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Teacher tools <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li th:each="nav : ${teacherNav}"><a th:href="@{${nav.value}}" th:text="${nav.key}"></a></li>
+                                </ul>
+                            </li>
+                        </ul>
 
-    <nav sec:authorize="isAnonymous()">
-        <ul id="sql-ul">
-            <li id="sql-li"><a id="sql-a" th:href="@{/login}">Login</a></li>
-            <li id="sql-li"><a id="sql-a" th:href="@{/register}">Register</a></li>
-        </ul>
-    </nav>
 
-    <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}">
-        <input type="submit" value="Logout"/>
-    </form>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a sec:authorize="isAuthenticated()" href="#" th:href="@{/profile}" sec:authentication="name">Username</a></li>
+                            <li sec:authorize="isAuthenticated()"><a href="#" class="glyphicon glyphicon-log-out"  onclick="document.getElementById('logout-form').submit();"></a></li>
+                            <li sec:authorize="isAnonymous()"><a th:href="@{/login}" class="glyphicon glyphicon-log-in"></a></li>                            
+                        </ul>
+                    </div>
+                </div>
+            </nav>
 
-</div>
-</body>
+            <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}">
+                <input type="submit" value="Logout"/>
+            </form>
+
+        </div>
+    </body>
 </html>

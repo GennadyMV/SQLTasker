@@ -5,47 +5,40 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>SQL-tasker</title>
-</head>
-<body>
-<div th:include="fragments/navbar_template :: navbar"></div>
+    <head>
+        <title>SQL-tasker</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
+    </head>
+    <body>
+        <div th:include="fragments/navbar_template :: navbar"></div>
 
-<div th:include="fragments/messages_template :: messages"></div>
+        <div th:include="fragments/messages_template :: messages"></div>
 
-<h2>Welcome to SQL-tasker!</h2>
+        <div>
+            <div class="page-header">
+                <h1>SQL-Tasker <small>Courses</small></h1>
+            </div>
+            <div class="list-group">
+                <a th:if="${role != 'STUDENT'}" th:href="@{/courses/create}" class="list-group-item active">
+                    Create course
+                </a>
+                <a th:each="course : ${courses}" class="list-group-item" th:href="@{/courses/{courseId} (courseId = ${course.id})}">
+                    <h4 class = "list-group-item-heading" th:text="${course.name}">
+                        Course name
+                    </h4>
 
-<div sec:authorize="hasRole('STUDENT')">
-    <h2><a th:href="@{/tasks}">To task listing</a></h2>
-    <h2><a th:href="@{/databases}">To database listing</a></h2>
-</div>
+                    <div class="progress list-group-item-text">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" style="width: 42%;">
+                            42%
+                        </div>
+                    </div>
+                </a>
 
-<div th:if="${submissions}">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Task</th>
-                <th>Category</th>
-                <th>Course</th>
-                <th>Query</th>
-                <th>Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="submission : ${submissions}">
-                <td th:text="${submission.account.username}">Username</td>
-                <td th:text="((${submission.task != null}) ? ${submission.task.name} : '')">Task name</td>
-                <td th:text="((${submission.category != null}) ? ${submission.category.name} : '')">Category name</td>
-                <td th:text="((${submission.course != null}) ? ${submission.course.name} : '')">Course name</td>
-                <td th:text="${submission.query}">Query</td>
-                <td th:text="${submission.points}">Points</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+            </div>
+        </div>
 
-<div th:include="fragments/footer_template :: footer"></div>
-<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-</body>
+
+
+        <div th:include="fragments/footer_template :: footer"></div>
+    </body>
 </html>

@@ -13,7 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Course;
-import static wepaht.SQLTasker.library.ConstantString.*;
+import static wepaht.SQLTasker.constant.ConstantString.*;
 
 @Service
 public class CategoryService {

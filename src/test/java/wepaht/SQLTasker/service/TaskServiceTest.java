@@ -22,8 +22,8 @@ import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.library.ConstantString;
-import static wepaht.SQLTasker.library.ConstantString.*;
+import wepaht.SQLTasker.constant.ConstantString;
+import static wepaht.SQLTasker.constant.ConstantString.*;
 import wepaht.SQLTasker.repository.TaskRepository;
 
 @RunWith(MockitoJUnitRunner.class)

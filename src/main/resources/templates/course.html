@@ -3,7 +3,7 @@
 
     <head>
         <title th:text="${course.name}">Course</title>
-
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
 
@@ -11,80 +11,65 @@
         <div th:include="fragments/messages_template :: messages"></div>
 
         <div>
-            <span>Course name</span>
-            <h1 th:text="${course.name}"></h1>
-        </div>
-        <div th:if="${course.description}">
-            <span>Course Description</span>
-            <p th:text="${course.description}"></p>
-        </div>
-        <div th:if="${course.starts}">
-            <span>Start-date</span>
-            <p th:text="${course.starts}"></p>
-        </div>
-        <div th:if="${course.expires}">
-            <span>Expire-date</span>
-            <p th:text="${course.expires}"></p>
-        </div>
-        
-        <div th:if="${points}">
-            <label>Your points</label>
-            <p th:text="${points}">Course points</p>
-        </div>
-        
-        <div th:if="${course.students}">
-            <span>Participants</span>
-            <div th:each="student : ${course.students}">
-                <h4 th:text="${student.username}">Student name</h4>
+            <div class="page-header">
+                <h1 th:text="${course.name}"></h1>
+            </div>
+
+            <div class="panel panel-default">
+
+                <div th:if="${course.description}" class="panel-body">
+                    <p th:text="${course.description}">Course description</p>
+                </div>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Starts</th>
+                            <th>Expires</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="detail : ${details}">
+                            <td>
+                                <a th:href="@{/courses/{courseId}/category/{categoryId} (courseId=${course.id}, categoryId=${detail.category.id})}">
+                                    <b th:text="${detail.category.name}"></b>
+                                </a>
+                            </td>
+                            <td th:text="((${detail.starts != null})? ${detail.starts} : '')"></td>
+                            <td th:text="((${detail.expires != null})? ${detail.expires} : '')"></td>
+                            <td><span class="badge">42%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-toolbar" role="group">
+                <div class="btn-group">
+                    <form th:method="POST" th:action="@{/courses/{id}/join (id = ${course.id})}" id="join"></form>                
+                    <form th:method="POST" th:action="@{/courses/{id}/leave (id = ${course.id})}" id="leave"></form>
+                    <button class="btn btn-default" form="join">Join course</button>
+                    <button class="btn btn-default" form="leave">Leave course</button>
+                </div>
+                <div class="btn-group" th:if="${role} != 'STUDENT'">
+                    <form th:method="DELETE" th:action="@{/courses/{id}/delete (id = ${course.id})}" id="delete"></form>
+                    <form th:method="GET" th:action="@{/courses/{id}/details (id = ${course.id})}" id="editDetails"></form>
+                    <form th:method="GET" th:action="@{/courses/{id}/edit (id = ${course.id})}" id="editCourse"></form>
+                    <button class="btn btn-warning" form="editDetails">Edit categories' details</button>
+                    <button class="btn btn-warning" form="editCourse">Edit course</button>
+                    <button class="btn btn-danger" form="delete">Delete course</button>
+                </div>
             </div>
         </div>
+
+
+
+
         
-        <div th:if="${details}">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Starts</th>
-                        <th>Expires</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="detail : ${details}">
-                        <td>
-                            <a th:text="${detail.category.name}" th:href="@{/courses/{courseId}/category/{categoryId} (courseId=${course.id}, categoryId=${detail.category.id})}"></a>
-                        </td>
-                        <td th:text="((${detail.starts != null})? ${detail.starts} : '')"></td>
-                        <td th:text="((${detail.expires != null})? ${detail.expires} : '')"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div>
-            <a th:href="@{/courses/{id}/edit (id = ${course.id})}">Edit course</a>
-        </div>
-        
-        <div>
-            <a th:href="@{/courses/{id}/details (id = ${course.id})}">Edit categories' details</a>
-        </div>
-        
-        <form th:method="POST" th:action="@{/courses/{id}/join (id = ${course.id})}">
-            <input type="submit" value="Join course"/>
-        </form>
-        
-        <form th:method="POST" th:action="@{/courses/{id}/leave (id = ${course.id})}">
-            <input type="submit" value="Leave course"/>
-        </form>
-        
-        <div>
-            <form th:method="DELETE" th:action="@{/courses/{id}/delete (id = ${course.id})}">
-                <input type="submit" value="Delete course"/>
-            </form>
-        </div>
-        
+
         <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/bootstrap :: bootstrap"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+
     </body>
 
 </html>
