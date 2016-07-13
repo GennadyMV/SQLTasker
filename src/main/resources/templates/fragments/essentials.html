@@ -12,30 +12,39 @@ and open the template in the editor.
 
     <body>
 
-    <div th:fragment="tableListing (tables)">
-        <div th:if="${tables}">
-            <div th:each="table : ${tables}">
-                <div th:if="${table.key}">
-                    <h2 th:text="${table.key}">Table name</h2>
-                </div>
-                <table th:if="${table.value}" class="table table-bordered">
-                    <tr>
-                        <div th:each="column : ${table.value.columns}">
-                            <th th:text="${column}">Column name</th>
-                        </div>
-                    </tr>
+        <div th:fragment="tableListing (tables)">
+            <div th:if="${tables}">
+                <div th:each="table : ${tables}">
+                    <div th:if="${table.key}">
+                        <h2 th:text="${table.key}">Table name</h2>
+                    </div>
+                    <table th:if="${table.value}" class="table table-bordered">
+                        <tr>
+                            <div th:each="column : ${table.value.columns}">
+                                <th th:text="${column}">Column name</th>
+                            </div>
+                        </tr>
 
-                    <tr th:each="row : ${table.value.rows}">
-                        <div th:each="cell : ${row}">
-                            <td th:text="${cell}">Cell value</td>
-                        </div>
-                    </tr>
-                </table>
+                        <tr th:each="row : ${table.value.rows}">
+                            <div th:each="cell : ${row}">
+                                <td th:text="${cell}">Cell value</td>
+                            </div>
+                        </tr>
+                    </table>
+                </div>
             </div>
+
         </div>
 
-    </div>
+        <div th:fragment="fragmentsTop">
+            <div th:include="fragments/navbar_template :: navbar"></div>        
+            <div th:include="fragments/messages_template :: messages"></div>
+        </div>
+        
+        <div th:fragments="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>
+            
+        </div>
 
-
-</body>
+    </body>
 </html>

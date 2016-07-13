@@ -74,7 +74,7 @@ public class CategoryService {
         List<Task> categoryTasks = category.getTaskList();
 
         int taskIndex = categoryTasks.indexOf(task);
-
+        
         if (taskIndex < categoryTasks.size() - 1 && categoryTasks.contains(task)) {
             Task next = categoryTasks.get(taskIndex + 1);
             categoryTasks.set(taskIndex, next);

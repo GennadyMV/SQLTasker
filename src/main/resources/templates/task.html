@@ -7,11 +7,50 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
     <head>
         <title th:text="${task.name}">Task name</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+        <div id="fragmentsTop" th:include="fragments/essentials :: fragmentsTop"></div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+        <div id="stuffz">
+            <div class="page-header">
+                <h1 th:text="${task.name}"></h1>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <p th:if="${task.description}" th:text="${task.description}"></p>
+                    <p th:text="${'Solution: ' + task.solution}"></p>                    
+                </div>
+                <div class="list-group">
+                    <div id="queryForm" class="list-group-item well">
+                        <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
+                            <div class="form-group">
+                                <label for="taskQuery">Perform query to database <a th:text="${database.name}" th:href="@{/databases/{dbId} (dbId=${database.id})}"></a></label>
+                                <textarea name="query" id="taskQuery" placeholder="SHOW TABLES;" class="form-control"></textarea>
+                            </div>
+                            
+                            <div class='form-group'>
+                                <input class="btn btn-primary form-control" type="submit"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="tagsEtc" class="list-group-item">
+                    <span class="label label-success">Dön</span>
+                </div>
+            </div>
+
+
+
+            <div class="btn-group" th:if="${role != 'STUDENT' or owned}">
+                <form id="delete" th:method="DELETE" th:action="@{ {current} (current=${#httpServletRequest.requestURI})}"></form>
+                <form id="edit" th:method="GET" th:action="@{ {current}/edit (current=${#httpServletRequest.requestURI})}"></form>
+                <button class="btn btn-warning" form="edit">Edit task</button>
+                <button class="btn btn-danger" form="delete">Delete task</button>
+            </div>
+        </div>
 
         <div>
             <ul>
@@ -38,9 +77,9 @@ and open the template in the editor.
 
                 <p th:text="${task.description}">Task description</p>
 
-                <h3 sec:authorize="hasRole('ROLE_TEACHER')" th:if="${task.solution}">Suggested solution</h3>
+                <h3 th:if="${task.solution}">Suggested solution</h3>
 
-                <p sec:authorize="hasRole('ROLE_TEACHER')" th:text="${task.solution}">Task solution</p>
+                <p th:text="${task.solution}">Task solution</p>
 
                 <div th:if="${database}">
                     <h3>Database</h3>
@@ -89,17 +128,18 @@ and open the template in the editor.
             </div>
         </div>
 
-        <a th:if='${category == null}' sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
+        <a th:if='${category == null}' th:href="@{/tasks}">Back to task listing</a>
 
 
         <a th:if="${course}" 
            th:href="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"
            th:text="'Give feedback to task ' + ${task.name}"></a>
 
-        <div th:if="${course}" th:include="fragments/scripts :: spyware (course = ${course}, task = ${task})"></div>
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/scripts :: confirmScript"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+        <div id="fragmentsBottom">
+            <div th:if="${course}" th:include="fragments/scripts :: spyware (course = ${course}, task = ${task})"></div>
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/scripts :: confirmScript"></div>        
+        </div>        
     </body>
 
 </html>

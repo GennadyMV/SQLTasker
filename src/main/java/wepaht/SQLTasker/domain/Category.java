@@ -8,7 +8,7 @@ import java.util.List;
 
 
 @Entity
-public class Category extends AbstractPersistable<Long> implements Owned{
+public class Category extends AbstractPersistable<Long> implements Owned {
 
     @NotBlank
     private String name;

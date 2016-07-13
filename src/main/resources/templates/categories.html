@@ -3,78 +3,85 @@
 
     <head>
         <title>Categories</title>
-
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
 
-        <div th:include="fragments/navbar_template :: navbar"></div>
-        <div th:include="fragments/messages_template :: messages"></div>
+        <div id="fragmentsTop">
+            <div th:include="fragments/navbar_template :: navbar"></div>
+            <div th:include="fragments/messages_template :: messages"></div>
+        </div>
 
-        <div class="get-in-touch">
-            <h2>Create new category</h2>
+        <div id="stuffs">
+            <div class="page-header">
+                <h1>Categories</h1>
+            </div>
 
-            <form method="POST" th:action="@{/categories}">
-                <div class="get-in-touch-text-boxs">
-                    <div class="get-in-touch-text-box">
-                        <span>Category name</span>
-                        <input type="text" name="name"/>
-                    </div>
+            <div class="list-group">
+                <button class="list-group-item active" id="toggleHideForm">Create category</button>
+                <div id="createForm" style="display: none">
+                    <form method="POST" th:action="@{/categories}" role="form" class="list-group-item well">
+                        <div class="form-group">
+                            <label for="catName">Category name</label>
+                            <input id="catName" class="form-control" type="text" name="name"/>
+                        </div>
 
-                    <div class="get-in-touch-text-box">
-                        <span>Description</span>
-                        <textarea name="description"></textarea>
-                    </div>
+                        <div class="form-group">
+                            <label for="catDesc">Description</label>
+                            <textarea class="form-control" id="catDesc" name="description"></textarea>
+                        </div>
 
-                    <div>
-                        <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
-                                data-toggle="modal" data-target="#taskModal">
-                           Select Tasks
-                        </button>
-                    </div>
-                    <div class="modal fade" id="taskModal" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title">Choose Tasks</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="text" id="search" placeholder="Type to search" class="topspace"/>
-
-                                    <div class="checkbox" th:each="task : ${tasks}" style="border: none">
-                                        <label>
-                                            <input type="checkbox" name="taskIds" th:value="${task.id}"/>
-
-                                            <p class="taskName" th:text="${task.name}"></p>
-                                        </label>
+                        <div>
+                            <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
+                                    data-toggle="modal" data-target="#taskModal">
+                                Select Tasks
+                            </button>
+                        </div>
+                        
+                        <div class="modal fade" id="taskModal" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Choose Tasks</h4>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Select
-                                    </button>
+                                    <div class="modal-body">
+                                        <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+
+                                        <div class="checkbox" th:each="task : ${tasks}" style="border: none">
+                                            <label>
+                                                <input type="checkbox" name="taskIds" th:value="${task.id}"/>
+
+                                                <p class="taskName" th:text="${task.name}"></p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Select
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <br/>
-                    <input type="submit" value="Create category"/>
+                        <input class="btn btn-primary" type="submit" value="Submit"/>
+                    </form>
                 </div>
-            </form>
-        </div>
-
-        <div class="get-in-touch">
-            <h2>List of categories</h2>        
-            <div th:each="category: ${categories}">
-                <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
+                <div>
+                    <a th:each="category: ${categories}" class="list-group-item" th:href="@{__${#httpServletRequest.requestURI}__/{id}(id=${category.id})}">
+                        <h4 class="list-group-item-heading" th:text="${category.name}"></h4>
+                        <p class="list-group-item-text" th:if="${category.description}" th:text="${category.description}"></p>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
 
-        <div th:include="fragments/scripts :: searchScript"></div>
-        <div th:include="fragments/bootstrap :: bootstrap"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+        <div id="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/scripts :: searchScript"></div>
+            <div th:include="fragments/scripts :: togglehide (elementId = 'createForm', buttonId = 'toggleHideForm')"></div>
+        </div>
     </body>
 
 </html>

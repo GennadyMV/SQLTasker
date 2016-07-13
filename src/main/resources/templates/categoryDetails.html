@@ -3,7 +3,7 @@
 
     <head>
         <title th:text="${course.name} + ' category details'">Course Form</title>
-
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
 
@@ -12,8 +12,12 @@
 
         <div>
 
+            <div class="page-header">
+                <h1 th:text="${course.name} + ' category details'">Course's category detail edit form</h1>
+            </div>
+            
             <form method="POST" action="#" th:action="@{${actionURL}}" th:object="${wrapper}">
-                <table class="table table-bordered">
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Category</th>
@@ -25,7 +29,7 @@
                     <tbody>
                         <tr th:each="detail, stat : ${wrapper.categoryDetailsList}">
                             <td>
-                                <p th:text="${detail.category.name}"></p>
+                                <b th:text="${detail.category.name}"></b>
 
                                 <input th:type="hidden" readonly="readonly"
                                        th:name="|wrapper.categoryDetailsList[${stat.index}]|"
@@ -50,15 +54,13 @@
                         </tr>
                     </tbody>
                 </table>
-                <input type="submit"/>
+                <input class="btn btn-primary" type="submit"/>
             </form>
 
         </div>
 
         <div th:include="fragments/scripts :: searchScript"></div>
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/bootstrap :: bootstrap"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+        <div th:include="fragments/footer_template :: footer"></div>        
     </body>
 
 </html>

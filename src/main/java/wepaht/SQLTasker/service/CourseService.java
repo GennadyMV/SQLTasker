@@ -407,6 +407,8 @@ public class CourseService {
             model.addAttribute("course", course);
             model.addAttribute("category", category);
             model.addAttribute("task", task);
+            model.addAttribute("owned", accountService.isOwned(task));
+            model.addAttribute("database", task.getDatabase());
         }
 
         return "task";

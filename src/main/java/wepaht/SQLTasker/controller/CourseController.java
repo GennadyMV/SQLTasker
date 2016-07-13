@@ -104,7 +104,7 @@ public class CourseController {
         return courseService.getCourseCategory(model, redirectAttributes, courseId, categoryId);
     }
     
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/task/{taskId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}", method = RequestMethod.GET)
     public String getCourseCategoryTask(
             Model model, 
             RedirectAttributes redirectAttr, 

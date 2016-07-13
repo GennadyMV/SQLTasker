@@ -84,6 +84,7 @@ public class CategoryController {
         List<Task> taskList = category.getTaskList();
         model.addAttribute("category", category);
         model.addAttribute("taskList", taskList);
+        model.addAttribute("owned", userService.isOwned(category));
         return "category";
     }
 

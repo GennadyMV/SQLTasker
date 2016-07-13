@@ -15,10 +15,22 @@
                 <h1 th:text="${course.name}"></h1>
             </div>
 
-            <div class="panel panel-default">
+            <div class="panel panel-primary">
 
-                <div th:if="${course.description}" class="panel-body">
+                <div th:if="${course.description}" class="panel-heading">
+                    <b>Categories</b>
+                </div>
+
+                <div class="panel-body">
                     <p th:text="${course.description}">Course description</p>
+                    <div th:if="${role != 'STUDENT'}">
+                        <b th:text="${#lists.size(course.students) + ' course patricipants:'}">Course participants: </b>
+                        <ul th:each="student : ${course.students}">
+                            <li>
+                                <a th:href="@{/users/{userId} (userId = ${student.id})}" th:text="${student.username}"></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <table class="table table-striped">
@@ -62,12 +74,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-        
-
         <div th:include="fragments/footer_template :: footer"></div>
 
     </body>

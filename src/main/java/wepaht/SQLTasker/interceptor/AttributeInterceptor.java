@@ -17,7 +17,9 @@ public class AttributeInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mav) {
-        Account user = accountService.getAuthenticatedUser();
+        Account user = null;
+        
+        user = accountService.getAuthenticatedUser();
 
         if (user != null) {
             if (request.getMethod().equals("GET")) {

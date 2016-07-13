@@ -267,6 +267,7 @@ public class TaskService {
             }
 
             List<Tag> tags = tagService.getTagsByTask(task);
+            model.addAttribute("owned", accountService.isOwned(task));
             model.addAttribute("tags", tags);
             model.addAttribute("task", task);
             model.addAttribute("database", task.getDatabase());
