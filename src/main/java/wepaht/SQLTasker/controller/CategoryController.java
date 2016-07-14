@@ -168,9 +168,11 @@ public class CategoryController {
     
     @RequestMapping(value = "/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.GET)
     public String getEditTaskForm(Model model, RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId) {
+        model.addAttribute("actionUri", "/{categoryId}/tasks/{taskId}");
         return categoryService.getEditTaskForm(model, redirAttr, categoryId, taskId);
     }
     
+    @RequestMapping(value="/{categoryId}/tasks/{taskId}/edit", method=RequestMethod.POST)
     public String editTask(RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId, 
             @RequestParam Long databaseId,
             @RequestParam String name,

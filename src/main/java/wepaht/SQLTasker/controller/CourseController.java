@@ -145,4 +145,19 @@ public class CourseController {
             @ModelAttribute TaskFeedback taskFeedback) {
         return feedbackService.createFeedback(redirAttr, courseId, categoryId, taskId, taskFeedback);
     }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.GET)
+    public String getCourseCategoryEditTaskForm(Model model, RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId, @PathVariable Long courseId) {
+        System.out.println("************** GOT HERE ******************");
+        return courseService.getCategoryEditTaskForm(model, redirAttr, courseId, categoryId, taskId);
+    }
+    
+    @RequestMapping(value="/{courseId}/category/{categoryId}/tasks/{taskId}/edit", method=RequestMethod.POST)
+    public String editCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId, @PathVariable Long courseId,
+            @RequestParam Long databaseId,
+            @RequestParam String name,
+            @RequestParam String solution,
+            @RequestParam String description) {
+        return courseService.categoryeditTask(redirAttr, courseId, categoryId, taskId, databaseId, name, solution, description);
+    }
 }

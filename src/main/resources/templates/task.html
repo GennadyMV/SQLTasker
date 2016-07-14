@@ -64,68 +64,7 @@ and open the template in the editor.
                 </div>
 
             </div>
-        </div>
-
-        <div>
-            <ul>
-                <li id="sql-li1">
-                    <form th:method="DELETE" th:action="@{ {current} (current=${#httpServletRequest.requestURI})}">
-                        <input id="sql-input1" type="submit" value="delete task" Onclick="return Confirm();"/>
-                    </form>
-                </li>
-                <li id="sql-li2">
-                    <form th:method="GET" th:action="@{ {current}/edit (current=${#httpServletRequest.requestURI})}">
-                        <input id="sql-input2" type="submit" value="edit task" Onclick="return Confirm();"/>
-                    </form>
-                </li>
-            </ul>
-
-            <div class="get-in-touch">
-                <h2 th:text="${task.name}">Task name</h2>
-                <h3>Tags</h3>
-                <div th:if="${tags}" th:each="tag : ${tags}">
-                    <span th:text="${tag.name}">Tag name</span>
-                </div>
-
-                <h3 th:if="${task.description}">Description</h3>
-
-                <p th:text="${task.description}">Task description</p>
-
-                <h3 th:if="${task.solution}">Suggested solution</h3>
-
-                <p th:text="${task.solution}">Task solution</p>
-
-                <div th:if="${database}">
-                    <h3>Database</h3>
-                    <a th:text="${database.name}" th:href="@{/databases/{id} (id = ${database.id})}">Task database</a>    
-                </div>
-            </div>
-        </div>
-
-
-        <!-- SELECT query to a database results -->
-
-
-        <div th:if="${course == null}">
-            <div th:if="${category}">
-                <a th:if="${next}" th:id="${next}" th:href="@{/categories/{id}/tasks/{nextId} (id=${category.id}, nextId=${next.id})}" th:text="'Next task: ' + ${next.name}">Next Task</a>
-                <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
-            </div>
-        </div>
-        <div th:if="${course != null}">
-            <div th:if="${category}">
-                <a th:if="${next}" th:id="${next}" th:href="@{/courses/{courseId}/category/{id}/task/{nextId} (id=${category.id}, nextId=${next.id}, courseId=${course.id})}" th:text="'Next task: ' + ${next.name}">Next Task</a>
-                <a th:id="${category}" th:href="@{courses/{courseId}/category/{id} (id = ${category.id}, courseId=${course.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
-            </div>
-        </div>
-
-        <a th:if='${category == null}' th:href="@{/tasks}">Back to task listing</a>
-
-
-        <a th:if="${course}" 
-           th:href="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"
-           th:text="'Give feedback to task ' + ${task.name}">               
-        </a>
+        </div>        
 
         <div id="fragmentsBottom">
             <div th:if="${course}" th:include="fragments/scripts :: spyware (course = ${course}, task = ${task})"></div>

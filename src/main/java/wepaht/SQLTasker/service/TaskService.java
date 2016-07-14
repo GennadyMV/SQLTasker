@@ -344,7 +344,7 @@ public class TaskService {
         return true;
     }
 
-    public String addTag(RedirectAttributes redirectAttributes, Long id, String name) {
+    public String addTag(RedirectAttributes redirectAttributes, Long id, String name, String redirectUri) {
         if (!accountService.isUserStudent()) {
             Tag tag = tagService.createTag(name, getTaskById(id));
             if (redirectAttributes != null) {
@@ -352,10 +352,10 @@ public class TaskService {
                 redirectAttributes.addFlashAttribute("messages", "Tag added!");
             }
         }
-        return "redirect:/tasks/{id}/edit";
+        return "redirect:" + redirectUri;
     }
 
-    public String deleteTag(RedirectAttributes redirectAttributes, Long id, String name) {
+    public String deleteTag(RedirectAttributes redirectAttributes, Long id, String name, String redirectUri) {
         if (!accountService.isUserStudent()) {
             Tag tag = tagService.getTagByNameAndTask(name, getTaskById(id));
             tagService.deleteTag(tag);
@@ -364,7 +364,7 @@ public class TaskService {
                 redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
             }
         }
-        return "redirect:/tasks/{id}/edit";
+        return "redirect:" + redirectUri;
     }
     
     public void deleteTask(Account user, Category category, Task task, RedirectAttributes redirAttr, Long taskId) {

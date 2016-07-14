@@ -11,86 +11,82 @@ and open the template in the editor.
     </head>
     <body>
         <div id="fragmentsTop" th:include="fragments/essentials :: fragmentsTop"></div>
-        
+
         <div id="everything">
             <div class="page-header">
                 <h1 th:text="${'Edit ' + task.name}"></h1>
             </div>
-            
-            <div class="well">
-                <div class="list-group">
-                    <button class="list-group-item active" id="toggleHideForm">Add tags</button>
-                </div>
-            </div>
-        </div>
+            <div class="list-group">
 
-        <div class="get-in-touch">
-            <h2>Edit task</h2>
 
-            <form method="POST" th:action="@{/tasks/{id}/edit (id=${task.id})}">
-                <div class="get-in-touch-text-boxs">
-                    <div class="get-in-touch-text-box">
-                        <span>Task name</span>
-                        <input type="text" name="name" th:value="${task.name}"/>
+                <div>
+                    <div class="list-group-item">
+                        <b class="list-group-item-heading">Tags</b>
+                        <div class="list-group-item-text" th:each="tag : ${tags}" style="display: inline-block; padding: 15px">
+                            <form th:if="${role != 'STUDENT'}" th:method="DELETE" th:action="@{/tasks/{id}/tags (id=${task.id})}" class="row form-inline">
+                                <input type="hidden" name="name" th:value="${tag.name}"/>
+                                <input type="hidden" name="redirectUri" th:value="${#httpServletRequest.requestURI}"/>
+                                <div class="form-group well well-sm" th:if="${role != 'STUDENT'}" >
+                                    <label th:text="${tag.name}" for="tagDelete"></label>
+                                    <input id="tagDelete" class="btn btn-danger btn-xs form-control" value="Delete" type="submit"/>
+                                </div>                                
+                            </form>
+                        </div>
                     </div>
 
-                    <div class="get-in-touch-text-box">
-                        <span>Description</span>
-                        <textarea name="description" th:text="${task.description}"></textarea>
-                    </div>
+                    <button class="list-group-item active" id="toggleHideForm">Add Tags</button>
+                    <div id="tagsForm" class="list-group-item" style="display: none">
+                        <form role="form" method="POST" th:action="@{/tasks/{id}/tags (id=${task.id})}">
+                            <div class="form-group">
+                                <label for="tagName">Tag name</label>
+                                <input id="tagName" class="form-control" type="text" name="name"/>
+                            </div>
 
-                    <div class="get-in-touch-text-box">
-                        <span>Solution</span>
-                        <textarea name="solution" th:text="${task.solution}"></textarea>
-                    </div>
+                            <input type="hidden" name="redirectUri" th:value="${#httpServletRequest.requestURI}"/>
 
-                    <div class="get-in-touch-text-box">
-                        <span>Database</span>
-                        <ul id="sql-id">
-                            <li><input type="radio" th:value="${task.database.id}" name="databaseId" 
-                                   th:text="${task.database.name}" checked="checked"/>
-                            </li>
-                            <li th:each="db : ${databases}">
-                                <input type="radio"  name="databaseId" th:text="${db.name}" th:value="${db.id}"/>
-                            </li>
-                            
-                        </ul>
-                    </div>
-
-                    <input type="submit" value="Save edits"/>
-                </div>
-            </form>
-        </div>
-
-        <div class="get-in-touch">
-            <h2>Tags</h2>
-            <div th:each="tag : ${tags}">
-                <ul>
-                    <li id="sql-li">
-                        <p th:text="${tag.name}">Tag name</p>
-                    </li>
-                    <li id="sql-li">
-                        <form th:method="DELETE" th:action="@{/tasks/{id}/tags (id=${task.id})}">
-                            <input type="hidden" name="name" th:value="${tag.name}"/>
-                            <input id="sql-input" type="submit" value="Delete tag"/>
+                            <input class="btn btn-primary" type="submit" value="Save new tag"/>
                         </form>
-                    </li>
-                </ul>
+                    </div>
+
+                    <div class="list-group-item">
+                        <form class="well" style="width: 30%;" method="POST" th:action="@{__${#httpServletRequest.requestURI}__}">
+                            <div class="form-group">
+                                <label for="tname">Task name</label>
+                                <input id="tname" class="form-control" type="text" name="name" th:value="${task.name}"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tdesc">Description</label>
+                                <textarea id="tdesc" class="form-control" name="description" th:text="${task.description}"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tsol">Solution</label>
+                                <textarea id="tsol" class="form-control" name="solution" th:text="${task.solution}"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tdb">Database</label>
+                                <select class="form-control" id="tdb" name="databaseId">
+                                    <option th:value="${task.database.id}"  
+                                            th:text="${task.database.name}"></option>
+                                    <option th:each="db : ${databases}" th:text="${db.name}" th:value="${db.id}"></option>
+                                </select>
+                            </div>
+
+                            <input type="hidden" name="redirectUri" th:value="${#httpServletRequest.requestURI}"/>
+
+                            <input class="btn btn-primary" type="submit" value="Submit"/>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-            <div class="get-in-touch-text-box">
-                <span>Add a tag</span>
-                <form method="POST" th:action="@{/tasks/{id}/tags (id=${task.id})}">
-                    <input type="text" name="name"/>
-                    <br/>
-                    <br/>
-                    <input id="sql-input" type="submit" value="Save new tag"/>
-                </form>
-            </div>
         </div>
 
         <a th:text="'Back to '+${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Back to task</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/scripts :: togglehide (elementId = 'tagsForm', buttonId = 'toggleHideForm')"></div>
     </body>
 </html>
