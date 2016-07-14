@@ -25,6 +25,7 @@ import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACTI
 import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
 import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_TASKS;
 import static wepaht.SQLTasker.constant.ConstantString.ROLE_STUDENT;
+import static wepaht.SQLTasker.constant.ConstantString.TAG_HIDDEN;
 import static wepaht.SQLTasker.constant.ConstantString.VIEW_TASK;
 import wepaht.SQLTasker.repository.TaskRepository;
 
@@ -364,5 +365,20 @@ public class TaskService {
             }
         }
         return "redirect:/tasks/{id}/edit";
+    }
+    
+    public void deleteTask(Account user, Category category, Task task, RedirectAttributes redirAttr, Long taskId) {
+        if (user.getRole().equals(ROLE_STUDENT)) {
+            if ((!accountService.isOwned(category) || !accountService.isOwned(task)) && categoryService.categoryHasTask(category, task)) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            } else {
+                categoryService.removeTaskFromCategory(category, task);
+                tagService.createTag(TAG_HIDDEN, task);
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
+            }
+        } else {
+            removeTask(taskId);
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
+        }
     }
 }

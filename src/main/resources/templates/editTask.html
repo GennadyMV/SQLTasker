@@ -7,11 +7,22 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title th:text="${task.name}">Edit task</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
-
-        <div th:include="fragments/messages_template :: messages"></div>
+        <div id="fragmentsTop" th:include="fragments/essentials :: fragmentsTop"></div>
+        
+        <div id="everything">
+            <div class="page-header">
+                <h1 th:text="${'Edit ' + task.name}"></h1>
+            </div>
+            
+            <div class="well">
+                <div class="list-group">
+                    <button class="list-group-item active" id="toggleHideForm">Add tags</button>
+                </div>
+            </div>
+        </div>
 
         <div class="get-in-touch">
             <h2>Edit task</h2>
@@ -36,9 +47,13 @@ and open the template in the editor.
                     <div class="get-in-touch-text-box">
                         <span>Database</span>
                         <ul id="sql-id">
-                            <input type="radio" th:value="${task.database.id}" name="databaseId" 
+                            <li><input type="radio" th:value="${task.database.id}" name="databaseId" 
                                    th:text="${task.database.name}" checked="checked"/>
-                            <input type="radio" th:each="db : ${databases}" name="databaseId" th:text="${db.name}" th:value="${db.id}"/>
+                            </li>
+                            <li th:each="db : ${databases}">
+                                <input type="radio"  name="databaseId" th:text="${db.name}" th:value="${db.id}"/>
+                            </li>
+                            
                         </ul>
                     </div>
 
@@ -77,6 +92,5 @@ and open the template in the editor.
         <a th:text="'Back to '+${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Back to task</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </body>
 </html>

@@ -27,28 +27,42 @@ and open the template in the editor.
                         <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
                             <div class="form-group">
                                 <label for="taskQuery">Perform query to database <a th:text="${database.name}" th:href="@{/databases/{dbId} (dbId=${database.id})}"></a></label>
-                                <textarea name="query" id="taskQuery" placeholder="SHOW TABLES;" class="form-control"></textarea>
+                                <textarea name="query" id="taskQuery" placeholder="SHOW TABLES;" class="form-control" th:text="((${query}) ? ${query} : '')"></textarea>
                             </div>
-                            
+
                             <div class='form-group'>
                                 <input class="btn btn-primary form-control" type="submit"/>
                             </div>
                         </form>
                     </div>
+
+                    <div class="list-group-item" th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})">
+                        <h4 class="list-group-item-heading">Query</h4>
+                    </div>
+
+                    <div id="tagsEtc" class="list-group-item">
+                        <span class="label label-success">Dön</span>
+                    </div>
                 </div>
 
-                <div id="tagsEtc" class="list-group-item">
-                    <span class="label label-success">Dön</span>
-                </div>
+
             </div>
 
 
 
-            <div class="btn-group" th:if="${role != 'STUDENT' or owned}">
-                <form id="delete" th:method="DELETE" th:action="@{ {current} (current=${#httpServletRequest.requestURI})}"></form>
-                <form id="edit" th:method="GET" th:action="@{ {current}/edit (current=${#httpServletRequest.requestURI})}"></form>
-                <button class="btn btn-warning" form="edit">Edit task</button>
-                <button class="btn btn-danger" form="delete">Delete task</button>
+            <div class="btn-toolbar" th:if="${role != 'STUDENT' or owned}">
+                <div class="btn-group" th:if="${course}">
+                    <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
+                    <button class="btn btn-default" form="feedback" th:text="'Give feedback to ' + ${task.name}"></button>
+                </div>
+
+                <div th:if="${role != 'STUDENT' or owned}" class="btn-group">
+                    <form id="delete" th:method="DELETE" th:action="@{ {current} (current=${#httpServletRequest.requestURI})}"></form>
+                    <form id="edit" th:method="GET" th:action="@{ {current}/edit (current=${#httpServletRequest.requestURI})}"></form>
+                    <button class="btn btn-warning" form="edit">Edit task</button>
+                    <button class="btn btn-danger" form="delete">Delete task</button>
+                </div>
+
             </div>
         </div>
 
@@ -88,32 +102,9 @@ and open the template in the editor.
             </div>
         </div>
 
-        <div class="get-in-touch" th:if="${category != null}">
-            <div class="get-in-touch-text-boxs">
-                <div class="get-in-touch-text-box">
-                    <div th:if="${course != null}">
-                        <form th:method="POST" th:action="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/query (courseId = ${course.id}, categoryId = ${category.id}, taskId = ${task.id})}">
-                            <textarea name="query" id="taskQuery"/>
-                            <input type="hidden" name="id" th:value="${task.id}"/>
 
-                            <input type="submit" value="Submit query"/>
-                        </form>
-                    </div>
-                    <div th:if="${course == null}">
-                        <form th:method="POST" th:action="@{/tasks/{categoryId}/{id}/query (categoryId=${category.id}, id=${task.id})}">
-                            <textarea name="query"/>
-                            <input type="hidden" name="id" th:value="${task.id}"/>
-
-                            <input type="submit" value="Submit query"/>
-                        </form>
-                    </div>                    
-                </div>
-            </div>
-        </div>
         <!-- SELECT query to a database results -->
-        <div class="get-in-touch" th:if="${tables}">
-            <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
-        </div>
+
 
         <div th:if="${course == null}">
             <div th:if="${category}">
@@ -133,7 +124,8 @@ and open the template in the editor.
 
         <a th:if="${course}" 
            th:href="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"
-           th:text="'Give feedback to task ' + ${task.name}"></a>
+           th:text="'Give feedback to task ' + ${task.name}">               
+        </a>
 
         <div id="fragmentsBottom">
             <div th:if="${course}" th:include="fragments/scripts :: spyware (course = ${course}, task = ${task})"></div>

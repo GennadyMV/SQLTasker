@@ -114,7 +114,12 @@ public class CourseController {
         return courseService.getCourseCategoryTask(model, redirectAttr, courseId, categoryId, taskId);
     }
     
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/task/{taskId}/query", method = RequestMethod.POST)
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}", method = RequestMethod.DELETE)
+    public String deleteCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @PathVariable Long taskId) {
+        return courseService.deleteCourseCategoryTask(redirAttr, courseId, categoryId, taskId);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/query", method = RequestMethod.POST)
     public String postQuery(RedirectAttributes redirectAttr, 
             @RequestParam String query, 
             @PathVariable Long courseId, 

@@ -20,15 +20,11 @@ and open the template in the editor.
                     </div>
                     <table th:if="${table.value}" class="table table-bordered">
                         <tr>
-                            <div th:each="column : ${table.value.columns}">
-                                <th th:text="${column}">Column name</th>
-                            </div>
+                            <th th:each="column : ${table.value.columns}" th:text="${column}">Column name</th>
                         </tr>
 
                         <tr th:each="row : ${table.value.rows}">
-                            <div th:each="cell : ${row}">
-                                <td th:text="${cell}">Cell value</td>
-                            </div>
+                            <td th:each="cell : ${row}" th:text="${cell}">Cell value</td>
                         </tr>
                     </table>
                 </div>
@@ -40,10 +36,10 @@ and open the template in the editor.
             <div th:include="fragments/navbar_template :: navbar"></div>        
             <div th:include="fragments/messages_template :: messages"></div>
         </div>
-        
+
         <div th:fragments="fragmentsBottom">
             <div th:include="fragments/footer_template :: footer"></div>
-            
+
         </div>
 
     </body>

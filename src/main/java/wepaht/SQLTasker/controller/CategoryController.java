@@ -134,6 +134,11 @@ public class CategoryController {
         return categoryService.getCreateTaskToCategoryForm(model, redirAttr, categoryId, task);
     }
     
+    @RequestMapping(value = "/{categoryId}/tasks/{taskId}/edit")
+    public String getTaskEdit(Model model, RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId) {
+        return categoryService.getTaskEditForm(model, redirAttr, categoryId, taskId);
+    }
+    
     @RequestMapping(value="/{categoryId}/tasks", method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirAttr, Model model, @PathVariable Long categoryId, @Valid @ModelAttribute Task task, BindingResult result) {
         if (result.hasErrors()) {
@@ -177,5 +182,14 @@ public class CategoryController {
     private String redirectMessage(String message, RedirectAttributes ra) {
         ra.addFlashAttribute("messages", message);
         return "redirect:/categories/";
+    }
+    
+    @RequestMapping(value="/{categoryId}/tasks/{taskId}/query")
+    public String postQueryToTask(
+            RedirectAttributes redirectAttributes, 
+            @RequestParam(required = false, defaultValue = "") String query,
+            @PathVariable Long categoryId,
+            @PathVariable Long taskId) {
+        return categoryService.performQueryToTask(redirectAttributes, query, categoryId, taskId);
     }
 }

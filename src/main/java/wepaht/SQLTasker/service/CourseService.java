@@ -430,11 +430,12 @@ public class CourseService {
     public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long categoryId, Long taskId) {
         Course course = repository.findOne(courseId);
         TmcAccount loggedUser = accountService.getAuthenticatedUser();
-        String redirectAddress = "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
+        String redirectAddress = "redirect:/courses/{courseId}/category/{categoryId}/tasks/{taskId}";
 
-        if (course.getStudents().contains(loggedUser)) {
+        if (!loggedUser.getRole().equals(ROLE_STUDENT)||course.getStudents().contains(loggedUser)) {
             List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<>(), taskId, query, categoryId, courseId);
             if (redirectAttr != null) {
+                redirectAttr.addFlashAttribute("query", query);
                 redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
                 redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
             }            
@@ -493,5 +494,18 @@ public class CourseService {
         }
 
         return true;
+    }
+
+    public String deleteCourseCategoryTask(RedirectAttributes redirAttr, Long courseId, Long categoryId, Long taskId) {
+        Account user = accountService.getAuthenticatedUser();
+        Course course = repository.findOne(courseId);
+        Category category = categoryService.getCategoryById(categoryId);
+        Task task = taskService.getTaskById(taskId);
+        
+        if (courseHasCategory(course, category)) {
+            taskService.deleteTask(user, category, task, redirAttr, taskId);
+        }
+        
+        return "redirect:/courses/{courseId}/category/{categoryId}";
     }
 }

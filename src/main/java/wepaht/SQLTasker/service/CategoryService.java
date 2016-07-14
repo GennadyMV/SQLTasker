@@ -306,22 +306,13 @@ public class CategoryService {
         Category category = categoryRepository.findOne(categoryId);
         Task task = taskService.getTaskById(taskId);
 
-        if (user.getRole().equals(ROLE_STUDENT)) {
-            if (!accountService.isOwned(category) || !accountService.isOwned(task)) {
-                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
-            } else {
-                removeTaskFromCategory(category, task);
-                tagService.createTag(TAG_HIDDEN, task);
-                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
-            }
-        } else {
-            taskService.removeTask(taskId);
-            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
-        }
+        taskService.deleteTask(user, category, task, redirAttr, taskId);
 
         redirAttr.addAttribute("categoryId", categoryId);
         return "redirect:/categories/{categoryId}";
     }
+
+    
 
     public String getEditTaskForm(Model model, RedirectAttributes redirAttr, Long categoryId, Long taskId) {
         Account user = accountService.getAuthenticatedUser();
@@ -363,5 +354,29 @@ public class CategoryService {
         }
 
         return redirectAddress;
+    }
+
+    public String performQueryToTask(RedirectAttributes redirectAttributes, String query, Long categoryId, Long taskId) {
+        List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<String>(), taskId, query, categoryId, null);
+
+        redirectAttributes.addFlashAttribute("messages", messagesAndQueryResult.get(0));
+        redirectAttributes.addAttribute("taskId", taskId);
+        redirectAttributes.addAttribute("categoryId", categoryId);
+        redirectAttributes.addFlashAttribute("tables", messagesAndQueryResult.get(1));
+        
+        return "redirect:/categories/{categoryId}/tasks/{taskId}";
+    }
+
+    public String getTaskEditForm(Model model, RedirectAttributes redirAttr, Long categoryId, Long taskId) {
+        Account user = accountService.getAuthenticatedUser();
+        Task task = taskService.getTaskById(taskId);
+        Category category = categoryRepository.findOne(taskId);
+        
+        if ((!user.getRole().equals(ROLE_STUDENT) || accountService.isOwned(task)) && categoryHasTask(category, task)) {
+            return taskService.setEditForm(model, task);
+        }
+        
+        redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+        return "redirect:/categories";
     }
 }
