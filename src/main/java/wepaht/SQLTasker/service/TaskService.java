@@ -104,7 +104,6 @@ public class TaskService {
      * third is boolean which tells was query correct.
      */
     public List<Object> performQueryToTask(List<String> messages, Long taskId, String query, Long categoryId, Long courseId) {
-        messages.add("Query sent");
         Task task = taskRepository.findOne(taskId);
         Category category = categoryService.getCategoryById(categoryId);
         Course course = courseService.getCourseById(courseId);
@@ -378,6 +377,7 @@ public class TaskService {
             }
         } else {
             removeTask(taskId);
+            categoryService.removeTaskFromCategory(category, task);
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
         }
     }

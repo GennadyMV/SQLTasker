@@ -32,10 +32,6 @@ import wepaht.SQLTasker.service.CategoryService;
 import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.DatabaseService;
 
-/**
- *
- * @author Kake
- */
 @Configuration
 @Profile(value = {"dev", "default"})
 public class DevProfile {
@@ -117,7 +113,7 @@ public class DevProfile {
     public Task randomTask() {
         Task task = new Task();
         task.setName(RandomStringUtils.randomAlphanumeric(10));
-        task.setDescription(RandomStringUtils.randomAlphabetic(30));
+        task.setDescription("Test data description: " + RandomStringUtils.randomAlphabetic(30));
         task.setDatabase(databaseRepository.findAll().get(0));
         task.setSolution("select address from persons");
         return task;

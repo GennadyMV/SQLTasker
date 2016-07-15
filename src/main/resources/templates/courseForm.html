@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title th:text="((${course.name})? ${'Edit ' + course.name} : 'Create course')">Course Form</title>        
+        <title th:text="((${course})? ${'Edit ' + course.name} : 'Create course')">Course Form</title>        
         <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
@@ -12,7 +12,7 @@
 
         <div>
             <div class="page-header">
-                <h1 th:text="((${course.name})? ${'Edit ' + course.name} : 'Create course')">Course form</h1>
+                <h1 th:text="((${course})? ${'Edit ' + course.name} : 'Create course')">Course form</h1>
             </div>
 
             <form role="form" style="width:50%" class="well" method="POST" th:action="@{${actionURL}}">

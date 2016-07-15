@@ -69,12 +69,24 @@ public class CategoryService {
         return null;
     }
 
+    public Task getPreviousTask(Category category, Task task) {
+        List<Task> categoryTasks = category.getTaskList();
+        int taskIndex = categoryTasks.indexOf(task);
+        int prevTaskIndex = taskIndex - 1;
+
+        if (taskIndex > 0 && categoryTasks.contains(task)) {
+            return categoryTasks.get(prevTaskIndex);
+        }
+
+        return null;
+    }
+
     @Transactional
     public void setCategoryTaskFurther(Category category, Task task) {
         List<Task> categoryTasks = category.getTaskList();
 
         int taskIndex = categoryTasks.indexOf(task);
-        
+
         if (taskIndex < categoryTasks.size() - 1 && categoryTasks.contains(task)) {
             Task next = categoryTasks.get(taskIndex + 1);
             categoryTasks.set(taskIndex, next);
@@ -138,7 +150,7 @@ public class CategoryService {
         }
     }
 
-    Category getCategoryById(Long categoryId) {
+    public Category getCategoryById(Long categoryId) {
         return categoryRepository.findOne(categoryId);
     }
 
@@ -312,8 +324,6 @@ public class CategoryService {
         return "redirect:/categories/{categoryId}";
     }
 
-    
-
     public String getEditTaskForm(Model model, RedirectAttributes redirAttr, Long categoryId, Long taskId) {
         Account user = accountService.getAuthenticatedUser();
         Category category = categoryRepository.findOne(categoryId);
@@ -363,7 +373,7 @@ public class CategoryService {
         redirectAttributes.addAttribute("taskId", taskId);
         redirectAttributes.addAttribute("categoryId", categoryId);
         redirectAttributes.addFlashAttribute("tables", messagesAndQueryResult.get(1));
-        
+
         return "redirect:/categories/{categoryId}/tasks/{taskId}";
     }
 
@@ -371,12 +381,25 @@ public class CategoryService {
         Account user = accountService.getAuthenticatedUser();
         Task task = taskService.getTaskById(taskId);
         Category category = categoryRepository.findOne(taskId);
-        
+
         if ((!user.getRole().equals(ROLE_STUDENT) || accountService.isOwned(task)) && categoryHasTask(category, task)) {
             return taskService.setEditForm(model, task);
         }
-        
+
         redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
         return "redirect:/categories";
     }
+
+    public Task getNextTask(Long categoryId, Long taskId) {
+        Task task = taskService.getTaskById(taskId);
+        Category category = categoryRepository.findOne(categoryId);
+        return getNextTask(category, task);
+    }
+
+    public Task getPreviousTask(Long categoryId, Long taskId) {
+        Task task = taskService.getTaskById(taskId);
+        Category category = categoryRepository.findOne(categoryId);
+        return getPreviousTask(category, task);
+    }
+
 }

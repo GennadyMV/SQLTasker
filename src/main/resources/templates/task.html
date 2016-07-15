@@ -13,8 +13,13 @@ and open the template in the editor.
         <div id="fragmentsTop" th:include="fragments/essentials :: fragmentsTop"></div>
 
         <div id="stuffz">
-            <div class="page-header">
-                <h1 th:text="${task.name}"></h1>
+            <div class="page-header">                
+                <h1 th:inline="text">
+                    [[${task.name}]] 
+                    <!-- Test label -->
+                    <span class="label label-success">Dön</span>
+                </h1>
+
             </div>
 
             <div class="panel panel-default">
@@ -39,16 +44,8 @@ and open the template in the editor.
                     <div class="list-group-item" th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})">
                         <h4 class="list-group-item-heading">Query</h4>
                     </div>
-
-                    <div id="tagsEtc" class="list-group-item">
-                        <span class="label label-success">Dön</span>
-                    </div>
                 </div>
-
-
             </div>
-
-
 
             <div class="btn-toolbar" th:if="${role != 'STUDENT' or owned}">
                 <div class="btn-group" th:if="${course}">
@@ -64,6 +61,15 @@ and open the template in the editor.
                 </div>
 
             </div>
+            
+            <nav>
+                <ul class="pager">
+                    <li th:if="${prev}" class="previous"><a th:href="@{__${#httpServletRequest.requestURI}__/prev}"><span aria-hidden="true">&larr;</span> Previous task</a></li>
+                    <li th:if="${prev == null}" class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Previous task</a></li>
+                    <li th:if="${next}" class="next"><a th:href="@{__${#httpServletRequest.requestURI}__/next}">Next task <span aria-hidden="true">&rarr;</span></a></li>
+                    <li th:if="${next == null}" class="next disabled"><a href="#">Next task <span aria-hidden="true">&rarr;</span></a></li>
+                </ul>
+            </nav>            
         </div>        
 
         <div id="fragmentsBottom">

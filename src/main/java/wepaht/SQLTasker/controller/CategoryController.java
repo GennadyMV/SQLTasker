@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import wepaht.SQLTasker.service.CategoryService;
 import wepaht.SQLTasker.service.DatabaseService;
+import wepaht.SQLTasker.service.TaskService;
 
 @Controller
 @RequestMapping("categories")
@@ -41,6 +42,9 @@ public class CategoryController {
     
     @Autowired
     private DatabaseService dbService;
+    
+    @Autowired
+    private TaskService taskService;
 
     @RequestMapping(method = RequestMethod.GET)
     @Transactional
@@ -123,7 +127,26 @@ public class CategoryController {
         model.addAttribute("database", task.getDatabase());
         model.addAttribute("category", category);
         model.addAttribute("next", categoryService.getNextTask(category, task));
+        model.addAttribute("prev", categoryService.getPreviousTask(category, task));
         return "task";
+    }
+    
+    @RequestMapping(value = "/{categoryId}/tasks/{taskId}/next")
+    public String getNextTask(@PathVariable Long categoryId, @PathVariable Long taskId, RedirectAttributes redirAttr) {
+        Task task = taskService.getTaskById(taskId);
+        Category category = categoryService.getCategoryById(categoryId);
+        redirAttr.addAttribute("nextId", categoryService.getNextTask(category, task).getId());
+        redirAttr.addAttribute("categoryId", categoryId);
+        return "redirect:/categories/{categoryId}/tasks/{nextId}";
+    }
+    
+    @RequestMapping(value = "/{categoryId}/tasks/{taskId}/prev")
+    public String getPreviousTask(@PathVariable Long categoryId, @PathVariable Long taskId, RedirectAttributes redirAttr) {
+        Task task = taskService.getTaskById(taskId);
+        Category category = categoryService.getCategoryById(categoryId);
+        redirAttr.addAttribute("prevId", categoryService.getPreviousTask(category, task).getId());
+        redirAttr.addAttribute("categoryId", categoryId);
+        return "redirect:/categories/{categoryId}/tasks/{prevId}";
     }
     
     @RequestMapping(value = "/{categoryId}/tasks/create", method = RequestMethod.GET)

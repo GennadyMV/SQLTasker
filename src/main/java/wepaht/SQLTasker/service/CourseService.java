@@ -416,6 +416,8 @@ public class CourseService {
             model.addAttribute("task", task);
             model.addAttribute("owned", accountService.isOwned(task));
             model.addAttribute("database", task.getDatabase());
+            model.addAttribute("next", categoryService.getNextTask(category, task));
+            model.addAttribute("prev", categoryService.getPreviousTask(category, task));
         }
 
         return "task";
@@ -543,5 +545,21 @@ public class CourseService {
         
         redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
         return "redirect:/courses";
+    }
+
+    public String getCourseCategoryNextTask(RedirectAttributes redirectAttr, Long courseId, Long categoryId, Long taskId) {
+        Task next = categoryService.getNextTask(categoryId, taskId);
+        redirectAttr.addAttribute("courseId", courseId);
+        redirectAttr.addAttribute("categoryId", categoryId);
+        redirectAttr.addAttribute("nextId", next.getId());
+        return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{nextId}";
+    }
+
+    public String getCourseCategoryPreviousTask(RedirectAttributes redirectAttr, Long courseId, Long categoryId, Long taskId) {
+        Task previous = categoryService.getPreviousTask(categoryId, taskId);
+        redirectAttr.addAttribute("courseId", courseId);
+        redirectAttr.addAttribute("categoryId", categoryId);
+        redirectAttr.addAttribute("prevId", previous.getId());
+        return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{prevId}";
     }
 }

@@ -16,9 +16,7 @@ and open the template in the editor.
             <div class="page-header">
                 <h1 th:text="${'Edit ' + task.name}"></h1>
             </div>
-            <div class="list-group">
-
-
+            <div class="list-group" style="width: 50%">
                 <div>
                     <div class="list-group-item">
                         <b class="list-group-item-heading">Tags</b>
@@ -34,8 +32,7 @@ and open the template in the editor.
                         </div>
                     </div>
 
-                    <button class="list-group-item active" id="toggleHideForm">Add Tags</button>
-                    <div id="tagsForm" class="list-group-item" style="display: none">
+                    <div id="tagsForm" class="list-group-item">
                         <form role="form" method="POST" th:action="@{/tasks/{id}/tags (id=${task.id})}">
                             <div class="form-group">
                                 <label for="tagName">Tag name</label>
@@ -49,7 +46,7 @@ and open the template in the editor.
                     </div>
 
                     <div class="list-group-item">
-                        <form class="well" style="width: 30%;" method="POST" th:action="@{__${#httpServletRequest.requestURI}__}">
+                        <form class="well" method="POST" th:action="@{__${#httpServletRequest.requestURI}__}">
                             <div class="form-group">
                                 <label for="tname">Task name</label>
                                 <input id="tname" class="form-control" type="text" name="name" th:value="${task.name}"/>
