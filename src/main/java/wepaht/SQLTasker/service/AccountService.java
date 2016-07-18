@@ -2,6 +2,7 @@ package wepaht.SQLTasker.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -30,6 +31,21 @@ public class AccountService {
 
     @Autowired
     private PointService pointService;
+
+    @Autowired
+    private CourseService courseService;
+
+    private HashMap<String, Integer> roleToValue = new HashMap<>();
+    private HashMap<Integer, String> valueToRole = new HashMap<>();
+
+    private void initRoleMaps() {
+        roleToValue.put(ROLE_STUDENT, 0);
+        roleToValue.put(ROLE_TEACHER, 1);
+        roleToValue.put(ROLE_ADMIN, 2);
+        valueToRole.put(0, ROLE_STUDENT);
+        valueToRole.put(1, ROLE_TEACHER);
+        valueToRole.put(2, ROLE_ADMIN);
+    }
 
     public TmcAccount getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -81,7 +97,7 @@ public class AccountService {
         return tmcRepo.findByUsernameAndDeletedFalse(username);
     }
 
-    public String listAllAccounts(Model model, RedirectAttributes redirAttr) {
+    public String getListAllAccounts(Model model, RedirectAttributes redirAttr) {
         if (isUserStudent()) {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return REDIRECT_DEFAULT;
@@ -104,6 +120,7 @@ public class AccountService {
 
         TmcAccount fetched = getUserById(id);
         model.addAttribute("editedUser", fetched);
+        model.addAttribute(ATTRIBUTE_COURSES, courseService.getCoursesByAccount(fetched));
 
         if (user.getRole().equals(ROLE_ADMIN)) {
             model.addAttribute(ATTRIBUTE_ROLES, Arrays.asList(ROLE_STUDENT, ROLE_TEACHER, ROLE_ADMIN));
@@ -129,7 +146,7 @@ public class AccountService {
         return true;
     }
 
-    public String editUser(RedirectAttributes redirAttr, Long accountId, String role) {
+    public String postEditUser(RedirectAttributes redirAttr, Long accountId, String role) {
         List<String> messages = new ArrayList<>();
         TmcAccount user = getAuthenticatedUser();
         TmcAccount fetched = getUserById(accountId);
@@ -164,6 +181,7 @@ public class AccountService {
         } else if (user.getRole().equals(ROLE_TEACHER)) {
             model.addAttribute(ATTRIBUTE_ROLES, ROLE_STUDENT);
         }
+        model.addAttribute(ATTRIBUTE_COURSES, courseService.getCoursesByCurrentUser());
         model.addAttribute(ATTRIBUTE_EDITEDUSER, user);
         model.addAttribute(ATTRIBUTE_TOKEN, getToken());
 
@@ -174,7 +192,7 @@ public class AccountService {
         TmcAccount user = getAuthenticatedUser();
         TmcAccount deleting = getUserById(accountId);
 
-        if (user.equals(deleting) || user.getRole().equals(ROLE_TEACHER) || user.getRole().equals(ROLE_ADMIN)) {
+        if (user.getRole().equals(ROLE_TEACHER) || user.getRole().equals(ROLE_ADMIN)) {
             deleting.setDeleted(Boolean.TRUE);
             tmcRepo.save(deleting);
 
@@ -206,15 +224,82 @@ public class AccountService {
         TmcAccount student = getAuthenticatedUser();
         if (course.getStudents() != null && course.getStudents().contains(student)) {
             course.getStudents().remove(student);
-        }        
+        }
     }
-    
+
     public Boolean isOwned(Owned ownedObject) {
         TmcAccount user = getAuthenticatedUser();
         return ownedObject.getOwner() != null && ownedObject.getOwner().equals(user);
     }
-    
+
     public Boolean isOwned(Owned ownedObject, Account user) {
         return ownedObject.getOwner() != null && ownedObject.getOwner().equals(user);
+    }
+
+    @Transactional
+    public Boolean promoteAccount(TmcAccount account) {
+        TmcAccount user = getAuthenticatedUser();
+
+        if (((user.getRole().equals(ROLE_TEACHER) && account.getRole().equals(ROLE_STUDENT))
+                || (user.getRole().equals(ROLE_ADMIN) && !account.getRole().equals(ROLE_ADMIN)))
+                && !account.equals(user)) {
+            initRoleMaps();
+            account.setRole(valueToRole.get(roleToValue.get(account.getRole()) + 1));
+            return true;
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public Boolean demoteAccount(TmcAccount account) {
+        TmcAccount user = getAuthenticatedUser();
+
+        if (((user.getRole().equals(ROLE_TEACHER) && account.getRole().equals(ROLE_TEACHER))
+                || (user.getRole().equals(ROLE_ADMIN))) && !account.getRole().equals(ROLE_STUDENT)
+                && !account.equals(user)) {
+            initRoleMaps();
+            account.setRole(valueToRole.get(roleToValue.get(account.getRole()) - 1));
+            return true;
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public String postPromoteAccount(RedirectAttributes redirAttr, Long id) {
+        TmcAccount promoting = tmcRepo.findOne(id);
+
+        if (promoteAccount(promoting)) {
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": " + promoting.getUsername() + " promoted");
+            }
+        } else {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+        }
+
+        if (redirAttr != null) {
+            redirAttr.addAttribute("id", id);
+        }
+        return "redirect:/users/{id}";
+    }
+
+    @Transactional
+    public String postDemoteAccount(RedirectAttributes redirAttr, Long id) {
+        TmcAccount demoting = tmcRepo.findOne(id);
+
+        if (demoteAccount(demoting)) {
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": " + demoting.getUsername() + " demoted");
+            }
+        } else {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+        }
+
+        if (redirAttr != null) {
+            redirAttr.addAttribute("id", id);
+        }
+
+        return "redirect:/users/{id}";
     }
 }

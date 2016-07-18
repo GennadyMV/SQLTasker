@@ -159,7 +159,7 @@ public class DatabaseService {
         }
 
         Map<String, Table> queryResult = new HashMap<>();
-        Table table = new Table("query");
+        Table table = new Table("Response");
         Database database = databaseRepository.findOne(databaseId);
         Statement statement = null;
         Connection connection = null;
@@ -171,7 +171,7 @@ public class DatabaseService {
 
             table.setColumns(listQueryColumns(resultSet));
             table.setRows(listQueryRows(resultSet, table.getColumns()));
-            queryResult.put("Query", table);
+            queryResult.put("Response", table);
         } catch (Exception e) {
             queryResult.put(e.toString(), null);
         } finally {

@@ -17,7 +17,7 @@ and open the template in the editor.
                 <h1 th:inline="text">
                     [[${task.name}]] 
                     <!-- Test label -->
-                    <span class="label label-success">Dön</span>
+                    <span th:if="${course}" class="label label-success">Dön</span>
                 </h1>
 
             </div>

@@ -2,61 +2,60 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Create Task</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
-        <div id="navigationBar">
+        <div id="fragmentsTop">
             <div th:include="fragments/navbar_template :: navbar"></div>
-
             <div th:include="fragments/messages_template :: messages"></div>
         </div>
 
-        <div id="taskForm">
-            <h1>Create Task</h1>
-            <form method="POST" action="#" th:action="@{/categories/{catId}/tasks (catId=${categoryId})}" th:object="${task}">
-                <div id="taskName">
-                    <label>Name</label>
-                    <input type="text" th:field="*{name}"/>
-                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</p>
-                </div>
+        <div id="stuffs">
+            <div class="page-header">
+                <h1>Create task</h1>
+            </div>
+            <div class="panel panel-default">
+                <div id="taskForm" class="panel panel-body" style="width: 70%">
+                    <form th:method="POST" th:action="@{/categories/{catId}/tasks (catId=${categoryId})}" th:object="${task}" role="form" class="well">
+                        <div class="form-group">
+                            <label for="taskName">Name</label>
+                            <input id="taskName" class="form-control" type="text" th:field="*{name}" placeholder="task name"/>
+                            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</p>
+                        </div>
 
-                <div id="taskDescription">
-                    <label>Description</label>
-                    <input type="text" th:field="*{description}"/>
-                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Name error</p>
-                </div>
+                        <div class="form-group">
+                            <label for="taskSolution">Solution</label>
+                            <input id="taskSolution" type="text" th:field="*{solution}" class="form-control" placeholder="SHOW TABLES;"/>
+                            <p th:if="${#fields.hasErrors('solution')}" th:errors="*{solution}">Solution error</p>
+                        </div>
 
-                <div id="taskSolution">
-                    <label>Solution</label>
-                    <input type="text" th:field="*{solution}"/>
-                    <p th:if="${#fields.hasErrors('solution')}" th:errors="*{solution}">Solution error</p>
-                </div>
+                        <div class="form-group">
+                            <label for="tdb">Database</label>
+                            <select class="form-control" id="tdb" name="database">
+                                <option th:if="${task.database}" th:value="${task.database.id}"  
+                                        th:text="${task.database.name}"></option>
+                                <option th:if="${task.database == null or task.database != db}" th:each="db : ${databases}" th:text="${db.name}" th:value="${db.id}"></option>
+                            </select>
+                            <p th:if="${#fields.hasErrors('database')}" th:errors="*{database}">Database error</p>
+                        </div>
 
-                <div id="taskDatabase">
-                    <label>Database</label>
-                    <ul>
-                        <li th:each="db : ${databases}">
-                            <label th:text="${db.name}"></label>
-                            <input type="radio" th:field="*{database}" th:value="${db.id}"/>
-                        </li>
-                    </ul>
-                    <p th:if="${#fields.hasErrors('database')}" th:errors="*{database}">Database error</p>
-                </div>
+                        <div id="taskCategories">
+                            <input type="hidden" th:field="*{categories}" th:value="${category}"/>
+                        </div>
 
-
-                <div id="taskCategories">
-                    <input type="hidden" th:field="*{categories}" th:value="${category}"/>
+                        <div id="submitTask">
+                            <input class="btn btn-primary" type="submit"/>
+                        </div>
+                    </form>
                 </div>
-
-                <div id="submitTask">
-                    <input type="submit"/>
-                </div>
-            </form>
+            </div>
         </div>
-        <div id="imports">
+        
+        <div id="fragmentsBottom">
             <div th:include="fragments/footer_template :: footer"></div>
-            <div th:include="fragments/bootstrap :: bootstrap"></div>
+
             <div th:include="fragments/scripts :: searchScript"></div>
-            <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+
         </div>
 
     </body>

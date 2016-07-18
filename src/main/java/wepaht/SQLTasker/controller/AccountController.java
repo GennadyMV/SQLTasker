@@ -34,7 +34,7 @@ public class AccountController {
 
     @RequestMapping(value = "users", method = RequestMethod.GET)
     public String list(Model model, RedirectAttributes redirAttr) {
-        return userService.listAllAccounts(model, redirAttr);
+        return userService.getListAllAccounts(model, redirAttr);
     }
 
     @RequestMapping(value = "users/{id}", method = RequestMethod.GET)
@@ -51,7 +51,7 @@ public class AccountController {
     @RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
     public String update(@PathVariable Long id, RedirectAttributes redirectAttributes,
             @RequestParam(required = false) String role) {
-        return userService.editUser(redirectAttributes, id, role);
+        return userService.postEditUser(redirectAttributes, id, role);
     }
 
     @RequestMapping(value = "profile/token", method = RequestMethod.POST)
@@ -67,5 +67,15 @@ public class AccountController {
     public String delete(RedirectAttributes redirAttr, @PathVariable Long accountId) {
 
         return userService.deleteAccount(redirAttr, accountId);
+    }
+    
+    @RequestMapping(value = "/users/{id}/promote", method = RequestMethod.POST)
+    public String promote(RedirectAttributes redirAttr, @PathVariable Long id) {
+        return userService.postPromoteAccount(redirAttr, id);
+    }
+    
+    @RequestMapping(value = "/users/{id}/demote", method = RequestMethod.POST)
+    public String demote(RedirectAttributes redirAttr, @PathVariable Long id) {
+        return userService.postDemoteAccount(redirAttr, id);
     }
 }

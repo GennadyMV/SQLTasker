@@ -67,7 +67,7 @@ and open the template in the editor.
                                 <select class="form-control" id="tdb" name="databaseId">
                                     <option th:value="${task.database.id}"  
                                             th:text="${task.database.name}"></option>
-                                    <option th:each="db : ${databases}" th:text="${db.name}" th:value="${db.id}"></option>
+                                    <option th:if="${task.database == null or task.database != db}" th:each="db : ${databases}" th:text="${db.name}" th:value="${db.id}"></option>
                                 </select>
                             </div>
 

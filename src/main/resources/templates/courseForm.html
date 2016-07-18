@@ -15,62 +15,67 @@
                 <h1 th:text="((${course})? ${'Edit ' + course.name} : 'Create course')">Course form</h1>
             </div>
 
-            <form role="form" style="width:50%" class="well" method="POST" th:action="@{${actionURL}}">
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input name="name" th:value="( (${course != null})? ${course.name} : '')" type="text" class="form-control" id="name" placeholder="Course name"/>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea name="description" th:value="( (${course != null})? ${course.description} : '')" class="form-control" id="description" placeholder="Course description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="starts">Start-date</label>
-                    <input name="starts" th:value="( (${course != null})? ${course.starts} : '')" type="date" class="form-control" id="starts"/>
-                </div>
-                <div class="form-group">
-                    <label for="expires">Expire-date</label>
-                    <input name="expires" th:value="( (${course != null})? ${course.expires} : '')" type="date" class="form-control" id="expires"/>
-                </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form role="form" style="width:70%" class="well" method="POST" th:action="@{${actionURL}}">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input name="name" th:value="( (${course != null})? ${course.name} : '')" type="text" class="form-control" id="name" placeholder="Course name"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea name="description" th:value="( (${course != null})? ${course.description} : '')" class="form-control" id="description" placeholder="Course description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="starts">Start-date</label>
+                            <input name="starts" th:value="( (${course != null})? ${course.starts} : '')" type="date" class="form-control" id="starts"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="expires">Expire-date</label>
+                            <input name="expires" th:value="( (${course != null})? ${course.expires} : '')" type="date" class="form-control" id="expires"/>
+                        </div>
 
-                <div class="form-group">
-                    <div>
-                        <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
-                                data-toggle="modal" data-target="#categoryModal">
-                            Select Categories
-                        </button>
-                    </div>
+                        <div class="form-group">
+                            <div>
+                                <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
+                                        data-toggle="modal" data-target="#categoryModal">
+                                    Select Categories
+                                </button>
+                            </div>
 
-                    <div class="modal fade" id="categoryModal" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title">Choose Categories</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+                            <div class="modal fade" id="categoryModal" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Choose Categories</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="text" id="search" placeholder="Type to search" class="topspace"/>
 
-                                    <div class="checkbox" th:each="category : ${categories}" style="border: none">
-                                        <label>
-                                            <input th:if="${course} == null" type="checkbox" name="categoryIds" th:value="${category.id}" />
-                                            <input th:if="${course}" type="checkbox" name="categoryIds" th:value="${category.id}" th:checked="${#lists.contains(course.courseCategories, category)}"/>
-                                            <p class="categoryName" th:text="${category.name}"></p>
-                                        </label>
+                                            <div class="checkbox" th:each="category : ${categories}" style="border: none">
+                                                <label>
+                                                    <input th:if="${course} == null" type="checkbox" name="categoryIds" th:value="${category.id}" />
+                                                    <input th:if="${course}" type="checkbox" name="categoryIds" th:value="${category.id}" th:checked="${#lists.contains(course.courseCategories, category)}"/>
+                                                    <p class="categoryName" th:text="${category.name}"></p>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Select
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Select
-                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>                
+            </div>
+
         </div>
 
 

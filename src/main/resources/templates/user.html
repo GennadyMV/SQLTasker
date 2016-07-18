@@ -18,58 +18,43 @@ and open the template in the editor.
             <div class="page-header">
                 <h1>TMC-account <small th:text="${editedUser.username}"></small></h1>
             </div>
-            
 
-            <ul>
-                <li id="sql-li">
-                    <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
-                        <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
-                    </form>
-                </li>
-
-                <li id="sql-li" th:if="${editedUser.role} != 'STUDENT'">
-                    <form method="POST" th:action="@{/profile/token}">
-                        <input id="sql-input" type="submit" th:value="createToken" Onclick="return Confirm();"></input>
-                    </form>
-                </li>
-            </ul>
-
-            <div th:if="${editedUser.role} != 'STUDENT'">
-                <p>To export points you need to include a token in your post-request</p>
-                <div th:if="${token}">
-                    <label><b>Your export-token: </b></label>
-                    <p th:text="${token.token}"></p>
+            <div id="stuffs" class="panel panel-default">
+                <div class="panel-heading" th:if="${role != 'STUDENT'}">
+                    <h4 class="panel-title">User role: <small th:text="${editedUser.role}"></small></h4>
+                    <div class="btn-group">
+                        <form id="deleteUser" role="form" th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}"></form>
+                        <form id="promoteUser" role="form" th:method="POST" th:action="@{/users/{id}/promote (id=${editedUser.id})}"></form>
+                        <form id="demoteUser" role="form" th:method="POST" th:action="@{/users/{id}/demote (id=${editedUser.id})}"></form>                        
+                        <button th:class="((${#strings.contains(#httpServletRequest.requestURI, 'profile') or editedUser.role == 'ADMIN'}) ? 'btn btn-default disabled' : 'btn btn-default')" form="promoteUser">Promote user</button>
+                        <button th:class="((${#strings.contains(#httpServletRequest.requestURI, 'profile') or editedUser.role == 'STUDENT'}) ? 'btn btn-default disabled' : 'btn btn-default')" form="demoteUser">Demote user</button>
+                        <button th:class="((${#strings.contains(#httpServletRequest.requestURI, 'profile')}) ? 'btn btn-danger disabled' : 'btn btn-danger')" form="deleteUser">Delete user</button>
+                    </div>
                 </div>
-            </div>
-
-            <div class="get-in-touch">
-                <h2>Edit user</h2>
-                <div class="get-in-touch-text-boxs">
-                    <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
-
-                        <div class="get-in-touch-text-box">
-                            <span>Role:</span>
-                            <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
-                                   checked="checked"/>
-                            <div th:if="${roles}">
-                                <input type="radio" th:each="role : ${roles}" name="role"
-                                       th:text="${role}" th:value="${role}"/>
+                
+                <div class="panel-body">
+                    <div class="list-group">
+                        
+                        <div id="tokenTools" th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile') and role!= 'STUDENT'}">
+                            <form id="createToken" role="form" method="POST" th:action="@{/profile/token}"></form>
+                            <button type="submit" class="list-group-item active" form="createToken">Create export token</button>
+                            <div th:if="${token}" class="list-group-item">
+                                <b class="list-group-item-heading">Your export token</b>
+                                <p class="list-group-item-text" th:text="${token.token}"></p>
                             </div>
                         </div>
 
-                        <input type="submit" value="Submit"/>
-                    </form>
+                        <div id="myCourses" th:include="fragments/essentials :: courses"></div>
+                    </div>
                 </div>
-            </div>
-
-            <div>
-                <a th:href="@{/users}">Back to user listing</a>
-            </div>
+            </div>            
         </div>
 
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/scripts :: confirmScript"></div>        
+        <div id="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/scripts :: confirmScript"></div>        
+        </div>        
     </body>
 
 </html>

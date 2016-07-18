@@ -81,12 +81,7 @@ public class CourseController {
     @RequestMapping(value = "/{id}/join", method = RequestMethod.POST)
     public String joinCourse(RedirectAttributes redirectAttributes,
             @PathVariable Long id) {
-        return courseService.joinCourse(redirectAttributes, id);
-    }
-
-    @RequestMapping(value = "/{id}/leave", method = RequestMethod.POST)
-    public String leaveCourse(RedirectAttributes redirectAttributes, @PathVariable Long id) {
-        return courseService.leaveCourse(redirectAttributes, id);
+        return courseService.joinOrLeaveCourse(redirectAttributes, id);
     }
 
     @RequestMapping(value = "/{id}/details", method = RequestMethod.GET)

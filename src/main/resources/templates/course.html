@@ -61,10 +61,8 @@
 
             <div class="btn-toolbar" role="group">
                 <div class="btn-group">
-                    <form th:method="POST" th:action="@{/courses/{id}/join (id = ${course.id})}" id="join"></form>                
-                    <form th:method="POST" th:action="@{/courses/{id}/leave (id = ${course.id})}" id="leave"></form>
-                    <button class="btn btn-default" form="join">Join course</button>
-                    <button class="btn btn-default" form="leave">Leave course</button>
+                    <form th:method="POST" th:action="@{/courses/{id}/join (id = ${course.id})}" id="join"></form>                                    
+                    <button class="btn btn-default" form="join" th:text="((${joined} == true)? 'Leave Course' : 'Join course')">Join course</button>                    
                 </div>
                 <div class="btn-group" th:if="${role} != 'STUDENT'">
                     <form th:method="DELETE" th:action="@{/courses/{id}/delete (id = ${course.id})}" id="delete"></form>

@@ -167,6 +167,7 @@ public class CourseService {
 
         model.addAttribute("course", course);
         model.addAttribute("points", pointService.getCoursePoints(course));
+        model.addAttribute("joined", course.getStudents().contains(accountService.getAuthenticatedUser()));
         if (!details.isEmpty()) {
             model.addAttribute("details", details);
         }
@@ -278,6 +279,17 @@ public class CourseService {
     }
 
     @Transactional
+    public String joinOrLeaveCourse(RedirectAttributes redirAttr, Long id) {
+        Course course = repository.findOne(id);
+        
+        if (course.getStudents().contains(accountService.getAuthenticatedUser())) {
+            return leaveCourse(redirAttr, id);            
+        } else {
+            return joinCourse(redirAttr, id);
+        }                
+    }
+    
+    @Transactional
     public String joinCourse(RedirectAttributes redirAttr, Long id) {
         Course course = repository.findOne(id);
         List<String> messages = new ArrayList<>();
@@ -291,7 +303,7 @@ public class CourseService {
         }
 
         try {
-            if (!course.getStudents().contains(user)) {
+            if (!course.getStudents().contains(accountService.getAuthenticatedUser())) {
                 course.getStudents().add(accountService.getAuthenticatedUser());
                 messages.add("Joined to course " + course.getName());
             }
@@ -561,5 +573,13 @@ public class CourseService {
         redirectAttr.addAttribute("categoryId", categoryId);
         redirectAttr.addAttribute("prevId", previous.getId());
         return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{prevId}";
+    }
+    
+    public List<Course> getCoursesByAccount(Account account) {
+        return repository.findByStudentsAndDeletedFalse((TmcAccount) account);
+    }
+    
+    public List<Course> getCoursesByCurrentUser() {
+        return repository.findByStudentsAndDeletedFalse(accountService.getAuthenticatedUser());
     }
 }
