@@ -15,28 +15,34 @@
                 <h1>Create task</h1>
             </div>
             <div class="panel panel-default">
-                <div id="taskForm" class="panel panel-body" style="width: 70%">
-                    <form th:method="POST" th:action="@{/categories/{catId}/tasks (catId=${categoryId})}" th:object="${task}" role="form" class="well">
-                        <div class="form-group">
+                <div id="taskForm" class="panel-body" style="width: 70%">
+                    <form th:method="POST" th:action="((${courseId != null})? @{/courses/{courseId}/category/{catId}/tasks (courseId=${courseId}, catId=${categoryId})} : @{/categories/{catId}/tasks (catId=${categoryId})})" th:object="${task}" role="form" class="well">
+                        <div th:class="((${#fields.hasErrors('name')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('name')}" class="panel-heading" th:errors="*{name}"></p>
                             <label for="taskName">Name</label>
-                            <input id="taskName" class="form-control" type="text" th:field="*{name}" placeholder="task name"/>
-                            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</p>
+                            <input id="taskName" class="form-control" type="text" th:field="*{name}" placeholder="task name"/>                            
                         </div>
 
-                        <div class="form-group">
-                            <label for="taskSolution">Solution</label>
-                            <input id="taskSolution" type="text" th:field="*{solution}" class="form-control" placeholder="SHOW TABLES;"/>
-                            <p th:if="${#fields.hasErrors('solution')}" th:errors="*{solution}">Solution error</p>
+                        <div th:class="((${#fields.hasErrors('description')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('description')}" class="panel-heading" th:errors="*{description}">Solution error</p>
+                            <label for="taskDescription">Solution</label>
+                            <textarea id="taskDescription" th:field="*{description}" class="form-control" placeholder="task description"></textarea>                            
                         </div>
 
-                        <div class="form-group">
+                        <div th:class="((${#fields.hasErrors('database')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('database')}" class="panel-heading" th:errors="*{database}">Database error</p>                            
                             <label for="tdb">Database</label>
-                            <select class="form-control" id="tdb" name="database">
+                            <select class="form-control" id="tdb" th:field="*{database}">
                                 <option th:if="${task.database}" th:value="${task.database.id}"  
                                         th:text="${task.database.name}"></option>
                                 <option th:if="${task.database == null or task.database != db}" th:each="db : ${databases}" th:text="${db.name}" th:value="${db.id}"></option>
-                            </select>
-                            <p th:if="${#fields.hasErrors('database')}" th:errors="*{database}">Database error</p>
+                            </select>                            
+                        </div>
+                        
+                        <div th:class="((${#fields.hasErrors('solution')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('solution')}" class="panel-heading" th:errors="*{solution}">Solution error</p>
+                            <label for="taskSolution">Solution</label>
+                            <textarea id="taskSolution" th:field="*{solution}" class="form-control" placeholder="SHOW TABLES;"></textarea>                            
                         </div>
 
                         <div id="taskCategories">
@@ -44,7 +50,7 @@
                         </div>
 
                         <div id="submitTask">
-                            <input class="btn btn-primary" type="submit"/>
+                            <input class="btn btn-primary form-control" type="submit"/>
                         </div>
                     </form>
                 </div>
@@ -53,9 +59,7 @@
         
         <div id="fragmentsBottom">
             <div th:include="fragments/footer_template :: footer"></div>
-
             <div th:include="fragments/scripts :: searchScript"></div>
-
         </div>
 
     </body>

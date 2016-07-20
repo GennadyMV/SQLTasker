@@ -140,25 +140,20 @@ public class TaskService {
             }
             return REDIRECT_TASKS;
         }
-
-        if (isDatabaseNull(databaseId, redirectAttributes)) {
-            return REDIRECT_TASKS;
-        }
+        
         if (isErrorsInTask(result, redirectAttributes)) {
             return REDIRECT_TASKS;
         }
         if (isTaskNull(task, redirectAttributes)) {
             return REDIRECT_TASKS;
         }
-
-        Database db = databaseService.getDatabase(databaseId);
-        task.setDatabase(db);
-        if (isInvalidSolution(task, db, redirectAttributes)) {
+                
+        if (isInvalidSolution(task, task.getDatabase(), redirectAttributes)) {
             return REDIRECT_TASKS;
         }
 
-        if (categoryIds != null) {
-            categoryService.setTaskToCategories(task, categoryIds);
+        if (task.getCategories() != null) {
+            categoryService.setTaskToCategories(task, task.getCategories());
         }
 
         task.setOwner(accountService.getAuthenticatedUser());

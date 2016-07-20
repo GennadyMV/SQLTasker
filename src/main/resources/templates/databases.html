@@ -7,41 +7,56 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Databases</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
 
-        <div th:include="fragments/navbar_template :: navbar"></div>
-
-        <div th:include="fragments/messages_template :: messages"></div>
-
-        <div class="get-in-touch">
-            <h2>Create new Database</h2>
-            <form method="POST" th:action="@{/databases}">
-                <div class="get-in-touch-text-boxs">
-                    <div class="get-in-touch-text-box">
-                        <span>Database Name</span>
-                        <input type="text" name="name"/>
-                    </div>
-
-                    <div class="get-in-touch-text-box">
-                        <span>Database Create-tables</span>
-                        <textarea name="databaseSchema">CREATE TABLE Foo(id integer);INSERT INTO Foo (id) VALUES (7);
-                        </textarea>
-                    </div>
-
-                    <input type="submit" value="Submit new database"/>
-                </div>
-            </form>
+        <div id="fragmentsTop">
+            <div th:include="fragments/navbar_template :: navbar"></div>
+            <div th:include="fragments/messages_template :: messages"></div>
         </div>
 
-        <div class="get-in-touch">
-            <h2>Existing Databases</h2>
-            <div th:each="database: ${databases}">
-                <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Database name</a></h3>
+        <div id="stuffs">
+
+            <div class="page-header">
+                <h1>Databases</h1>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="list-group">
+                        <button class="list-group-item active" id="toggleHideForm">Create database</button>
+                        <form role="form" id="createForm" method="POST" th:action="@{/databases}" class="well" style="display: none">
+
+                            <div class="form-group">
+                                <label for="dbName">Name</label>
+                                <input id="dbName" class="form-control" type="text" name="name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dbSchema">Create-tables</label>
+                                <textarea id="dbSchema" class="form-control" name="databaseSchema">CREATE TABLE Foo(id integer);
+INSERT INTO Foo (id) VALUES (7);
+                                </textarea>
+                            </div>
+
+                            <input class="btn btn-primary form-control" type="submit" value="Submit new database"/>
+                        </form>
+                    </div>
+
+                    <div class="list-group">
+                        <a th:each="database: ${databases}" th:href="@{/databases/{id}(id=${database.id})}" class="list-group-item">
+                            <h4 th:text="${database.name}" class="list-group-item-heading"></h4>                            
+                        </a>
+                    </div>
+                </div>                
             </div>
         </div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+
+        <div id="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>      
+            <div th:include="fragments/scripts :: togglehide (elementId = 'createForm', buttonId = 'toggleHideForm')"></div>
+        </div>        
     </body>
 </html>

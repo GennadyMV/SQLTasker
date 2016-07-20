@@ -14,11 +14,11 @@ import wepaht.SQLTasker.domain.TmcAccount;
 public interface DatabaseRepository extends JpaRepository<Database, Long>{
 
     @Override
-    @Query("SELECT d FROM Database d WHERE d.id=:id AND deleted=false")
+    @Query("SELECT d FROM Database d WHERE d.id=:id AND d.deleted=false")
     public Database findOne(@Param("id") Long id);
     
     @Override
-    @Query("SELECT d FROM Database d WHERE deleted=false")    
+    @Query("SELECT d FROM Database d WHERE d.deleted=false")    
     public List<Database> findAll();
     
     public List<Database> findByNameAndDeletedFalse(String name);

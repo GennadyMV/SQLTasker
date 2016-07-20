@@ -7,29 +7,44 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title th:text="${database.name}">Database name</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
-        <div th:include="fragments/navbar_template :: navbar "></div>
+        <div id="fragmentsTop">
+            <div th:include="fragments/navbar_template :: navbar "></div>
+            <div th:include="fragments/messages_template :: messages"></div>
+        </div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+        <div id="stuffs">
 
+            <div class="page-header">
+                <h1 th:text="${database.name}"></h1>
+            </div>
 
-        <!-- Example usage of listing database's tables -->
-        <h1 th:text="${database.name}">Database name</h1>
-        <!-- Only for testing purposes. Delete afterwards -->
-        <div th:if="${database.owner}"><p th:text="${'Owner: ' + database.owner.username}"></p></div>
-        
-        <pre th:text="${database.databaseSchema}">Database create-tables</pre>
-        <div class="get-in-touch">
-            <div class="get-in-touch-text-boxs">
-        <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
+            <div class="panel panel-primary">
+                <!-- Example usage of listing database's tables -->
+                <div class="panel-heading" th:if="${database.owner != null and role != 'STUDENT'}">
+                    <b th:text="${'Owner: ' + database.owner.username}"></b>
+                </div>
+                
+                <div class="panel-bodyl">
+                    <ul class="list-group">
+                        <li class="list-group-item"><pre th:text="${database.databaseSchema}">Database create-tables</pre></li>
+                        <li class="list-group-item" th:include="fragments/essentials :: tableListing (tables = ${tables})"></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <form th:if="${owned or role != 'STUDENT'}" th:action="@{/databases/{id} (id=${database.id})}" th:method="DELETE" id="deleteDb">
+                    <input type="submit" th:class="((${role != 'STUDENT' or owned})? 'btn btn-danger' : 'btn btn-danger disabled')" value="Delete database"/>
+                </form>
             </div>
         </div>
 
-        <br/>
-        <a th:href="@{/databases}">Back to Database listing</a>
+
 
         <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+
     </body>
 </html>

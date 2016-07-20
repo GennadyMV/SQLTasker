@@ -6,9 +6,11 @@
 package wepaht.SQLTasker.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
+import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TaskFeedback;
 import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.TaskFeedbackService;
@@ -142,7 +145,7 @@ public class CourseController {
         return courseService.createQuery(redirectAttr, query, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/task/{taskId}/feedback", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/feedback", method = RequestMethod.GET)
     public String getTaskFeedback(Model model,
             @PathVariable Long courseId,
             @PathVariable Long categoryId,
@@ -161,7 +164,6 @@ public class CourseController {
 
     @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.GET)
     public String getCourseCategoryEditTaskForm(Model model, RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId, @PathVariable Long courseId) {
-        System.out.println("************** GOT HERE ******************");
         return courseService.getCategoryEditTaskForm(model, redirAttr, courseId, categoryId, taskId);
     }
 
@@ -172,5 +174,36 @@ public class CourseController {
             @RequestParam String solution,
             @RequestParam String description) {
         return courseService.categoryeditTask(redirAttr, courseId, categoryId, taskId, databaseId, name, solution, description);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}", method = RequestMethod.DELETE)
+    public String deleteCourseCategory(RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId) {
+        return courseService.deleteCourseCategory(redirAttr, courseId, categoryId);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/edit", method = RequestMethod.GET)
+    public String getCourseCategoryEdit(Model model, RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId) {
+        return courseService.getCourseCategoryEdit(model, redirAttr, courseId, categoryId);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/edit", method = RequestMethod.POST)
+    public String editCourseCategory(
+            RedirectAttributes redirAttr, 
+            @PathVariable Long courseId, 
+            @PathVariable Long categoryId, 
+            @RequestParam String name,
+            @RequestParam String description,
+            @RequestParam(required = false) List<Long> taskIds) {
+        return courseService.editCourseCategory(redirAttr, courseId, categoryId, name, description, taskIds);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/create", method = RequestMethod.GET)
+    public String getCourseCategoryCreateTask(Model model, RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @ModelAttribute Task task) {
+        return courseService.getCourseCategoryTaskCreateForm(model, redirAttr, courseId, categoryId, task);
+    }
+    
+    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks", method = RequestMethod.POST)
+    public String createCourseCategoryTask(Model model, RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @Valid @ModelAttribute Task task, BindingResult result) {
+        return courseService.createTaskToCourseCategory(model, redirAttr, courseId, categoryId, task, result);
     }
 }

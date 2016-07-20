@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Edit category</title>
-        <div th:include="fragments/bootstrap :: bootstrap"></div>
+        <title th:inline="text">Edit category [[${category.name}]]</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
         <div th:include="fragments/navbar_template :: navbar"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div class="get-in-touch">
-            <form method="POST" th:action="@{/categories/{id}/edit (id=${category.id})}">
-                <div class="get-in-touch-text-boxs">
-                    <div class="get-in-touch-text-box">
-                        <span>Category name</span>
-                        <input type="text" name="name" th:value="${category.name}"/>
+        <div id="stuffs">
+            <div class="page-header">
+                <h1 th:text="${'Edit category ' + category.name}"></h1>
+            </div>
+            
+            <div class="panel panel-default">
+                <form class="panel-body well" style="width: 70%" role="form" method="POST" th:action="((${course})? @{/courses/{courseId}/category/{id}/edit (courseId=${course.id}, id=${category.id})} : @{/categories/{id}/edit (id=${category.id})})">
+                    <div class="form-group">
+                        <label for="catName">Category name</label>
+                        <input id="catName" class="form-control" type="text" name="name" th:value="${category.name}"/>
                     </div>
-                    <div class="get-in-touch-text-box">
-                        <span>Description</span>
-                        <textarea name="description" th:text="${category.description}"></textarea>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" name="description" th:text="${category.description}"></textarea>
                     </div>
-                    <div>
+                    
+                    <div class="form-group">
                         <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
                                 data-toggle="modal" data-target="#taskModal">
                             Choose Tasks
@@ -50,23 +56,23 @@
                                         </label>
                                     </div>
                                 </div>
+                                
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-primary" data-dismiss="modal">Choose</button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-                    <br/>
-                    <input type="submit" value="Update Category"/>
-                </div>
-            </form>
+                    
+                    <input class="btn btn-primary form-control" type="submit" value="Update Category"/>
+                </form>
+            </div>
         </div>
-        
+
+
         <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: searchScript"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </body>
 </html>

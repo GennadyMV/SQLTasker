@@ -1,91 +1,104 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Tasks</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+        <div id="fragmentsTop">
+            <div th:include="fragments/navbar_template :: navbar"></div>
+            <div th:include="fragments/messages_template :: messages"></div>
+        </div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+        <div class="stuffs">
+            <div class="page-header">
+                <h1>Tasks</h1>
+            </div>
+            <div class="panel panel-primary">
+                <div class="list-group">
+                    <button class="list-group-item active" id="toggleHideForm">Create task</button>
 
-        <div class="get-in-touch">
-            <h2>Create new task</h2>
-            
-            <form method="POST" th:action="@{/tasks}">
-                <div class="get-in-touch-text-boxs">
+                    <form id="createForm" th:method="POST" th:action="@{/tasks}" th:object="${task}" role="form" class="well" style="display: none">
+                        <div th:class="((${#fields.hasErrors('name')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('name')}" class="panel-heading" th:errors="*{name}"></p>
+                            <label for="taskName">Name</label>
+                            <input id="taskName" class="form-control" type="text" th:field="*{name}" placeholder="task name"/>                            
+                        </div>
 
-                    <div class="get-in-touch-text-box">
-                        <span>Task name</span>
-                        <input type="text" name="name"/>
-                    </div>
+                        <div th:class="((${#fields.hasErrors('description')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('description')}" class="panel-heading" th:errors="*{description}">Solution error</p>
+                            <label for="taskDescription">Solution</label>
+                            <textarea id="taskDescription" th:field="*{description}" class="form-control" placeholder="task description"></textarea>                            
+                        </div>
 
-                    <div class="get-in-touch-text-box">
-                        <span>Description</span>
-                        <textarea name="description"></textarea>
-                    </div>
+                        <div th:class="((${#fields.hasErrors('database')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('database')}" class="panel-heading" th:errors="*{database}">Database error</p>                            
+                            <label for="tdb">Database</label>
+                            <select class="form-control" id="tdb" th:field="*{database}">
+                                <option th:if="${task.database}" th:value="${task.database.id}"  
+                                        th:text="${task.database.name}"></option>
+                                <option th:if="${task.database == null or task.database != db}" th:each="db : ${databases}" th:text="${db.name}" th:value="${db.id}"></option>
+                            </select>                            
+                        </div>
 
-                    <div class="get-in-touch-text-box">
-                        <span>Solution</span>
-                        <textarea name="solution"></textarea>
-                    </div>
-                    <div>
-                        <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
-                                data-toggle="modal" data-target="#categoryModal">
-                            Select Categories
-                        </button>
-                    </div>
-                    <div class="modal fade" id="categoryModal" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title">Select Categories</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+                        <div th:class="((${#fields.hasErrors('solution')})? 'form-group panel panel-danger' : 'form-group')">
+                            <p th:if="${#fields.hasErrors('solution')}" class="panel-heading" th:errors="*{solution}">Solution error</p>
+                            <label for="taskSolution">Solution</label>
+                            <textarea id="taskSolution" th:field="*{solution}" class="form-control" placeholder="SHOW TABLES;"></textarea>                            
+                        </div>
 
-                                    <div class="checkbox" th:each="category : ${categories}" style="border: none">
-                                        <label>
-                                            <input type="checkbox" name="categoryIds" th:value="${category.id}"/>
+                        <div class="form-group">
+                            <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
+                                    data-toggle="modal" data-target="#categoryModal">
+                                Select Categories
+                            </button>
 
-                                            <p class="categoryName" th:text="${category.name}"></p>
-                                        </label>
+                            <div class="modal fade form-group" id="categoryModal" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Select Categories</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+
+                                            <div class="checkbox" th:each="category : ${categories}" style="border: none">
+                                                <label>
+                                                    <input type="checkbox" th:field="*{categories}" th:value="${category.id}"/>
+
+                                                    <p class="categoryName" th:text="${category.name}"></p>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Select
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Select
-                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <span>Database</span>
-                    <ul id="sql-id">
-                        <input type="radio" name="databaseId" th:each="db : ${databases}" th:value="${db.id}">
-                            <li id="sql-li" th:text="${db.name}">Database</li>
-                        </input>
-                    </ul>
-
-
-                    <input type="submit" value="Create task"/>
-                    <input type="submit" value="Submit suggestion"/>
+                        <div id="submitTask">
+                            <input class="btn btn-primary form-control" type="submit"/>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
 
-        <div class="get-in-touch">
-            <h2>List of tasks</h2>
-
-            <div th:each="task: ${tasks}">
-                <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
+                <div class="list-group">
+                    <a class="list-group-item" th:each="task : ${tasks}" th:href="@{/tasks/{id} (id=${task.id})}">
+                        <h4 class="list-group-item-heading" th:text="${task.name}"></h4>
+                        <p class="list-group-item-text" th:text="${task.description}"></p>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/bootstrap :: bootstrap"></div>
-        <div th:include="fragments/scripts :: searchScript"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-
+        <div id="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/scripts :: togglehide (elementId = 'createForm', buttonId = 'toggleHideForm')"></div>
+            <div th:include="fragments/scripts :: searchScript"></div>
+        </div>
     </body>
 </html>

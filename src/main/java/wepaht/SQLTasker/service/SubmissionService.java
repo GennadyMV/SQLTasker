@@ -4,6 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
+import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_SUBMISSIONS;
+import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
+import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
 import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
@@ -15,13 +21,13 @@ import wepaht.SQLTasker.repository.SubmissionRepository;
 
 @Service
 public class SubmissionService {
-    
+
     @Autowired
     private SubmissionRepository repository;
-    
+
     @Autowired
     private AccountService accountService;
-    
+
     @Autowired
     private CategoryDetailService detailService;
 
@@ -31,23 +37,23 @@ public class SubmissionService {
     public void createNewSubmisson(Task task, String query, Boolean correct, Category category, Course course) {
         repository.save(new Submission(accountService.getAuthenticatedUser(), task, category, course, query, correct));
     }
-    
+
     public List<Submission> listAllSubmissions() {
         return repository.findAll();
     }
-    
+
     public Integer getAccountPoints(TmcAccount account) {
         return repository.getPointsByAccount(account);
     }
-    
+
     public List getAccountSubmissions(TmcAccount account) {
         return repository.getTaskNameAndPointsByAccount(account);
     }
-    
+
     public List getAllPoints() {
         return repository.getAllPoints();
     }
-    
+
     public List exportAllPoints() {
         return repository.exportAllPoints();
     }
@@ -66,22 +72,28 @@ public class SubmissionService {
 
     public Boolean createNewSubmissionAndCheckPoints(Task task, String query, Category category, Course course) {
         Boolean isCorrect;
-        
+
         if (task.getSolution() != null) {
             isCorrect = taskResultService.evaluateSubmittedQueryResult(task, query);
         } else {
             isCorrect = false;
         }
-        
-        if (course != null) isCorrect = isCourseActive(isCorrect, course);
-        
-        if (category != null) isCorrect = isCategoryActive(isCorrect, course, category);
-        
+
+        if (course != null) {
+            isCorrect = isCourseActive(isCorrect, course);
+        } else {
+            isCorrect = false;
+        }
+
+        if (category != null) {
+            isCorrect = isCategoryActive(isCorrect, course, category);
+        }
+
         createNewSubmisson(task, query, isCorrect, category, course);
-        
+
         return isCorrect;
     }
-    
+
     private Boolean isCourseActive(Boolean isCorrect, Course course) {
         if (course.getStarts() != null) {
             isCorrect = isCorrect && course.getStarts().isBefore(LocalDate.now());
@@ -104,5 +116,15 @@ public class SubmissionService {
             }
         }
         return isCorrect;
+    }
+
+    public String getSubmissions(Model model, RedirectAttributes redirAttr) {
+        if (accountService.isUserStudent()) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            return REDIRECT_DEFAULT;
+        }
+        model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll());
+
+        return "submissions";
     }
 }

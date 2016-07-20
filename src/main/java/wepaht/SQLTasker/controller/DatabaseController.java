@@ -39,6 +39,7 @@ public class DatabaseController {
 
         model.addAttribute("database", database);
         model.addAttribute("tables", databaseTables);
+        model.addAttribute("owned", userService.isOwned(database));
 
         return "database";
     }
@@ -55,7 +56,7 @@ public class DatabaseController {
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public String deleteDatabase(RedirectAttributes redirAttr, Long databaseId) {
-        return databaseService.deleteDatabaseById(redirAttr, databaseId);
+    public String deleteDatabase(RedirectAttributes redirAttr, @PathVariable Long id) {
+        return databaseService.deleteDatabase(redirAttr, id);
     }
 }

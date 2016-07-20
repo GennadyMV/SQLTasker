@@ -29,6 +29,7 @@ public abstract class ConstantString {
     public static final String ATTRIBUTE_TASKS = "tasks";
     public static final String ATTRIBUTE_PUBLIC_NAV = "publicNav";
     public static final String ATTRIBUTE_TEACHER_NAV = "teacherNav";
+    public static final String ATTRIBUTE_SUBMISSIONS = "submissions";
     
     public static final String ATTRIBUTE_NAV_COURSES = "Courses";
     public static final String ATTRIBUTE_NAV_CATEGORIES = "Categories";
@@ -49,7 +50,7 @@ public abstract class ConstantString {
     public static final String LINK_CATEGORIES = "/categories";
     public static final String LINK_USERS = "/users";
     public static final String LINK_DATABASES = "/databases";
-    public static final String LINK_SUBMISSIONS = "";
+    public static final String LINK_SUBMISSIONS = "/submissions";
     public static final String LINK_FEEDBACK = "/feedback";
     public static final String LINK_TASKS = "/tasks";
 }

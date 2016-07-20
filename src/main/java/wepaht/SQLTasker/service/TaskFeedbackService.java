@@ -53,6 +53,7 @@ public class TaskFeedbackService {
         model.addAttribute("course", course);
         model.addAttribute("category", category);
         model.addAttribute("task", task);
+        model.addAttribute("next", categoryService.getNextTask(category, task));
 
         return "feedback";
     }
@@ -84,7 +85,7 @@ public class TaskFeedbackService {
         redirAttr.addAttribute("categoryId", categoryId);
         redirAttr.addAttribute("taskId", taskId);
 
-        return "redirect:/courses/{courseId}/category/{categoryId}/task/{taskId}";
+        return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{taskId}";
     }
 
     public void saveFeedback(TaskFeedback taskFeedback) {

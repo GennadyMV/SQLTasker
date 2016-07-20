@@ -82,7 +82,7 @@ public class TaskServiceTest {
         when(taskRepoMock.findOne(any(Long.class))).thenReturn(task);
         when(accountMock.getRole()).thenReturn(ROLE_TEACHER);
         
-        taskService.addTag(null, Long.MIN_VALUE, tagName);
+        taskService.addTag(null, Long.MIN_VALUE, tagName, "hurr");
         verify(tagServiceMock, times(1)).createTag(eq(tagName), eq(task));
     }
     
@@ -98,7 +98,7 @@ public class TaskServiceTest {
         when(accountMock.getRole()).thenReturn(ROLE_TEACHER);
         when(tagServiceMock.getTagByNameAndTask(eq(tagName), eq(task))).thenReturn(tag);
         
-        taskService.deleteTag(null, Long.MIN_VALUE, tagName);
+        taskService.deleteTag(null, Long.MIN_VALUE, tagName, "durr");
         verify(tagServiceMock, times(1)).getTagByNameAndTask(tagName, task);
         verify(tagServiceMock, times(1)).deleteTag(tag);
     }

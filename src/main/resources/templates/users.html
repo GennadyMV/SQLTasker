@@ -7,29 +7,44 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Users</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+        <div id="fragmentsTop">
+            <div th:include="fragments/navbar_template :: navbar"></div>
+            <div th:include="fragments/messages_template :: messages"></div>    
+        </div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
 
-        <div class="get-in-touch">
-            <h2>List of users</h2>
-            <div th:each="user : ${admins}">
-                <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
-                        th:text="${user.role}">User Role</span></h3>
+        <div id="stuffs">
+            <div class="page-header">
+                <h1>Users</h1>
             </div>
-            <div th:each="user : ${teachers}">
-                <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
-                        th:text="${user.role}">User Role</span></h3>
-            </div>
-            <div th:each="user : ${students}">
-                <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <span
-                        th:text="${user.role}">User Role</span></h3>
+            
+            <div class="panel-primary">
+                <div class="panel-heading">
+                    <b>Registered TMC users</b>
+                </div>
+                <div class="panel-body">
+                    <p>Admins - teachers - students</p>
+                </div>
+                <div class="list-group">
+                    <a th:each="user : ${admins}" th:href="@{/users/{id}(id=${user.id})}" class="list-group-item">
+                        <h4 class="list-group-item-heading" th:text="${user.username}"></h4>
+                        <p class="list-group-item-text" th:text="${user.role}"></p>
+                    </a>
+                    <a th:each="user : ${teachers}" th:href="@{/users/{id}(id=${user.id})}" class="list-group-item">
+                        <h4 class="list-group-item-heading" th:text="${user.username}"></h4>
+                        <p class="list-group-item-text" th:text="${user.role}"></p>
+                    </a>
+                    <a th:each="user : ${students}" th:href="@{/users/{id}(id=${user.id})}" class="list-group-item">
+                        <h4 class="list-group-item-heading" th:text="${user.username}"></h4>
+                        <p class="list-group-item-text" th:text="${user.role}"></p>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+        <div id="fragmentsBottom" th:include="fragments/footer_template :: footer"></div>
     </body>
 </html>

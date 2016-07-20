@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
-public class Database extends AbstractPersistable<Long> {
+public class Database extends AbstractPersistable<Long> implements Owned {
 
     @NotEmpty
     private String name;
@@ -57,10 +57,12 @@ public class Database extends AbstractPersistable<Long> {
         this.databaseSchema = databaseSchema;
     }
 
+    @Override
     public TmcAccount getOwner() {
         return owner;
     }
 
+    @Override
     public void setOwner(TmcAccount owner) {
         this.owner = owner;
     }

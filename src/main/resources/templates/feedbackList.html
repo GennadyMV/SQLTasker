@@ -5,40 +5,38 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>SQL-tasker</title>
-</head>
-<body>
-<div th:include="fragments/navbar_template :: navbar"></div>
+    <head>
+        <title>SQL-tasker</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
+    </head>
+    <body>
+        <div th:include="fragments/navbar_template :: navbar"></div>
 
-<div th:include="fragments/messages_template :: messages"></div>
+        <div th:include="fragments/messages_template :: messages"></div>
+        <div id="stuffs">
+            <div class="page-header">
+                <h1>Feedback</h1>
+            </div>
 
-<h2>Welcome to SQL-tasker!</h2>
+            <div class="panel panel-primary" th:if="${feedback}">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th><b>Task</b></th>
+                            <th><b>Feedback attributes</b></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="fb : ${feedback}">
+                            <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
+                            <td th:each="stuff : ${fb.feedback}"><p th:inline="text">[[${stuff.key}]]: [[${stuff.value}]]</p></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>    
+        </div>
 
-<div sec:authorize="hasRole('STUDENT')">
-    <h2><a th:href="@{/tasks}">To task listing</a></h2>
-    <h2><a th:href="@{/databases}">To database listing</a></h2>
-</div>
 
-<div th:if="${feedback}">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Task</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="fb : ${feedback}">
-                <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
-                <div th:each="stuff : ${fb.feedback}">
-                    <td><p th:text="${stuff.key + ': ' + stuff.value}">Things</p></td>
-                </div>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div th:include="fragments/footer_template :: footer"></div>
-<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-</body>
+        <div id="fragmentsBottom" th:include="fragments/footer_template :: footer"></div>
+    </body>
 </html>

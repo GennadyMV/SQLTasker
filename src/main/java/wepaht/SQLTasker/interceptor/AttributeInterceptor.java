@@ -32,6 +32,7 @@ public class AttributeInterceptor extends HandlerInterceptorAdapter {
     private void setNavigationAttributes(Account user, ModelAndView mav) {
         if (user != null) {
             HashMap<String, String> common = new HashMap<>();
+            common.put(ATTRIBUTE_NAV_DATABASES, LINK_DATABASES);
             common.put(ATTRIBUTE_NAV_COURSES, LINK_COURSES);
             common.put(ATTRIBUTE_NAV_CATEGORIES, LINK_CATEGORIES);
             mav.getModel().put(ATTRIBUTE_PUBLIC_NAV, common);
@@ -43,8 +44,7 @@ public class AttributeInterceptor extends HandlerInterceptorAdapter {
         if (!user.getRole().equals(ROLE_STUDENT)) {
             HashMap<String, String> teacher = new HashMap<>();
             teacher.put(ATTRIBUTE_NAV_USERS, LINK_USERS);
-            teacher.put(ATTRIBUTE_NAV_TASKS, LINK_TASKS);
-            teacher.put(ATTRIBUTE_NAV_DATABASES, LINK_DATABASES);
+            teacher.put(ATTRIBUTE_NAV_TASKS, LINK_TASKS);            
             teacher.put(ATTRIBUTE_NAV_SUBMISSIONS, LINK_SUBMISSIONS);
             teacher.put(ATTRIBUTE_NAV_FEEDBACK, LINK_FEEDBACK);
             mav.getModel().put(ATTRIBUTE_TEACHER_NAV, teacher);

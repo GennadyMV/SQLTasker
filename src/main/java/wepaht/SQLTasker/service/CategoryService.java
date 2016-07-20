@@ -51,6 +51,15 @@ public class CategoryService {
             category.setTaskList(taskList);
         }
     }
+    
+    @Transactional
+    public void setCategoryTotask(Category category, Task task) {
+        List<Task> taskList = category.getTaskList();
+        if (!taskList.contains(task)) {
+            taskList.add(task);
+            category.setTaskList(taskList);
+        }
+    }
 
     @Transactional
     public void setCategoryToTasks(Category category, List<Task> tasks) {
@@ -104,11 +113,17 @@ public class CategoryService {
         taskService.save(task);
     }
 
-    public void setTaskToCategories(Task task, List<Long> categoryIds) {
+    public void setTaskToCategoriesIds(Task task, List<Long> categoryIds) {
         categoryIds.stream().forEach((id) -> {
             setCategoryToTask(id, task);
         });
 
+    }
+    
+    public void setTaskToCategories(Task task, List<Category> categories) {
+        categories.stream().forEach((cat) -> {
+            setCategoryTotask(cat, task);
+        });
     }
 
     public List<Category> findCategoriesByIds(List<Long> categoryIds) {
@@ -182,8 +197,12 @@ public class CategoryService {
             return "redirect:/categories/{id}";
         }
 
-        model.addAttribute(ATTRIBUTE_CATEGORY, category);
+        return returnEditForm(model, category, user);
+    }
 
+    public String returnEditForm(Model model, Category category, Account user) {
+        model.addAttribute(ATTRIBUTE_CATEGORY, category);
+        
         List<Task> tasks;
 
         if (user.getRole().equals(ROLE_STUDENT)) {
@@ -196,6 +215,7 @@ public class CategoryService {
         return VIEW_CATEGORY_EDIT;
     }
 
+    @Transactional
     public String updateCategory(RedirectAttributes redirectAttributes, Long categoryId, String name, String description, List<Long> taskIds) {
         Account user = accountService.getAuthenticatedUser();
         List<String> messages = new ArrayList<>();
@@ -209,7 +229,7 @@ public class CategoryService {
             return "redirect:/categories/{id}";
         }
 
-        editing = editCategory(editing, name, description, taskIds, categoryId);
+        editing = editCategory(editing, name, description, taskIds);
         messages = saveCategory(editing, messages);
 
         if (redirectAttributes != null) {
@@ -230,7 +250,8 @@ public class CategoryService {
         return messages;
     }
 
-    private Category editCategory(Category editing, String name, String description, List<Long> taskIds, Long id) {
+    @Transactional
+    public Category editCategory(Category editing, String name, String description, List<Long> taskIds) {
         editing.setName(name);
         editing.setDescription(description);
         List<Task> tasks = new ArrayList<>();
@@ -269,6 +290,10 @@ public class CategoryService {
             return "redirect:/categories/{categoryId}";
         }
 
+        return returnCreateTaskForm(model, categoryId, category, task);
+    }
+
+    public String returnCreateTaskForm(Model model, Long categoryId, Category category, Task task) {
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("databases", dbService.getAllDatabases());
         model.addAttribute("category", Arrays.asList(category.getId()));
@@ -298,7 +323,7 @@ public class CategoryService {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_FAILED_ACTION + ": " + e.toString());
         }
 
-        setTaskToCategories(task, Arrays.asList(categoryId));
+        setTaskToCategoriesIds(task, Arrays.asList(categoryId));
 
         return "redirect:/categories/{categoryId}";
     }

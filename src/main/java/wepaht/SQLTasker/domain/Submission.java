@@ -1,5 +1,7 @@
 package wepaht.SQLTasker.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
@@ -23,9 +25,22 @@ public class Submission extends AbstractPersistable<Long> {
     
     private String query;
     private Boolean points;
+    private final LocalDateTime created;
+
+    public Boolean getPoints() {
+        return points;
+    }
+
+    public void setPoints(Boolean points) {
+        this.points = points;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
     
     public Submission() {
-        
+        this.created = LocalDateTime.now();
     }
     
     public Submission(TmcAccount account, Task task, Category category, Course course, String query, Boolean points) {
@@ -35,6 +50,7 @@ public class Submission extends AbstractPersistable<Long> {
         this.course = course;
         this.query = query;
         this.points = points;
+        this.created = LocalDateTime.now();
     }
 
     public TmcAccount getAccount() {

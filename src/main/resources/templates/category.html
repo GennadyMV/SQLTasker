@@ -15,11 +15,12 @@
 
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <b>Tasks</b>
+                    <b class="panel-title">Tasks</b>
+                    <p th:if="${role != 'STUDENT' and category.owner != null}" th:text="${'Owner: ' + category.owner.username}"></p>
                 </div>
-
+                
                 <div class="panel-body" th:if="${category.description}">
-                    <p th:text="${category.description}"></p>
+                    <p th:text="${category.description}"></p>                    
                 </div>
 
                 <div class="list-group" th:each="task : ${category.taskList}">
@@ -38,10 +39,10 @@
                 </div>
             </div>
 
-            <div th:if="${role != 'STUDENT' or owned}" class="btn-group" role="group">
-                <form th:method="DELETE" th:action="@{/categories/{id} (id=${category.id})}" id="delete"></form>
-                <form th:method="GET" th:action="@{/categories/{id}/edit (id=${category.id})}" id="edit"></form>
-                <form th:method="GET" th:action="@{/categories/{catId}/tasks/create (catId = ${category.id})}" id="createTask"></form>
+            <div th:if="${role != 'STUDENT' or owned == true}" class="btn-group" role="group">
+                <form th:method="DELETE" th:action="@{ {id} (id=${category.id})}" id="delete"></form>
+                <form th:method="GET" th:action="@{ {id}/edit (id=${category.id})}" id="edit"></form>
+                <form th:method="GET" th:action="@{ {catId}/tasks/create (catId = ${category.id})}" id="createTask"></form>
                 <button class="btn btn-default" form="createTask">Create task to category</button>
                 <button class="btn btn-warning" form="edit" onclick="confirm('Are you sure?');">Edit category</button>
                 <button th:if="role != 'STUDENT'" class="btn btn-danger" form="delete" onclick="confirm('Are you sure?');">Delete category</button>                

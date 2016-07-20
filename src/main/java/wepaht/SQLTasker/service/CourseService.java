@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_COURSES;
 import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
@@ -281,14 +282,14 @@ public class CourseService {
     @Transactional
     public String joinOrLeaveCourse(RedirectAttributes redirAttr, Long id) {
         Course course = repository.findOne(id);
-        
+
         if (course.getStudents().contains(accountService.getAuthenticatedUser())) {
-            return leaveCourse(redirAttr, id);            
+            return leaveCourse(redirAttr, id);
         } else {
             return joinCourse(redirAttr, id);
-        }                
+        }
     }
-    
+
     @Transactional
     public String joinCourse(RedirectAttributes redirAttr, Long id) {
         Course course = repository.findOne(id);
@@ -430,6 +431,7 @@ public class CourseService {
             model.addAttribute("database", task.getDatabase());
             model.addAttribute("next", categoryService.getNextTask(category, task));
             model.addAttribute("prev", categoryService.getPreviousTask(category, task));
+            model.addAttribute("finished", pointService.hasUserDoneTaskCorrectly(accountService.getAuthenticatedUser(), course, category, task));
         }
 
         return "task";
@@ -539,14 +541,14 @@ public class CourseService {
         if (!user.getRole().equals(ROLE_STUDENT)) {
             return taskService.setEditForm(model, task);
         }
-        
+
         redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
         return "redirect:/courses";
     }
 
     public String categoryeditTask(RedirectAttributes redirAttr, Long courseId, Long categoryId, Long taskId, Long databaseId, String name, String solution, String description) {
         Account user = accountService.getAuthenticatedUser();
-        
+
         if (!user.getRole().equals(ROLE_STUDENT)) {
             Task task = taskService.getTaskById(taskId);
             if (taskService.updateTask(task, solution, redirAttr, "", description, name, databaseId)) {
@@ -554,7 +556,7 @@ public class CourseService {
             }
             return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{taskId}";
         }
-        
+
         redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
         return "redirect:/courses";
     }
@@ -574,12 +576,110 @@ public class CourseService {
         redirectAttr.addAttribute("prevId", previous.getId());
         return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{prevId}";
     }
-    
+
     public List<Course> getCoursesByAccount(Account account) {
         return repository.findByStudentsAndDeletedFalse((TmcAccount) account);
     }
-    
+
     public List<Course> getCoursesByCurrentUser() {
         return repository.findByStudentsAndDeletedFalse(accountService.getAuthenticatedUser());
+    }
+
+    public String deleteCourseCategory(RedirectAttributes redirAttr, Long courseId, Long categoryId) {
+        if (!accountService.isUserStudent()) {
+            categoryService.deleteCategory(courseId);
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": category deleted");
+                redirAttr.addAttribute("courseId", courseId);
+            }
+            return "redirect:/courses/{courseId}";
+        }
+
+        if (redirAttr != null) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            redirAttr.addAttribute("courseId", courseId);
+            redirAttr.addAttribute("categoryId", categoryId);
+        }
+        return "redirect:/courses/{courseId}/category/{categoryId}";
+    }
+
+    public String getCourseCategoryEdit(Model model, RedirectAttributes redirAttr, Long courseId, Long categoryId) {
+        if (!accountService.isUserStudent()) {
+            model.addAttribute("course", repository.findOne(courseId));
+            return categoryService.returnEditForm(model, categoryService.getCategoryById(categoryId), accountService.getAuthenticatedUser());
+        }
+        if (redirAttr != null) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            redirAttr.addAttribute("courseId", courseId);
+            redirAttr.addAttribute("categoryId", categoryId);
+        }
+        return "redirect:/courses/{courseId}/category/{categoryId}";
+    }
+
+    @Transactional
+    public String editCourseCategory(RedirectAttributes redirAttr, Long courseId, Long categoryId, String name, String description, List<Long> taskIds) {
+        if (!accountService.isUserStudent()) {
+            categoryService.editCategory(categoryService.getCategoryById(categoryId), name, description, taskIds);
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": category updated");
+            }
+        } else {
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            }
+        }
+        if (redirAttr != null) {
+            redirAttr.addAttribute("courseId", courseId);
+            redirAttr.addAttribute("categoryId", categoryId);
+        }
+        return "redirect:/courses/{courseId}/category/{categoryId}";
+    }
+
+    public String getCourseCategoryTaskCreateForm(Model model, RedirectAttributes redirAttr, Long courseId, Long categoryId, Task task) {
+        if (!accountService.isUserStudent()) {
+            model.addAttribute("courseId", courseId);
+            return categoryService.returnCreateTaskForm(model, categoryId, categoryService.getCategoryById(categoryId), task);
+        }
+
+        if (redirAttr != null) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
+            redirAttr.addAttribute("courseId", courseId);
+            redirAttr.addFlashAttribute("categoryId", categoryId);
+        }
+        return "redirect:/courses/{courseId}/category/{categoryId}";
+    }
+
+    @Transactional
+    public String createTaskToCourseCategory(Model model, RedirectAttributes redirAttr, Long courseId, Long categoryId, Task task, BindingResult result) {
+        if (!accountService.isUserStudent()) {
+            if (result.hasErrors()) {
+                return getCourseCategoryTaskCreateForm(model, redirAttr, courseId, categoryId, task);
+            }
+            createTask(task, categoryId, redirAttr);
+        } else {
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+            }
+        }
+        if (redirAttr != null) {
+            redirAttr.addAttribute("courseId", courseId);
+            redirAttr.addAttribute("categoryId", categoryId);
+        }
+        return "redirect:/courses/{courseId}/category/{categoryId}";
+    }
+
+    @Transactional
+    private void createTask(Task task, Long categoryId, RedirectAttributes redirAttr) {
+        try {
+            task = taskService.createTask(task);
+            categoryService.setTaskToCategoriesIds(task, Arrays.asList(categoryId));
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task created to category");
+            }
+        } catch (Exception e) {
+            if (redirAttr != null) {
+                redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, e.getMessage());
+            }
+        }
     }
 }

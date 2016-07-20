@@ -73,7 +73,8 @@ public class TaskController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String listAll(Model model, RedirectAttributes redirAttr) {
+    public String listAll(Model model, RedirectAttributes redirAttr, @ModelAttribute Task task) {
+        model.addAttribute("task", task);
         return taskService.listTasks(model, redirAttr);
     }
 

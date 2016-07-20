@@ -321,7 +321,7 @@ public class DatabaseService {
     }
 
     @Transactional
-    public Boolean deleteDatabase(Long databaseId) {
+    public Boolean deleteDatabaseById(Long databaseId) {
         try {
             Database database = databaseRepository.findOne(databaseId);
             database.setDeleted(true);
@@ -349,7 +349,8 @@ public class DatabaseService {
         return VIEW_DATABASES;
     }
 
-    public String deleteDatabaseById(RedirectAttributes redirAttr, Long databaseId) {
+    @Transactional
+    public String deleteDatabase(RedirectAttributes redirAttr, Long databaseId) {
         String redirectAddress = "redirect:/databases";
         TmcAccount user = accountService.getAuthenticatedUser();
         Database db = databaseRepository.findOne(databaseId);
@@ -357,7 +358,7 @@ public class DatabaseService {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
             return redirectAddress;
         } else {
-            if (deleteDatabase(databaseId)) {
+            if (deleteDatabaseById(databaseId)) {
                 redirAttr.addFlashAttribute("messages", "Database deleted");
             } else {
                 redirAttr.addFlashAttribute("messages", "No such database");

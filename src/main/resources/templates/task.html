@@ -17,17 +17,22 @@ and open the template in the editor.
                 <h1 th:inline="text">
                     [[${task.name}]] 
                     <!-- Test label -->
-                    <span th:if="${course}" class="label label-success">Dön</span>
+                    <span th:if="${course != null and finished}" class="label label-success">Done</span>
                 </h1>
 
             </div>
 
-            <div class="panel panel-default">
+            <div class="panel panel-primary">
+                <div class="panel-heading" th:if="${role != 'STUDENT' and task.owner != null}" >
+                    <p class="panel-title" th:text="${'Owner: ' + task.owner.username}">Owner</p>
+                </div>
+                
                 <div class="panel-body">
                     <p th:if="${task.description}" th:text="${task.description}"></p>
-                    <p th:text="${'Solution: ' + task.solution}"></p>                    
+                    <p th:if="${role != 'STUDENT'}" th:text="${'Solution: ' + task.solution}"></p>                       
                 </div>
-                <div class="list-group">
+                
+                <div class="list-group" th:if="${category}">
                     <div id="queryForm" class="list-group-item well">
                         <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
                             <div class="form-group">
@@ -45,12 +50,20 @@ and open the template in the editor.
                         <h4 class="list-group-item-heading">Query</h4>
                     </div>
                 </div>
+
+                <div th:if="${category == null and task.categories != null and not #lists.isEmpty(task.categories)}" class="list-group">
+                    <p class="list-group-item active">Task categories</p>
+                    <a th:each="cat : ${task.categories}" class="list-group-item" th:href="@{/categories/{catId} (catId=${cat.id})}">
+                        <h4 class="list-group-item-heading" th:text="${cat.name}"></h4>
+                        <p class="list-group-item-text" th:text="${cat.description}"></p>
+                    </a>
+                </div>
             </div>
 
-            <div class="btn-toolbar" th:if="${role != 'STUDENT' or owned}">
+            <div class="btn-toolbar" th:if="${role != 'STUDENT' or owned == true}">
                 <div class="btn-group" th:if="${course}">
                     <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
-                    <button class="btn btn-default" form="feedback" th:text="'Give feedback to ' + ${task.name}"></button>
+                    <button th:class="((${finished})? 'btn btn-default' : 'btn btn-default disabled')" class="btn btn-default" form="feedback" th:text="'Give feedback to ' + ${task.name}"></button>
                 </div>
 
                 <div th:if="${role != 'STUDENT' or owned}" class="btn-group">
@@ -61,15 +74,15 @@ and open the template in the editor.
                 </div>
 
             </div>
-            
-            <nav>
+
+            <nav th:if="${category}">
                 <ul class="pager">
                     <li th:if="${prev}" class="previous"><a th:href="@{__${#httpServletRequest.requestURI}__/prev}"><span aria-hidden="true">&larr;</span> Previous task</a></li>
                     <li th:if="${prev == null}" class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Previous task</a></li>
                     <li th:if="${next}" class="next"><a th:href="@{__${#httpServletRequest.requestURI}__/next}">Next task <span aria-hidden="true">&rarr;</span></a></li>
                     <li th:if="${next == null}" class="next disabled"><a href="#">Next task <span aria-hidden="true">&rarr;</span></a></li>
                 </ul>
-            </nav>            
+            </nav>                              
         </div>        
 
         <div id="fragmentsBottom">

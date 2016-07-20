@@ -58,17 +58,17 @@ and open the template in the editor.
                             </div>
 
                             <div class="form-group">
-                                <label for="tsol">Solution</label>
-                                <textarea id="tsol" class="form-control" name="solution" th:text="${task.solution}"></textarea>
-                            </div>
-
-                            <div class="form-group">
                                 <label for="tdb">Database</label>
                                 <select class="form-control" id="tdb" name="databaseId">
                                     <option th:value="${task.database.id}"  
                                             th:text="${task.database.name}"></option>
                                     <option th:if="${task.database == null or task.database != db}" th:each="db : ${databases}" th:text="${db.name}" th:value="${db.id}"></option>
                                 </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tsol">Solution</label>
+                                <textarea id="tsol" class="form-control" name="solution" th:text="${task.solution}"></textarea>
                             </div>
 
                             <input type="hidden" name="redirectUri" th:value="${#httpServletRequest.requestURI}"/>
