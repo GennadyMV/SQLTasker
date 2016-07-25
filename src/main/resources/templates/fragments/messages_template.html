@@ -6,8 +6,8 @@ and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
-    
-      <title>messages_template></title>
+
+        <title>messages_template></title>
     </head>
 
     <body>
@@ -15,9 +15,7 @@ and open the template in the editor.
         <div th:fragment="messages">
             <div class="centered-inner">
                 <div th:if="${messages}" class="alert alert-info" th:each="message : ${messages}">
-                    <ul>
-                        <li th:text="${message}"></li>
-                    </ul>
+                    <p th:text="${message}"></p>
                 </div>
             </div>
         </div>
