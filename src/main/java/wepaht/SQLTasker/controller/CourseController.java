@@ -93,7 +93,7 @@ public class CourseController {
     }
 
     @RequestMapping(value = "/{id}/details", method = RequestMethod.POST)
-    public String postCategoryDetails(RedirectAttributes redirectAttributes, @PathVariable Long id, @ModelAttribute CategoryDetailsWrapper wrapper) {
+    public String postCategoryDetails(RedirectAttributes redirectAttributes, @PathVariable Long id, @ModelAttribute("wrapper") CategoryDetailsWrapper wrapper) {
         return courseService.setCategoryDetails(redirectAttributes, wrapper.getCategoryDetailsList(), id);
     }
 

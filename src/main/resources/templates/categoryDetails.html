@@ -16,7 +16,7 @@
                 <h1 th:text="${course.name} + ' category details'">Course's category detail edit form</h1>
             </div>
             
-            <form method="POST" action="#" th:action="@{${actionURL}}" th:object="${wrapper}">
+            <form method="POST" action="#" th:action="@{/courses/{id}/details (id = ${course.id})}" th:object="${wrapper}">
                 <table class="table table-striped">
                     <thead>
                         <tr>
