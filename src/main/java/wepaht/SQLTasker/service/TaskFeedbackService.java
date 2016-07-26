@@ -85,7 +85,7 @@ public class TaskFeedbackService {
         redirAttr.addAttribute("categoryId", categoryId);
         redirAttr.addAttribute("taskId", taskId);
 
-        return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{taskId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}/tasks/{taskId}";
     }
 
     public void saveFeedback(TaskFeedback taskFeedback) {
