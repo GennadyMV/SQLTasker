@@ -72,7 +72,7 @@ public class TaskFeedbackService {
         if (pointService.hasUserDoneTaskCorrectly(accountService.getAuthenticatedUser(), course, category, task)) {
             try {
                 saveFeedback(taskFeedback);
-                messages.add("Feedback on task " + task.getName() + "has been sent");
+                messages.add("Feedback on task " + task.getName() + " has been sent");
             } catch (Exception e) {
                 messages.add(e.toString());
             }

@@ -18,7 +18,7 @@
                     <b class="panel-title">Tasks</b>
                     <p th:if="${role != 'STUDENT' and category.owner != null}" th:text="${'Owner: ' + category.owner.username}"></p>
                 </div>
-                
+
                 <div class="panel-body" th:if="${category.description}">
                     <p th:text="${category.description}"></p>                    
                 </div>
@@ -26,9 +26,9 @@
                 <div class="list-group" th:each="task : ${category.taskList}">
                     <a class="list-group-item" th:href="@{__${#httpServletRequest.requestURI}__/tasks/__${task.id}__}">
                         <span class="badge" th:if="${course}">Dön</span>
-                        
+
                         <b class="list-group-item-heading" th:text="${task.name}"></b>
-                        
+
                         <div class="list-group-item-text" th:if="${role != 'STUDENT'}">
                             <form th:method="POST" th:action="@{/categories/{id} (id = ${category.id})}">
                                 <input type="hidden" th:value="${task.id}" name="taskId"/>
@@ -44,11 +44,14 @@
                 <form th:method="GET" th:action="@{ {id}/edit (id=${category.id})}" id="edit"></form>
                 <form th:method="GET" th:action="@{ {catId}/tasks/create (catId = ${category.id})}" id="createTask"></form>
                 <button class="btn btn-default" form="createTask">Create task to category</button>
-                <button class="btn btn-warning" form="edit" onclick="confirm('Are you sure?');">Edit category</button>
-                <button th:if="role != 'STUDENT'" class="btn btn-danger" form="delete" onclick="confirm('Are you sure?');">Delete category</button>                
+                <button class="btn btn-warning" form="edit" onclick="return confirmScript('Are you sure you want to edit category?')">Edit category</button>
+                <button th:if="role != 'STUDENT'" class="btn btn-danger" form="delete" onclick="return confirmScript('Are you absolutely sure you want to delete category?')">Delete category</button>                
             </div>
         </div>
-        
-        <div id="footer" th:include="fragments/footer_template :: footer"></div>
+
+        <div id="fragmentsBottom">
+            <div th:include="fragments/scripts :: confirmScript"></div>
+            <div id="footer" th:include="fragments/footer_template :: footer"></div>
+        </div>       
     </body>
 </html>

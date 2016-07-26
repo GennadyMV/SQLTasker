@@ -1,11 +1,8 @@
 package wepaht.SQLTasker.controller;
 
-import java.util.ArrayList;
-import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.controller.TaskController;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Task;
-import wepaht.SQLTasker.domain.LocalAccount;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -25,24 +22,19 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.TagRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import java.util.List;
-import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.DatabaseService;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.TmcAccount;
-import static wepaht.SQLTasker.constant.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TmcAccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
@@ -149,7 +141,6 @@ public class TaskControllerTest {
 
         mockMvc.perform(post(API_URI + "/" + category.getId() + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", Matchers.hasSize(1)))
                 .andReturn();
     }
 
@@ -164,19 +155,6 @@ public class TaskControllerTest {
                 .andReturn();
     }
 
-    @Test
-    public void correctQueryIsAnnounced() throws Exception {
-        Task testTask = randomTask();
-        String solution = "SELECT firstname FROM persons;";
-        testTask.setSolution(solution);
-        testTask = taskRepository.save(testTask);
-
-        mockMvc.perform(post(API_URI + "/" + category.getId() + "/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", hasSize(2)))
-                .andReturn();
-    }
-
     //Update-, delete-, drop-, insert- and create-queries use the same method
     @Test
     public void updateTypeQuery() throws Exception {
@@ -188,7 +166,6 @@ public class TaskControllerTest {
                 .param("query", sql)
                 .with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("messages", hasSize(1)))
                 .andReturn();
     }
 

@@ -38,7 +38,7 @@ public class CourseController {
         return courseService.courseListing(model);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = {"/{id}", "/{id}/categories"}, method = RequestMethod.GET)
     public String getCourse(Model model, RedirectAttributes redirAttr, @PathVariable Long id) {
         return courseService.getCourse(model, redirAttr, id);
     }
@@ -97,12 +97,12 @@ public class CourseController {
         return courseService.setCategoryDetails(redirectAttributes, wrapper.getCategoryDetailsList(), id);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}", method = RequestMethod.GET)
+    @RequestMapping(value = {"/{courseId}/categories/{categoryId}", "/{courseId}/categories/{categoryId}/tasks"}, method = RequestMethod.GET)
     public String getCourseCategory(Model model, RedirectAttributes redirectAttributes, @PathVariable Long courseId, @PathVariable Long categoryId) {
         return courseService.getCourseCategory(model, redirectAttributes, courseId, categoryId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}", method = RequestMethod.GET)
     public String getCourseCategoryTask(
             Model model,
             RedirectAttributes redirectAttr,
@@ -112,7 +112,7 @@ public class CourseController {
         return courseService.getCourseCategoryTask(model, redirectAttr, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/next", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}/next", method = RequestMethod.GET)
     public String getCourseCategoryNextTask(
             RedirectAttributes redirectAttr,
             @PathVariable Long courseId,
@@ -121,7 +121,7 @@ public class CourseController {
         return courseService.getCourseCategoryNextTask(redirectAttr, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/prev", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}/prev", method = RequestMethod.GET)
     public String getCourseCategoryPreviousTask(
             RedirectAttributes redirectAttr,
             @PathVariable Long courseId,
@@ -130,12 +130,12 @@ public class CourseController {
         return courseService.getCourseCategoryPreviousTask(redirectAttr, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}", method = RequestMethod.DELETE)
     public String deleteCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @PathVariable Long taskId) {
         return courseService.deleteCourseCategoryTask(redirAttr, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/query", method = RequestMethod.POST)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}/query", method = RequestMethod.POST)
     public String postQuery(RedirectAttributes redirectAttr,
             @RequestParam String query,
             @PathVariable Long courseId,
@@ -145,7 +145,7 @@ public class CourseController {
         return courseService.createQuery(redirectAttr, query, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/feedback", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}/feedback", method = RequestMethod.GET)
     public String getTaskFeedback(Model model,
             @PathVariable Long courseId,
             @PathVariable Long categoryId,
@@ -154,7 +154,7 @@ public class CourseController {
         return feedbackService.getFeedbackForm(model, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/task/{taskId}/feedback", method = RequestMethod.POST)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}/feedback", method = RequestMethod.POST)
     public String postTaskFeedback(RedirectAttributes redirAttr, @PathVariable Long courseId,
             @PathVariable Long categoryId,
             @PathVariable Long taskId,
@@ -162,12 +162,12 @@ public class CourseController {
         return feedbackService.createFeedback(redirAttr, courseId, categoryId, taskId, taskFeedback);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.GET)
     public String getCourseCategoryEditTaskForm(Model model, RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId, @PathVariable Long courseId) {
         return courseService.getCategoryEditTaskForm(model, redirAttr, courseId, categoryId, taskId);
     }
 
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}/edit", method = RequestMethod.POST)
     public String editCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long categoryId, @PathVariable Long taskId, @PathVariable Long courseId,
             @RequestParam Long databaseId,
             @RequestParam String name,
@@ -176,17 +176,17 @@ public class CourseController {
         return courseService.categoryeditTask(redirAttr, courseId, categoryId, taskId, databaseId, name, solution, description);
     }
     
-    @RequestMapping(value = "/{courseId}/category/{categoryId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}", method = RequestMethod.DELETE)
     public String deleteCourseCategory(RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId) {
         return courseService.deleteCourseCategory(redirAttr, courseId, categoryId);
     }
     
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/edit", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/edit", method = RequestMethod.GET)
     public String getCourseCategoryEdit(Model model, RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId) {
         return courseService.getCourseCategoryEdit(model, redirAttr, courseId, categoryId);
     }
     
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/edit", method = RequestMethod.POST)
     public String editCourseCategory(
             RedirectAttributes redirAttr, 
             @PathVariable Long courseId, 
@@ -197,12 +197,12 @@ public class CourseController {
         return courseService.editCourseCategory(redirAttr, courseId, categoryId, name, description, taskIds);
     }
     
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks/create", method = RequestMethod.GET)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/create", method = RequestMethod.GET)
     public String getCourseCategoryCreateTask(Model model, RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @ModelAttribute Task task) {
         return courseService.getCourseCategoryTaskCreateForm(model, redirAttr, courseId, categoryId, task);
     }
     
-    @RequestMapping(value = "/{courseId}/category/{categoryId}/tasks", method = RequestMethod.POST)
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks", method = RequestMethod.POST)
     public String createCourseCategoryTask(Model model, RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @Valid @ModelAttribute Task task, BindingResult result) {
         return courseService.createTaskToCourseCategory(model, redirAttr, courseId, categoryId, task, result);
     }

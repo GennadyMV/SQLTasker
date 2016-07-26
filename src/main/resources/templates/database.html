@@ -37,14 +37,15 @@ and open the template in the editor.
             
             <div class="btn-group">
                 <form th:if="${owned or role != 'STUDENT'}" th:action="@{/databases/{id} (id=${database.id})}" th:method="DELETE" id="deleteDb">
-                    <input type="submit" th:class="((${role != 'STUDENT' or owned})? 'btn btn-danger' : 'btn btn-danger disabled')" value="Delete database"/>
+                    <input type="submit" th:class="((${role != 'STUDENT' or owned})? 'btn btn-danger' : 'btn btn-danger disabled')" value="Delete database" onclick="return confirmScript('Are you ABSOLUTELY sure you want to delete the database? Please make sure the database is not user by any tasks.');"/>
                 </form>
             </div>
         </div>
 
 
-
-        <div th:include="fragments/footer_template :: footer"></div>
-
+        <div id="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/scripts :: confirmScript"></div>
+        </div>        
     </body>
 </html>

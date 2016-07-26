@@ -14,7 +14,12 @@
 
 
         <div id="stuffs" class="panel panel-default">
-            <form method="POST" th:action="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId=${course.id}, categoryId=${category.id}, taskId=${task.id})}" 
+
+            <div class="list-group-item" th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})">
+                <h4 class="list-group-item-heading">Query</h4>
+            </div>
+
+            <form method="POST" th:action="@{/courses/{courseId}/categories/{categoryId}/tasks/{taskId}/feedback (courseId=${course.id}, categoryId=${category.id}, taskId=${task.id})}" 
                   th:object="${taskFeedback}" id="feedbackForm">
                 <table class="table">
                     <thead class="panel-heading">
@@ -62,10 +67,10 @@
                 <input th:field="${taskFeedback.task}" th:type="hidden" name="task" th:value="${task}"/>
                 <input class="btn btn-primary" type="submit" value="Submit feeback" />                
             </form>
-            
+
             <nav>
                 <ul class="pager">
-                    <li th:if="${next}" class="next"><a th:href="@{/courses/{courseId}/category/{catId}/tasks/{taskId}/next (courseId=${course.id}, catId=${category.id}, taskId=${task.id})}">Next task <span aria-hidden="true">&rarr;</span></a></li>
+                    <li th:if="${next}" class="next"><a th:href="@{/courses/{courseId}/categories/{catId}/tasks/{taskId}/next (courseId=${course.id}, catId=${category.id}, taskId=${task.id})}">Next task <span aria-hidden="true">&rarr;</span></a></li>
                     <li th:if="${next == null}" class="next disabled"><a href="#">Next task <span aria-hidden="true">&rarr;</span></a></li>
                 </ul>
             </nav>

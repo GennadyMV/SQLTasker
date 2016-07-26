@@ -16,7 +16,7 @@
             </div>
             <div class="panel panel-default">
                 <div id="taskForm" class="panel-body" style="width: 70%">
-                    <form th:method="POST" th:action="((${courseId != null})? @{/courses/{courseId}/category/{catId}/tasks (courseId=${courseId}, catId=${categoryId})} : @{/categories/{catId}/tasks (catId=${categoryId})})" th:object="${task}" role="form" class="well">
+                    <form th:method="POST" th:action="((${courseId != null})? @{/courses/{courseId}/categories/{catId}/tasks (courseId=${courseId}, catId=${categoryId})} : @{/categories/{catId}/tasks (catId=${categoryId})})" th:object="${task}" role="form" class="well">
                         <div th:class="((${#fields.hasErrors('name')})? 'form-group panel panel-danger' : 'form-group')">
                             <p th:if="${#fields.hasErrors('name')}" class="panel-heading" th:errors="*{name}"></p>
                             <label for="taskName">Name</label>
@@ -25,7 +25,7 @@
 
                         <div th:class="((${#fields.hasErrors('description')})? 'form-group panel panel-danger' : 'form-group')">
                             <p th:if="${#fields.hasErrors('description')}" class="panel-heading" th:errors="*{description}">Solution error</p>
-                            <label for="taskDescription">Solution</label>
+                            <label for="taskDescription">Description</label>
                             <textarea id="taskDescription" th:field="*{description}" class="form-control" placeholder="task description"></textarea>                            
                         </div>
 

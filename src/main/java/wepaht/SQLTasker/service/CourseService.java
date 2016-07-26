@@ -447,13 +447,13 @@ public class CourseService {
         redirectAttr.addFlashAttribute("messages", messages);
         redirectAttr.addAttribute("courseId", course.getId());
         redirectAttr.addAttribute("categoryId", category.getId());
-        return "redirect:/courses/{courseId}/category/{categoryId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     public String createQuery(RedirectAttributes redirectAttr, String query, Long courseId, Long categoryId, Long taskId) {
         Course course = repository.findOne(courseId);
         TmcAccount loggedUser = accountService.getAuthenticatedUser();
-        String redirectAddress = "redirect:/courses/{courseId}/category/{categoryId}/tasks/{taskId}";
+        String redirectAddress = "redirect:/courses/{courseId}/categories/{categoryId}/tasks/{taskId}";
 
         if (!loggedUser.getRole().equals(ROLE_STUDENT) || course.getStudents().contains(loggedUser)) {
             List<Object> messagesAndQueryResult = taskService.performQueryToTask(new ArrayList<>(), taskId, query, categoryId, courseId);
@@ -463,6 +463,7 @@ public class CourseService {
                 redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
             }
             if ((Boolean) messagesAndQueryResult.get(2)) {
+                if (redirectAttr != null) redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
                 redirectAddress = redirectAddress + "/feedback";
             }
         } else {
@@ -531,7 +532,7 @@ public class CourseService {
             taskService.deleteTask(user, category, task, redirAttr, taskId);
         }
 
-        return "redirect:/courses/{courseId}/category/{categoryId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     public String getCategoryEditTaskForm(Model model, RedirectAttributes redirAttr, Long courseId, Long categoryId, Long taskId) {
@@ -554,7 +555,7 @@ public class CourseService {
             if (taskService.updateTask(task, solution, redirAttr, "", description, name, databaseId)) {
                 redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": updated task " + task.getName());
             }
-            return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{taskId}";
+            return "redirect:/courses/{courseId}/categories/{categoryId}/tasks/{taskId}";
         }
 
         redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
@@ -566,7 +567,7 @@ public class CourseService {
         redirectAttr.addAttribute("courseId", courseId);
         redirectAttr.addAttribute("categoryId", categoryId);
         redirectAttr.addAttribute("nextId", next.getId());
-        return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{nextId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}/tasks/{nextId}";
     }
 
     public String getCourseCategoryPreviousTask(RedirectAttributes redirectAttr, Long courseId, Long categoryId, Long taskId) {
@@ -574,7 +575,7 @@ public class CourseService {
         redirectAttr.addAttribute("courseId", courseId);
         redirectAttr.addAttribute("categoryId", categoryId);
         redirectAttr.addAttribute("prevId", previous.getId());
-        return "redirect:/courses/{courseId}/category/{categoryId}/tasks/{prevId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}/tasks/{prevId}";
     }
 
     public List<Course> getCoursesByAccount(Account account) {
@@ -600,7 +601,7 @@ public class CourseService {
             redirAttr.addAttribute("courseId", courseId);
             redirAttr.addAttribute("categoryId", categoryId);
         }
-        return "redirect:/courses/{courseId}/category/{categoryId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     public String getCourseCategoryEdit(Model model, RedirectAttributes redirAttr, Long courseId, Long categoryId) {
@@ -613,7 +614,7 @@ public class CourseService {
             redirAttr.addAttribute("courseId", courseId);
             redirAttr.addAttribute("categoryId", categoryId);
         }
-        return "redirect:/courses/{courseId}/category/{categoryId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     @Transactional
@@ -632,7 +633,7 @@ public class CourseService {
             redirAttr.addAttribute("courseId", courseId);
             redirAttr.addAttribute("categoryId", categoryId);
         }
-        return "redirect:/courses/{courseId}/category/{categoryId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     public String getCourseCategoryTaskCreateForm(Model model, RedirectAttributes redirAttr, Long courseId, Long categoryId, Task task) {
@@ -646,7 +647,7 @@ public class CourseService {
             redirAttr.addAttribute("courseId", courseId);
             redirAttr.addFlashAttribute("categoryId", categoryId);
         }
-        return "redirect:/courses/{courseId}/category/{categoryId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     @Transactional
@@ -665,7 +666,7 @@ public class CourseService {
             redirAttr.addAttribute("courseId", courseId);
             redirAttr.addAttribute("categoryId", categoryId);
         }
-        return "redirect:/courses/{courseId}/category/{categoryId}";
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     @Transactional

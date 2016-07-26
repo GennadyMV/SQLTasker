@@ -18,14 +18,14 @@ public class AttributeInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mav) {
         Account user = null;
-        
+
         user = accountService.getAuthenticatedUser();
 
         if (user != null) {
             if (request.getMethod().equals("GET")) {
                 mav.getModel().put("role", user.getRole());
                 setNavigationAttributes(user, mav);
-            }            
+            }
         }
     }
 
@@ -44,7 +44,7 @@ public class AttributeInterceptor extends HandlerInterceptorAdapter {
         if (!user.getRole().equals(ROLE_STUDENT)) {
             HashMap<String, String> teacher = new HashMap<>();
             teacher.put(ATTRIBUTE_NAV_USERS, LINK_USERS);
-            teacher.put(ATTRIBUTE_NAV_TASKS, LINK_TASKS);            
+            teacher.put(ATTRIBUTE_NAV_TASKS, LINK_TASKS);
             teacher.put(ATTRIBUTE_NAV_SUBMISSIONS, LINK_SUBMISSIONS);
             teacher.put(ATTRIBUTE_NAV_FEEDBACK, LINK_FEEDBACK);
             mav.getModel().put(ATTRIBUTE_TEACHER_NAV, teacher);

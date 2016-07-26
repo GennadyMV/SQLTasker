@@ -18,8 +18,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+import org.aspectj.apache.bcel.classfile.Constant;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import wepaht.SQLTasker.constant.ConstantString;
 import wepaht.SQLTasker.service.CategoryService;
 import wepaht.SQLTasker.service.DatabaseService;
 import wepaht.SQLTasker.service.TaskService;
@@ -81,7 +83,7 @@ public class CategoryController {
         return "redirect:/categories";
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = {"/{id}", "/{id}/tasks"}, method = RequestMethod.GET)
     public String getOne(@PathVariable Long id,
             Model model) throws Exception {
         Category category = categoryRepository.findOne(id);
@@ -123,6 +125,11 @@ public class CategoryController {
         Category category = categoryRepository.findOne(id);
 
         Task task = taskRepository.findOne(taskId);
+        if (task == null) {
+            redirectAttributes.addFlashAttribute(ConstantString.ATTRIBUTE_MESSAGES, ConstantString.MESSAGE_FAILED_ACTION + ": no such task");
+            redirectAttributes.addAttribute("id", id);
+            return "redirect:/categories/{id}";
+        }
         model.addAttribute("task", task);
         model.addAttribute("database", task.getDatabase());
         model.addAttribute("category", category);

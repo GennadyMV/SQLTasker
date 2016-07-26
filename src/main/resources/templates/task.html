@@ -10,8 +10,8 @@ and open the template in the editor.
         <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
-        <div id="fragmentsTop" th:include="fragments/essentials :: fragmentsTop"></div>
-
+        <div id="fragmentsTop" th:include="fragments/essentials :: fragmentsTop"></div>        
+        
         <div id="stuffz">
             <div class="page-header">                
                 <h1 th:inline="text">
@@ -63,15 +63,15 @@ and open the template in the editor.
 
             <div class="btn-toolbar" th:if="${role != 'STUDENT' or owned == true}">
                 <div class="btn-group" th:if="${course}">
-                    <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/category/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
+                    <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/categories/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
                     <button th:class="((${finished})? 'btn btn-default' : 'btn btn-default disabled')" class="btn btn-default" form="feedback" th:text="'Give feedback to ' + ${task.name}"></button>
                 </div>
 
                 <div th:if="${role != 'STUDENT' or owned}" class="btn-group">
                     <form id="delete" th:method="DELETE" th:action="@{ {current} (current=${#httpServletRequest.requestURI})}"></form>
                     <form id="edit" th:method="GET" th:action="@{ {current}/edit (current=${#httpServletRequest.requestURI})}"></form>
-                    <button class="btn btn-warning" form="edit">Edit task</button>
-                    <button class="btn btn-danger" form="delete">Delete task</button>
+                    <button class="btn btn-warning" form="edit" onclick="return confirmScript('Are you sure you want to edit task?')">Edit task</button>
+                    <button class="btn btn-danger" form="delete" onclick="return confirmScript('Are you ABSOLUTELY sure you want to delete task?')">Delete task</button>
                 </div>
 
             </div>

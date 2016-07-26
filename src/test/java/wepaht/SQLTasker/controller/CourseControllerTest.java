@@ -28,17 +28,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.service.AccountService;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
@@ -257,7 +254,7 @@ public class CourseControllerTest {
                 .andReturn();
 
         List<TmcAccount> students = courseRepository.getCourseStudents(course);
-        assertEquals(courseStudentCountAtBeginning + 1, students.size());
+        assertEquals(courseStudentCountAtBeginning, students.size());
     }
 
     @Test
@@ -268,7 +265,7 @@ public class CourseControllerTest {
         course.setCourseCategories(Arrays.asList(category));
         course = courseRepository.save(course);
 
-        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId())
+        mockMvc.perform(get(URI + "/" + course.getId() + "/categories/" + category.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("course", "category"))
@@ -282,7 +279,7 @@ public class CourseControllerTest {
         course.setName("No categories");
         course = courseRepository.save(course);
 
-        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId())
+        mockMvc.perform(get(URI + "/" + course.getId() + "/categories/" + category.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(model().attributeDoesNotExist("category"))
@@ -299,7 +296,7 @@ public class CourseControllerTest {
         course.setName("No categories");
         courseRepository.save(course);
 
-        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
+        mockMvc.perform(get(URI + "/" + course.getId() + "/categories/" + category.getId() + "/tasks/" + task.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(model().attributeDoesNotExist("task", "category"))
@@ -317,7 +314,7 @@ public class CourseControllerTest {
         course.setCourseCategories(Arrays.asList(category));
         courseRepository.save(course);
 
-        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId())
+        mockMvc.perform(get(URI + "/" + course.getId() + "/categories/" + category.getId() + "/tasks/" + task.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(model().attributeDoesNotExist("task"))
@@ -332,7 +329,7 @@ public class CourseControllerTest {
         Category category = createTestCategory("From here", Arrays.asList(task));
         Course course = createTestCourse("From this", category, null, null);
 
-        mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/query")
+        mockMvc.perform(post(URI + "/" + course.getId() + "/categories/" + category.getId() + "/tasks/" + task.getId() + "/query")
                 .param("query", "SELECT 1;")
                 .with(user("student").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -346,7 +343,7 @@ public class CourseControllerTest {
         Category category = createTestCategory("In dis category", Arrays.asList(task));
         Course course = createTestCourse("Nerf this", category, null, null);
 
-        mockMvc.perform(post(URI + "/" + course.getId() + "/category/" + category.getId() + "/task/" + task.getId() + "/feedback")
+        mockMvc.perform(post(URI + "/" + course.getId() + "/categories/" + category.getId() + "/tasks/" + task.getId() + "/feedback")
                 .with(user("student").roles("STUDENT")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages",
@@ -403,7 +400,7 @@ public class CourseControllerTest {
         Course course = createTestCourseWithMultipleCategories("The course", Arrays.asList(category2), null, null);
         CategoryDetail detail2 = createTestDetail(course, category2, now.plusDays(1l), null);
 
-        mockMvc.perform(get(URI + "/" + course.getId() + "/category/" + detail2.getCategory().getId())
+        mockMvc.perform(get(URI + "/" + course.getId() + "/categories/" + detail2.getCategory().getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection());
     }

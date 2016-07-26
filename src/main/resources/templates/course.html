@@ -45,7 +45,7 @@
                     <tbody>
                         <tr th:each="detail : ${details}">
                             <td>
-                                <a th:href="@{/courses/{courseId}/category/{categoryId} (courseId=${course.id}, categoryId=${detail.category.id})}">
+                                <a th:href="@{/courses/{courseId}/categories/{categoryId} (courseId=${course.id}, categoryId=${detail.category.id})}">
                                     <b th:text="${detail.category.name}"></b>
                                 </a>
                             </td>
@@ -68,14 +68,17 @@
                     <form th:method="DELETE" th:action="@{/courses/{id}/delete (id = ${course.id})}" id="delete"></form>
                     <form th:method="GET" th:action="@{/courses/{id}/details (id = ${course.id})}" id="editDetails"></form>
                     <form th:method="GET" th:action="@{/courses/{id}/edit (id = ${course.id})}" id="editCourse"></form>
-                    <button class="btn btn-warning" form="editDetails">Edit categories' details</button>
-                    <button class="btn btn-warning" form="editCourse">Edit course</button>
-                    <button class="btn btn-danger" form="delete">Delete course</button>
+                    <button class="btn btn-warning" form="editDetails" onclick="return confirmScript('Are you sure you want to change dates of categories?')">Edit categories' details</button>
+                    <button class="btn btn-warning" form="editCourse" onclick="return confirmScript('Are you sure you want to edit course?')">Edit course</button>
+                    <button class="btn btn-danger" form="delete" onclick="return confirmScript('Are you ABSOLUTELY sure you want to delete course?')">Delete course</button>
                 </div>
             </div>
         </div>
-        <div th:include="fragments/footer_template :: footer"></div>
-
+        
+        <div id="fragmentsBottom">
+            <div th:include="fragments/scripts :: confirmScript"></div>
+            <div th:include="fragments/footer_template :: footer"></div>
+        </div>        
     </body>
 
 </html>

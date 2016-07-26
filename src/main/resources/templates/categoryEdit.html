@@ -15,7 +15,7 @@
             </div>
             
             <div class="panel panel-default">
-                <form class="panel-body well" style="width: 70%" role="form" method="POST" th:action="((${course})? @{/courses/{courseId}/category/{id}/edit (courseId=${course.id}, id=${category.id})} : @{/categories/{id}/edit (id=${category.id})})">
+                <form class="panel-body well" style="width: 70%" role="form" method="POST" th:action="((${course})? @{/courses/{courseId}/categories/{id}/edit (courseId=${course.id}, id=${category.id})} : @{/categories/{id}/edit (id=${category.id})})">
                     <div class="form-group">
                         <label for="catName">Category name</label>
                         <input id="catName" class="form-control" type="text" name="name" th:value="${category.name}"/>
@@ -68,9 +68,6 @@
                 </form>
             </div>
         </div>
-
-
-        <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: searchScript"></div>

@@ -26,7 +26,7 @@ and open the template in the editor.
                     <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-left" sec:authorize="isAuthenticated()">
                             <li th:each="nav : ${publicNav}"><a th:href="@{${nav.value}}" th:text="${nav.key}"></a></li>
-                            
+
                             <li class="dropdown" th:if="${teacherNav}">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Teacher tools <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
@@ -49,6 +49,37 @@ and open the template in the editor.
                 <input type="submit" value="Logout"/>
             </form>
 
+            <ol class="breadcrumb" th:with="splitted = ${#strings.arraySplit(#httpServletRequest.requestURI, '/')}">                
+                <script type="text/javascript" th:inline="javascript">
+                    function writeCrumbs(current, i) {
+                        var URIs = [[${splitted}]];
+                        
+                        if (URIs.length === 0) {
+                            var className = "active";
+                            document.write("<li class=" + className + ">home</li>");
+                            return;
+                        }
+                        
+                        if (i === 0) {
+                            var homeAddress = "/";
+                            document.write("<li><a href=" + homeAddress + ">home</a></li>");
+                        }
+                        
+                        current = current + "/" + URIs[i];
+                        
+                        if(i === URIs.length - 1) {
+                            var className = "active";
+                            document.write("<li class=" + className + ">" + URIs[i] + "</li>");
+                            return;
+                        } 
+                        document.write("<li><a href=" + current + ">" + URIs[i] + "</a></li>");
+                        writeCrumbs(current, i + 1);
+                    }
+                    
+                    writeCrumbs("", 0);
+                </script>
+            </ol>
+           
         </div>
     </body>
 </html>

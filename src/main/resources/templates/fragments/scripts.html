@@ -7,9 +7,9 @@
     <body>
         <div th:fragment="confirmScript">
             <script>
-                function confirmScript()
+                function confirmScript(message)
                 {
-                    return confirm("Are you sure?");
+                    return confirm(message);
                 }
 
 

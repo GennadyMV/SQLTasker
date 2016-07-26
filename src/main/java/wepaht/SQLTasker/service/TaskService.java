@@ -16,8 +16,6 @@ import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Table;
 import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.domain.Task;
-import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.constant.ConstantString;
 import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
 import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_SUCCESSFUL_ACTION;
 import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
@@ -244,7 +242,7 @@ public class TaskService {
         if (user.getRole().equals(ROLE_STUDENT)) {
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
         } else {
-            task.setDeleted(Boolean.TRUE);
+            removeTask(id);
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
         }
 
@@ -361,6 +359,7 @@ public class TaskService {
         return "redirect:" + redirectUri;
     }
     
+    @Transactional
     public void deleteTask(Account user, Category category, Task task, RedirectAttributes redirAttr, Long taskId) {
         if (user.getRole().equals(ROLE_STUDENT)) {
             if ((!accountService.isOwned(category) || !accountService.isOwned(task)) && categoryService.categoryHasTask(category, task)) {

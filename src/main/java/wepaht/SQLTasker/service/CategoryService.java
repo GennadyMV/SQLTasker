@@ -338,6 +338,7 @@ public class CategoryService {
         return "categories";
     }
 
+    @Transactional
     public String deleteTask(RedirectAttributes redirAttr, Long categoryId, Long taskId) {
         Account user = accountService.getAuthenticatedUser();
         Category category = categoryRepository.findOne(categoryId);

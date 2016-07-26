@@ -13,16 +13,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import wepaht.SQLTasker.Application;
 import wepaht.SQLTasker.domain.Database;
 import wepaht.SQLTasker.domain.Tag;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.constant.ConstantString;
 import static wepaht.SQLTasker.constant.ConstantString.*;
 import wepaht.SQLTasker.repository.TaskRepository;
 
@@ -66,7 +63,7 @@ public class TaskServiceTest {
         
         when(dbMock.getId()).thenReturn(42l);
         when(dbServiceMock.getDatabase(eq(42l))).thenReturn(dbMock);
-        when(dbServiceMock.isValidQuery(eq(dbMock), any())).thenReturn(Boolean.TRUE);
+        when(dbServiceMock.isValidQuery(any(), any())).thenReturn(Boolean.TRUE);
         when(accountMock.getRole()).thenReturn(ROLE_TEACHER);
         
         taskService.createTask(null, testTask, 42l, null, null);
