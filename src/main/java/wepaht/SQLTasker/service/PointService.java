@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.SQLTasker.domain.Table;
 import java.util.*;
+import org.springframework.transaction.annotation.Transactional;
 import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
@@ -87,6 +88,7 @@ public class PointService {
         return ((double)points / taskCount) * 100;
     }
     
+    @Transactional
     public Map<Task,Boolean> getCategoryTasksAndIsDone(Course course, Category category) {
         HashMap<Task, Boolean> tasks = new HashMap<>();
         
@@ -97,6 +99,7 @@ public class PointService {
         return tasks;
     }
     
+    @Transactional
     public Map<CategoryDetail, Double> getCategoriesAndProgress(Course course) {
         HashMap<CategoryDetail, Double> categories = new HashMap<>();
         
@@ -114,6 +117,7 @@ public class PointService {
         return ((double) points / taskCount) * 100;
     }
     
+    @Transactional
     public Map<Course, Double> getCoursesAndProgress(List<Course> courses) {
         HashMap<Course, Double> coursesAndProgress = new HashMap<>();
         
