@@ -92,9 +92,9 @@ public class PointService {
     public Map<Task,Boolean> getCategoryTasksAndIsDone(Course course, Category category) {
         HashMap<Task, Boolean> tasks = new HashMap<>();
         
-        category.getTaskList().stream().forEach((task) -> {
+        for (Task task : category.getTaskList()) {
             tasks.put(task, hasUserDoneTaskCorrectly(accountService.getAuthenticatedUser(), course, category, task));
-        });
+        }
         
         return tasks;
     }

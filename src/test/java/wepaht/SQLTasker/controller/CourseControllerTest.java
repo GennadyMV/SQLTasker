@@ -206,23 +206,6 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testGetCoursesListsCourses() throws Exception {
-        Course course1 = createTestCourse("listing courses1");
-        Course course2 = createTestCourse("listing courses2");
-        when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
-
-        mockMvc.perform(get(URI)
-                .with(user("student").roles("STUDENT"))
-                .with(csrf()))
-                .andExpect(model().attribute("courses", hasSize(2)))
-                .andExpect(model().attribute("courses", Matchers.hasItem(
-                                        Matchers.allOf(Matchers.hasProperty("id", Matchers.is(course1.getId()))))))
-                .andExpect(model().attribute("courses", Matchers.hasItem(
-                                        Matchers.allOf(Matchers.hasProperty("id", Matchers.is(course2.getId()))))))
-                .andReturn();
-    }
-
-    @Test
     public void testCourseCanBeSeen() throws Exception {
         Course course = createTestCourse("Lookin at dis");
 
@@ -351,19 +334,6 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testStudentCanSeeOnlyActiveCourses() throws Exception {
-        LocalDate now = LocalDate.now();
-        Course course = createTestCourse("Active", null, now.minusDays(7l), now.plusDays(1l));
-        Course course2 = createTestCourse("inactive", null, now.minusDays(7l), now.minusDays(1l));
-        when(accountServiceMock.getAuthenticatedUser()).thenReturn(student);
-
-        mockMvc.perform(get(URI).with(user("student").roles("STUDENT")))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("courses",
-                                Matchers.anyOf(Matchers.hasSize(1))));
-    }
-
-    @Test
     public void testStudentCanOnlyAccessActiveCourses() throws Exception {
         LocalDate now = LocalDate.now();
         Course course = createTestCourse("inactive", null, now.minusDays(7l), now.minusDays(1l));
@@ -371,21 +341,6 @@ public class CourseControllerTest {
         mockMvc.perform(get(URI + "/" + course.getId())
                 .with(user("student").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection());
-    }
-
-    @Test
-    public void testStudentCanSeeOnlyActiveCategories() throws Exception {
-        LocalDate now = LocalDate.now();
-        Category category = createTestCategory("Active");
-        Category category2 = createTestCategory("Inactive");
-        Course course = createTestCourseWithMultipleCategories("The course", Arrays.asList(category, category2), null, null);
-        CategoryDetail detail1 = createTestDetail(course, category, null, null);
-        CategoryDetail detail2 = createTestDetail(course, category2, now.plusDays(1l), null);
-
-        mockMvc.perform(get(URI + "/" + course.getId())
-                .with(user("student").roles("STUDENT")))
-                .andExpect(model().attribute("details",
-                                Matchers.anyOf(Matchers.hasSize(1))));
     }
 
     private CategoryDetail createTestDetail(Course course, Category category, LocalDate starts, LocalDate expires) {
