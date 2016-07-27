@@ -120,7 +120,7 @@ public class AccountService {
 
         TmcAccount fetched = getUserById(id);
         model.addAttribute("editedUser", fetched);
-        model.addAttribute(ATTRIBUTE_COURSES, courseService.getCoursesByAccount(fetched));
+        model.addAttribute(ATTRIBUTE_COURSES, pointService.getCoursesAndProgress(courseService.getCoursesByAccount(fetched)));
 
         if (user.getRole().equals(ROLE_ADMIN)) {
             model.addAttribute(ATTRIBUTE_ROLES, Arrays.asList(ROLE_STUDENT, ROLE_TEACHER, ROLE_ADMIN));
@@ -181,7 +181,7 @@ public class AccountService {
         } else if (user.getRole().equals(ROLE_TEACHER)) {
             model.addAttribute(ATTRIBUTE_ROLES, ROLE_STUDENT);
         }
-        model.addAttribute(ATTRIBUTE_COURSES, courseService.getCoursesByCurrentUser());
+        model.addAttribute(ATTRIBUTE_COURSES, pointService.getCoursesAndProgress(courseService.getCoursesByCurrentUser()));
         model.addAttribute(ATTRIBUTE_EDITEDUSER, user);
         model.addAttribute(ATTRIBUTE_TOKEN, getToken());
 

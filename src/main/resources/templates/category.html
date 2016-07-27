@@ -19,20 +19,33 @@
                     <p th:if="${role != 'STUDENT' and category.owner != null}" th:text="${'Owner: ' + category.owner.username}"></p>
                 </div>
 
-                <div class="panel-body" th:if="${category.description}">
-                    <p th:text="${category.description}"></p>                    
+                <div class="panel-body">
+                    <p th:if="${category.description}" th:text="${category.description}"></p>
+                    <p th:if="${course}">Category progress: <span class="label label-primary" th:text="${#numbers.formatDecimal(progress, 0, 'DEFAULT', 2, 'DEFAULT') + '%'}"></span></p>
                 </div>
 
-                <div class="list-group" th:each="task : ${category.taskList}">
+                <div id="listCategoryTasks" class="list-group" th:each="task : ${taskList}" th:if="${course == null}">
                     <a class="list-group-item" th:href="@{__${#httpServletRequest.requestURI}__/tasks/__${task.id}__}">
-                        <span class="badge" th:if="${course}">Dön</span>
-
                         <b class="list-group-item-heading" th:text="${task.name}"></b>
 
                         <div class="list-group-item-text" th:if="${role != 'STUDENT'}">
                             <form th:method="POST" th:action="@{/categories/{id} (id = ${category.id})}">
                                 <input type="hidden" th:value="${task.id}" name="taskId"/>
                                 <input class="btn btn-xs btn-default" type="submit" th:value="'Switch ' + ${task.name} + ' with next task'"/>
+                            </form>                            
+                        </div>
+                    </a>
+                </div>
+                
+                <div id="listCourseCategoryTasks" class="list-group" th:each="task : ${taskList}" th:if="${course != null}">
+                    <a class="list-group-item" th:href="@{__${#httpServletRequest.requestURI}__/tasks/__${task.key.id}__}">
+                        <span class="badge" th:if="${course != null and task.value == true}">Done</span>
+
+                        <b class="list-group-item-heading" th:text="${task.key.name}"></b>
+                        <div class="list-group-item-text" th:if="${role != 'STUDENT' or owned == false}">
+                            <form th:method="POST" th:action="@{/courses/{courseId}/categories/{catId} (courseId=${course.id}, catId = ${category.id})}">
+                                <input type="hidden" th:value="${task.key.id}" name="taskId"/>
+                                <input class="btn btn-xs btn-default" type="submit" th:value="'Switch ' + ${task.key.name} + ' with next task'"/>
                             </form>                            
                         </div>
                     </a>

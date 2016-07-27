@@ -7,6 +7,7 @@ import wepaht.SQLTasker.domain.Category;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.TmcAccount;
 
 @RestResource(exported = false)
@@ -21,4 +22,15 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findAll();
     
     List<Category> findByOwnerAndDeletedFalse(TmcAccount owner);
+    
+    @Query("SELECT COUNT(task) as taskCount FROM Category cat "
+            + "JOIN cat.taskList task "
+            + "WHERE cat IN :cats "
+            + "AND task.deleted=false")
+    Long getTaskCountByCategories(@Param("cats") List<Category> categories);
+    
+    @Query("SELECT COUNT(task) as taskCount FROM Category c "
+            + "JOIN c.taskList task "
+            + "WHERE c=:cat")
+    Long getTaskCountByCategory(@Param("cat") Category category);
 }

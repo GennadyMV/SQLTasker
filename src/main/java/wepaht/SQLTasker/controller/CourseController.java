@@ -206,4 +206,9 @@ public class CourseController {
     public String createCourseCategoryTask(Model model, RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @Valid @ModelAttribute Task task, BindingResult result) {
         return courseService.createTaskToCourseCategory(model, redirAttr, courseId, categoryId, task, result);
     }
+    
+    @RequestMapping(value = "/{courseId}/categories/{categoryId}", method = RequestMethod.POST)
+    public String postReorderCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long courseId, @RequestParam Long taskId) {
+        return courseService.reorderTasks(redirAttr, courseId, taskId, taskId);
+    }
 }

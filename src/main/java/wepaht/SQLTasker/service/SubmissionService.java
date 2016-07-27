@@ -63,7 +63,7 @@ public class SubmissionService {
     }
 
     Integer getAccountCourseCategoryPoints(TmcAccount account, Course course, Category category) {
-        return repository.getPointsByAccountAndCourseAncCategory(account, course, category);
+        return repository.countPointsByAccountAndCourseAndCategory(account, course, category).intValue();
     }
 
     List<Submission> getSubmissionByAccountAndCourseAndCategoryAndTaskAndPoints(TmcAccount account, Course course, Category category, Task task, Boolean points) {
@@ -126,5 +126,9 @@ public class SubmissionService {
         model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll());
 
         return "submissions";
+    }
+    
+    public Long getCoursePoints(TmcAccount account, Course course) {
+        return repository.countPointsByAccountAndCourse(account, course);
     }
 }

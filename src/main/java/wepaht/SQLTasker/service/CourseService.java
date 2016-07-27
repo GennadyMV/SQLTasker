@@ -58,9 +58,9 @@ public class CourseService {
     public void getCourses(Model model) {
         Account user = accountService.getAuthenticatedUser();
         if (user == null || user.getRole().equals("STUDENT")) {
-            model.addAttribute(ATTRIBUTE_COURSES, getActiveCourses());
+            model.addAttribute(ATTRIBUTE_COURSES, pointService.getCoursesAndProgress(getActiveCourses()));
         } else {
-            model.addAttribute(ATTRIBUTE_COURSES, repository.findAll());
+            model.addAttribute(ATTRIBUTE_COURSES, pointService.getCoursesAndProgress(repository.findAll()));
         }
     }
 
@@ -167,10 +167,10 @@ public class CourseService {
         }
 
         model.addAttribute("course", course);
-        model.addAttribute("points", pointService.getCoursePoints(course));
+        model.addAttribute("progress", pointService.getCourseProgress(course));
         model.addAttribute("joined", course.getStudents().contains(accountService.getAuthenticatedUser()));
         if (!details.isEmpty()) {
-            model.addAttribute("details", details);
+            model.addAttribute("details", pointService.getCategoriesAndProgress(course));
         }
         return "course";
     }
@@ -393,10 +393,12 @@ public class CourseService {
             return noSuchCategoryInCourse(course, redirectAttributes);
         }
 
+        model.addAttribute("progress", pointService.getCourseCategoryProgress(course, category));
         model.addAttribute("points", pointService.getCourseCategoryPoints(course, category));
+        model.addAttribute("taskCount", categoryService.getTaskCount(category));
         model.addAttribute("course", course);
         model.addAttribute("category", category);
-        model.addAttribute("taskList", category.getTaskList());
+        model.addAttribute("taskList", pointService.getCategoryTasksAndIsDone(course, category));
         return "category";
     }
 
@@ -503,7 +505,7 @@ public class CourseService {
         return true;
     }
 
-    private List<CategoryDetail> getActiveCategories(Course course) {
+    public List<CategoryDetail> getActiveCategories(Course course) {
         TmcAccount user = accountService.getAuthenticatedUser();
         if (user.getRole().equals("STUDENT")) {
             return categoryDetailsService.getActiveCategoryDetailsBycourse(course);
@@ -682,5 +684,28 @@ public class CourseService {
                 redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, e.getMessage());
             }
         }
+    }
+    
+    @Transactional
+    public String reorderTasks(RedirectAttributes redirectAttributes,
+            Long courseId,
+            Long categoryId,
+            Long taskId) {
+        Account user = accountService.getAuthenticatedUser();
+        Category category = categoryService.getCategoryById(categoryId);
+        Task task = taskService.getTaskById(taskId);
+        
+        
+        if (user.getRole().equals(ROLE_STUDENT) && (category.getOwner() == null || !category.getOwner().equals(user))) {
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
+        } else {
+            categoryService.setCategoryTaskFurther(category, task);
+            redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION);
+        }
+        
+        redirectAttributes.addAttribute("categoryId", categoryId);
+        redirectAttributes.addAttribute("courseId", courseId);
+
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 }

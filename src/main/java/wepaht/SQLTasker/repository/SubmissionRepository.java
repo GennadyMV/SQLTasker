@@ -20,11 +20,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     @Query("SELECT COUNT(*) FROM Submission WHERE :account=account AND points=true")
     Integer getPointsByAccount(@Param("account") TmcAccount account);
 
-//    @Query("SELECT new wepaht.SQLTasker.domain.PointHolder(q.username, COUNT(q)) FROM PastQuery q WHERE q.awarded=true AND q.correct=true GROUP BY q.username")
-//    List<PointHolder> exportAllPoints();    
-    
-//    @Query("SELECT username, COUNT(*) AS points FROM PastQuery WHERE awarded=true AND correct=true GROUP BY username")
-//    List<?> getPoints();
     @Query("SELECT account.username, COUNT(*) AS points FROM Submission WHERE points=true GROUP BY account")
     List<?> getAllPoints();
     
@@ -35,7 +30,24 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     Integer getPointsByAccountAndCourse(@Param("account") TmcAccount account, @Param("course") Course course);
 
     @Query("SELECT COUNT(*) FROM Submission WHERE :account=account AND :course=course AND :category=category AND points=true")
-    public Integer getPointsByAccountAndCourseAncCategory(@Param("account")TmcAccount account, @Param("course") Course course, @Param("category") Category category);
+    public Integer getPointsByAccountAndCourseAndCategory(@Param("account")TmcAccount account, @Param("course") Course course, @Param("category") Category category);
 
     public List<Submission> findByAccountAndCourseAndCategoryAndTaskAndPoints(TmcAccount account, Course course, Category category, Task task, Boolean points);
+    
+    @Query("SELECT COUNT(DISTINCT sub.task) FROM Submission sub "
+            + "WHERE sub.account=:account "
+            + "AND sub.course=:course "
+            + "AND sub.category=:cat "
+            + "AND sub.task.deleted = false "            
+            + "AND sub.points=true")
+    Long countPointsByAccountAndCourseAndCategory(@Param("account") TmcAccount account, @Param("course") Course course, @Param("cat") Category category);
+    
+    @Query("SELECT COUNT(sub.task) FROM Submission sub "
+            + "WHERE sub.account=:account "
+            + "AND sub.course=:course "
+            + "AND sub.points=true "
+            + "AND sub.task.deleted=false "
+            + "AND sub.category.deleted=false "
+            + "GROUP By sub.task, sub.category")
+    Long countPointsByAccountAndCourse(@Param("account") TmcAccount account, @Param("course") Course course);
 }

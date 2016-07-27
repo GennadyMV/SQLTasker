@@ -428,4 +428,12 @@ public class CategoryService {
         return getPreviousTask(category, task);
     }
 
+    public Integer getTaskCountByCourse(Course course) {
+        return categoryRepository.getTaskCountByCategories(course.getCourseCategories()).intValue();
+    }
+
+    public Integer getTaskCount(Category category) {
+        return categoryRepository.getTaskCountByCategory(category).intValue();
+    }
+
 }

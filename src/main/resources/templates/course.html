@@ -17,12 +17,13 @@
 
             <div class="panel panel-primary">
 
-                <div th:if="${course.description}" class="panel-heading">
+                <div th:if="${course.courseCategories}" class="panel-heading">
                     <b>Categories</b>
                 </div>
 
                 <div class="panel-body">
                     <p th:text="${course.description}">Course description</p>
+                    <p>Course progress: <span class="label label-primary" th:text="${#numbers.formatDecimal(progress, 0, 'DEFAULT', 2, 'DEFAULT') + '%'}"></span></p>
                     <div th:if="${role != 'STUDENT'}">
                         <b th:text="${#lists.size(course.students) + ' course patricipants:'}">Course participants: </b>
                         <ul th:each="student : ${course.students}">
@@ -45,14 +46,14 @@
                     <tbody>
                         <tr th:each="detail : ${details}">
                             <td>
-                                <a th:href="@{/courses/{courseId}/categories/{categoryId} (courseId=${course.id}, categoryId=${detail.category.id})}">
-                                    <b th:text="${detail.category.name}"></b>
+                                <a th:href="@{/courses/{courseId}/categories/{categoryId} (courseId=${course.id}, categoryId=${detail.key.category.id})}">
+                                    <b th:text="${detail.key.category.name}"></b>
                                 </a>
                             </td>
-                            <td th:text="((${detail.starts != null})? ${detail.starts} : '')"></td>
-                            <td th:text="((${detail.expires != null})? ${detail.expires} : '')"></td>
+                            <td th:text="((${detail.key.starts != null})? ${detail.key.starts} : '')"></td>
+                            <td th:text="((${detail.key.expires != null})? ${detail.key.expires} : '')"></td>
                             <td>
-                                <span class="badge">42%</span>
+                                <span class="badge" th:text="${detail.value + '%'}">42%</span>
                             </td>
                         </tr>
                     </tbody>
