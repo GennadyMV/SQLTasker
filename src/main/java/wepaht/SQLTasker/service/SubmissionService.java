@@ -10,13 +10,13 @@ import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
 import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_SUBMISSIONS;
 import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
 import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
-import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.specification.SubmissionSpecification.courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 
 @Service
@@ -123,7 +123,7 @@ public class SubmissionService {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return REDIRECT_DEFAULT;
         }
-        model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll());
+        model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, null, null, null)));
 
         return "submissions";
     }
