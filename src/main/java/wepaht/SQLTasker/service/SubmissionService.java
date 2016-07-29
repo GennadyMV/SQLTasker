@@ -123,7 +123,7 @@ public class SubmissionService {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return REDIRECT_DEFAULT;
         }
-        model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, null, null, null)));
+        model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, null, null, null, null, null)));
 
         return "submissions";
     }
