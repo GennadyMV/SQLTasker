@@ -83,7 +83,7 @@ public class CategoryController {
         return "redirect:/categories";
     }
 
-    @RequestMapping(value = {"/{id}", "/{id}/tasks"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/{id}"}, method = RequestMethod.GET)
     public String getOne(@PathVariable Long id,
             Model model) throws Exception {
         Category category = categoryRepository.findOne(id);
@@ -93,6 +93,12 @@ public class CategoryController {
         model.addAttribute("owned", userService.isOwned(category));
         model.addAttribute("taskCount", categoryService.getTaskCount(category));
         return "category";
+    }
+    
+    @RequestMapping(value = {"/{id}/tasks"}, method = RequestMethod.GET)
+    public String getOne(RedirectAttributes redirAttr, @PathVariable Long id) {
+        redirAttr.addFlashAttribute("id", id);
+        return "redirect:/categories/{id}";
     }
 
     @Transactional

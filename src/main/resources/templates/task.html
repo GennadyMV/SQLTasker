@@ -37,7 +37,7 @@ and open the template in the editor.
                     <div id="queryForm" class="list-group-item well">
                         <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
                             <div class="form-group">
-                                <label for="taskQuery">Perform query to database <a th:text="${database.name}" th:href="@{/databases/{dbId} (dbId=${database.id})}"></a></label>
+                                <label for="taskQuery">Perform query to database <a target="_blank" th:text="${database.name}" th:href="@{/databases/{dbId} (dbId=${database.id})}"></a></label>
                                 <textarea name="query" id="taskQuery" placeholder="SHOW TABLES;" class="form-control" th:text="((${query}) ? ${query} : '')"></textarea>
                             </div>
 

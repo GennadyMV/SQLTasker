@@ -26,7 +26,7 @@
 
                         <div th:class="((${#fields.hasErrors('description')})? 'form-group panel panel-danger' : 'form-group')">
                             <p th:if="${#fields.hasErrors('description')}" class="panel-heading" th:errors="*{description}">Solution error</p>
-                            <label for="taskDescription">Solution</label>
+                            <label for="taskDescription">Description</label>
                             <textarea id="taskDescription" th:field="*{description}" class="form-control" placeholder="task description"></textarea>                            
                         </div>
 

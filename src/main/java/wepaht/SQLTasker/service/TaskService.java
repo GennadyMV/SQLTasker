@@ -107,7 +107,7 @@ public class TaskService {
         Category category = categoryService.getCategoryById(categoryId);
         Course course = courseService.getCourseById(courseId);
 
-        Boolean isCorrect = submissionService.createNewSubmissionAndCheckPoints(task, query, category, course);
+        Boolean isCorrect = submissionService.createNewSubmissionAndCheckPointsWithFeedback(task, query, category, course, messages);
 
         if (isCorrect) {
             messages.add("Your answer is correct");

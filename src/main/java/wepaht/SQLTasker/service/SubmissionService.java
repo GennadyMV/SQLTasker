@@ -71,22 +71,39 @@ public class SubmissionService {
     }
 
     public Boolean createNewSubmissionAndCheckPoints(Task task, String query, Category category, Course course) {
-        Boolean isCorrect;
-
-        if (task.getSolution() != null) {
-            isCorrect = taskResultService.evaluateSubmittedQueryResult(task, query);
-        } else {
-            isCorrect = false;
-        }
+        Boolean isCorrect = false;
 
         if (course != null) {
-            isCorrect = isCourseActive(isCorrect, course);
-        } else {
-            isCorrect = false;
+            isCorrect = isCourseActive(true, course);
+
+            if (task.getSolution() != null) {
+                isCorrect = taskResultService.evaluateSubmittedQueryResult(task, query);
+            } else {
+                isCorrect = false;
+            }
+            if (category != null) {
+                isCorrect = isCategoryActive(isCorrect, course, category);
+            }
         }
 
-        if (category != null) {
-            isCorrect = isCategoryActive(isCorrect, course, category);
+        createNewSubmisson(task, query, isCorrect, category, course);
+
+        return isCorrect;
+    }
+    public Boolean createNewSubmissionAndCheckPointsWithFeedback(Task task, String query, Category category, Course course, List<String> messages) {
+        Boolean isCorrect = false;
+
+        if (course != null) {
+            isCorrect = isCourseActive(true, course);
+
+            if (task.getSolution() != null) {
+                isCorrect = taskResultService.evaluateSubmittedQueryResultWithFeedback(task, query, messages);
+            } else {
+                isCorrect = false;
+            }
+            if (category != null) {
+                isCorrect = isCategoryActive(isCorrect, course, category);
+            }
         }
 
         createNewSubmisson(task, query, isCorrect, category, course);
@@ -127,7 +144,7 @@ public class SubmissionService {
 
         return "submissions";
     }
-    
+
     public Long getCoursePoints(TmcAccount account, Course course) {
         return repository.countPointsByAccountAndCourse(account, course);
     }
