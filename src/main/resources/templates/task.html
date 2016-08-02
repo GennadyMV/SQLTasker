@@ -34,6 +34,10 @@ and open the template in the editor.
                 </div>
                 
                 <div class="list-group" th:if="${category}">
+                    <div class="list-group-item" th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})">
+                        <h4 class="list-group-item-heading">Query</h4>
+                    </div>
+                    
                     <div id="queryForm" class="list-group-item well">
                         <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
                             <div class="form-group">
@@ -45,11 +49,7 @@ and open the template in the editor.
                                 <input class="btn btn-primary form-control" type="submit"/>
                             </div>
                         </form>
-                    </div>
-
-                    <div class="list-group-item" th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})">
-                        <h4 class="list-group-item-heading">Query</h4>
-                    </div>
+                    </div>                   
                 </div>
 
                 <div th:if="${category == null and task.categories != null and not #lists.isEmpty(task.categories)}" class="list-group">
@@ -63,7 +63,7 @@ and open the template in the editor.
 
             <div class="btn-toolbar" th:if="${role != 'STUDENT' or owned == true}">
                 <div class="btn-group" th:if="${course}">
-                    <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/categories/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
+                    <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/categories/{categoryId}/tasks/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
                     <button th:class="((${finished})? 'btn btn-default' : 'btn btn-default disabled')" class="btn btn-default" form="feedback" th:text="'Give feedback to ' + ${task.name}"></button>
                 </div>
 

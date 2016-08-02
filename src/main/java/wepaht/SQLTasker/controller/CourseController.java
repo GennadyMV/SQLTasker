@@ -221,7 +221,7 @@ public class CourseController {
     }
     
     @RequestMapping(value = "/{courseId}/categories/{categoryId}", method = RequestMethod.POST)
-    public String postReorderCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long courseId, @RequestParam Long taskId) {
-        return courseService.reorderTasks(redirAttr, courseId, taskId, taskId);
+    public String postReorderCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @RequestParam Long taskId) {
+        return courseService.reorderTasks(redirAttr, courseId, categoryId, taskId);
     }
 }

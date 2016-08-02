@@ -26,8 +26,7 @@ public class Task extends AbstractPersistable<Long> implements Owned {
     @NotNull
     private String name;
     private String description;
-
-    @NotNull
+    
     private String solution;
 
     @ManyToOne

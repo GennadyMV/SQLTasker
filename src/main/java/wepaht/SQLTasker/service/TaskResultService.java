@@ -181,6 +181,7 @@ public class TaskResultService {
                 if (!correctTableColumns.get(i).equals(queryTableColumns.get(i))) {
                     isCorrect = false;
                     columnNameError(tableName, i, correctTableColumns, queryTableColumns, messages);
+                    break;
                 }
             }
         }
