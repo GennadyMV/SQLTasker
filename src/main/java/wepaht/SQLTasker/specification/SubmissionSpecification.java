@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.specification;
 
+import java.time.LocalDateTime;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -18,14 +19,23 @@ public class SubmissionSpecification {
 
     }
 
-    public static Specification<Submission> courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(Course course, Category category, Task task, TmcAccount account, Boolean correct) {
+    public static Specification<Submission> courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(
+            Course course, 
+            Category category, 
+            Task task, 
+            TmcAccount account, 
+            Boolean correct,
+            LocalDateTime after,
+            LocalDateTime before) {
         return (Root<Submission> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {            
             return cb.and(
                     courseEqualsIfGiven(course, cb, root),
                     categoryEqualsIfGiven(category, cb, root),
                     taskEqualsIfGiven(task, cb, root),
                     pointsEqualsIfGiven(correct, cb, root),
-                    accountEqualsIfGiven(account, cb, root)
+                    accountEqualsIfGiven(account, cb, root),
+                    dateIsAfterIfGiven(after, cb, root),
+                    dateIsBeforeIfGiven(before, cb, root)
             );
         };
     }
@@ -69,4 +79,22 @@ public class SubmissionSpecification {
         return cb.or(cb.isNull(root.<TmcAccount>get(Submission_.account)),
                 cb.isNotNull(root.<TmcAccount>get(Submission_.account)));
     }
+    
+    private static Predicate dateIsAfterIfGiven(LocalDateTime after, CriteriaBuilder cb, Root<Submission> root) {
+        if (after != null) {
+            return cb.greaterThanOrEqualTo(root.<LocalDateTime>get(Submission_.created), after);
+        }
+        return cb.or(cb.isNull(root.<LocalDateTime>get(Submission_.created)),
+                cb.isNotNull(root.<LocalDateTime>get(Submission_.created)));
+    }
+    
+    private static Predicate dateIsBeforeIfGiven(LocalDateTime before, CriteriaBuilder cb, Root<Submission> root) {
+        if (before != null) {
+            return cb.lessThanOrEqualTo(root.<LocalDateTime>get(Submission_.created), before);
+        }
+        return cb.or(cb.isNull(root.<LocalDateTime>get(Submission_.created)),
+                cb.isNotNull(root.<LocalDateTime>get(Submission_.created)));
+    }
+    
+    
 }
