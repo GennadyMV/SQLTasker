@@ -77,7 +77,7 @@ public class SubmissionService {
             isCorrect = isCourseActive(true, course);
 
             if (task.getSolution() != null) {
-                isCorrect = taskResultService.evaluateSubmittedQueryResult(task, query);
+                isCorrect = isCorrect && taskResultService.evaluateSubmittedQueryResult(task, query);
             } else {
                 isCorrect = false;
             }
@@ -97,7 +97,7 @@ public class SubmissionService {
             isCorrect = isCourseActive(true, course);
 
             if (task.getSolution() != null) {
-                isCorrect = taskResultService.evaluateSubmittedQueryResultWithFeedback(task, query, messages);
+                isCorrect = isCorrect && taskResultService.evaluateSubmittedQueryResultWithFeedback(task, query, messages);
             } else {
                 isCorrect = false;
             }
@@ -112,11 +112,12 @@ public class SubmissionService {
     }
 
     private Boolean isCourseActive(Boolean isCorrect, Course course) {
+        LocalDate now = LocalDate.now();
         if (course.getStarts() != null) {
-            isCorrect = isCorrect && course.getStarts().isBefore(LocalDate.now());
+            isCorrect = isCorrect && (course.getStarts().isBefore(now) || course.getStarts().equals(now));
         }
         if (course.getExpires() != null) {
-            isCorrect = isCorrect && course.getExpires().isAfter(LocalDate.now());
+            isCorrect = isCorrect && (course.getExpires().isAfter(now) || course.getExpires().equals(now));
         }
         return isCorrect;
     }
