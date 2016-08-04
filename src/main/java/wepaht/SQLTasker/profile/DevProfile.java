@@ -93,17 +93,11 @@ public class DevProfile {
         CategoryDetail details = new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX);
         detailRepository.save(details);
 
-        TmcAccount student = new TmcAccount();
-        student.setUsername("sqldummy");
-        student.setRole(ROLE_STUDENT);
-        student.setDeleted(false);
-
         TmcAccount admin = new TmcAccount();
-        admin.setUsername("mcraty");
+        admin.setUsername("sqldummy");
         admin.setRole(ROLE_ADMIN);
         admin.setDeleted(false);
 
-        userRepository.save(student);
         userRepository.save(admin);
 //        courseService.createCourse(null, "Test course", null, null, "Dis a test", Arrays.asList(category.getId()));
 
@@ -111,11 +105,12 @@ public class DevProfile {
         StringBuilder createTable = new StringBuilder();
         String opiskelija = "CREATE TABLE Opiskelija \n"
                 + "(opiskelijanumero VARCHAR(9) PRIMARY KEY, nimi VARCHAR(255), syntymävuosi INTEGER(4), pääaine VARCHAR(255));\n"
-                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999999', 'Matti', 1993, 'Tietojenkäsittelytiede');\n"
-                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999995', 'Eero', 1993, 'Tietojenkäsittelytiede');\n"
+                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999999', 'Matti', 1731, 'Tietojenkäsittelytiede');\n"
+                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999995', 'Eero', 1989, 'Tietojenkäsittelytiede');\n"
                 + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999998', 'Kasper', 1992, 'Matematiikka');\n"
-                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999997', 'Iida', 1993, 'Fysiikka');\n"
-                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999996', 'Leo', 1994, 'Tietojenkäsittelytiede');";
+                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999997', 'Iida', 1993, 'Kauppatieteet');\n"
+                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999996', 'Leo', 1994, 'Tietojenkäsittelytiede');\n"
+                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999994', 'Arto', 1981l, 'Tietojenkäsittelytiede');\n";
         String kurssisuoritus1 = "CREATE TABLE Kurssisuoritus\n"
                 + "(opiskelijanumero VARCHAR,\n"
                 + "kurssi VARCHAR,\n"
@@ -157,20 +152,146 @@ public class DevProfile {
                 "SELECT * FROM Kurssisuoritus WHERE kurssi LIKE '%Ohjelmoinnin jatkokurssi%' OR kurssi LIKE '%Ohjelmoinnin perusteet%';", category1);
 
         //Toinen kategoria
-        String kurssi = "CREATE TABLE Kurssi\n"
-                + "(kurssitunnus VARCHAR(6),\n"
+        String kurssi = "\nCREATE TABLE Kurssi\n"
+                + "(kurssitunnus VARCHAR(7),\n"
                 + "nimi VARCHAR,\n"
                 + "kuvaus VARCHAR,\n"
-                + "PRIMARY KEY(kurssitunnus));";
+                + "PRIMARY KEY(kurssitunnus));\n"
+                + "INSERT INTO Kurssi\n"
+                + "(kurssitunnus, nimi, kuvaus)\n"
+                + "VALUES ('581328', 'Tietokantojen perusteet', 'Kurssilla tutustutaan tiedon esitysmuotoihin ja tiedon hakuun suurista tietomääristä.');\n"
+                + "INSERT INTO Kurssi\n"
+                + "(kurssitunnus, nimi, kuvaus)\n"
+                + "VALUES ('581325', 'Ohjelmoinnin perusteet', 'Kurssilla perehdytään nykyaikaisen ohjelmoinnin perusideoihin sekä algoritmien laatimiseen.');\n"
+                + "INSERT INTO Kurssi\n"
+                + "(kurssitunnus, nimi, kuvaus)\n"
+                + "VALUES ('582103', 'Ohjelmoinnin jatkokurssi', 'Kurssilla perehdytään olio-ohjelmoinnin perustekniikoihin.');\n";
+
+        String kurssisuoritus2 = "\nCREATE TABLE Kurssisuoritus\n"
+                + "(opiskelija VARCHAR,\n"
+                + "kurssi VARCHAR,\n"
+                + "päivämäärä DATE,\n"
+                + "arvosana INT(1),\n"
+                + "FOREIGN KEY(opiskelija) REFERENCES Opiskelija (opiskelijanumero),\n"
+                + "FOREIGN KEY(kurssi) REFERENCES Kurssi (kurssitunnus));\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999998', '581325', '2014-10-1', 3);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999998', '582103', '2015-01-1', 5);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999999', '582103', '2015-01-1', 2);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999995', '581325', '2013-10-1', 1);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999995', '581328', '2014-01-1', 5);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999995', '582103', '2014-06-1', 5);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999997', '581328', '2016-06-1', 4);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999994', '581328', '2010-06-1', 2);\n"
+                + "INSERT INTO Kurssisuoritus (opiskelija, kurssi, päivämäärä, arvosana)\n"
+                + "VALUES ('999999999', '581325', '2016-10-1', 4);\n";
+
+        String tehtava = "\nCREATE TABLE Tehtävä\n"
+                + "(tunnus INT GENERATED BY DEFAULT AS IDENTITY (START WITH 0), nimi VARCHAR, kuvaus VARCHAR,\n"
+                + "PRIMARY KEY (tunnus));\n"
+                + "INSERT INTO Tehtävä (nimi, kuvaus)\n"
+                + "VALUES ('Hello world', 'Ohjelmointi esittäytyy');\n"
+                + "INSERT INTO Tehtävä (nimi, kuvaus)\n"
+                + "VALUES ('Game of life', 'Elämää');\n"
+                + "INSERT INTO Tehtävä (nimi, kuvaus)\n"
+                + "VALUES ('Sääasema', 'Anturit kuntoon');\n"
+                + "INSERT INTO Tehtävä (nimi, kuvaus)\n"
+                + "VALUES ('SELECT', 'Valitse kaikki');\n"
+                + "INSERT INTO Tehtävä (nimi, kuvaus)\n"
+                + "VALUES ('Eläintarha', 'Rajapintoja');\n";
+
+        String kurssitehtava = "\nCREATE TABLE Kurssitehtävä (tunnus INTEGER GENERATED BY DEFAULT AS IDENTITY (START WITH 0), tehtävä INTEGER, kurssi VARCHAR,\n"
+                + "PRIMARY KEY (tunnus),\n"
+                + "FOREIGN KEY (tehtävä) REFERENCES Tehtävä (tunnus),\n"
+                + "FOREIGN KEY (kurssi) REFERENCES Kurssi (kurssitunnus));\n"
+                + "INSERT INTO Kurssitehtävä (tehtävä, kurssi)\n"
+                + "VALUES (3, '582103');\n"
+                + "INSERT INTO Kurssitehtävä (tehtävä, kurssi)\n"
+                + "VALUES (2, '581325');\n"
+                + "INSERT INTO Kurssitehtävä (tehtävä, kurssi)\n"
+                + "VALUES (4, '581325');\n"
+                + "INSERT INTO Kurssitehtävä (tehtävä, kurssi)\n"
+                + "VALUES (0, '581328');\n"
+                + "INSERT INTO Kurssitehtävä (tehtävä, kurssi)\n"
+                + "VALUES (1, '581328');\n"
+                + "INSERT INTO Kurssitehtävä (tehtävä, kurssi)\n"
+                + "VALUES (2, '581328');\n";
+
         createTable = new StringBuilder();
-        createTable.append(opiskelija).append(kurssi);
+        createTable.append(opiskelija).append(kurssi).append(kurssisuoritus2).append(tehtava)
+                .append(kurssitehtava);
         databaseService.createDatabase("Yliopisto2", createTable.toString());
+
+        String tehtavasuoritus = "\nCREATE TABLE Tehtäväsuoritus (opiskelija VARCHAR, tehtävä INTEGER, aika Date,\n"
+                + "FOREIGN KEY (opiskelija) REFERENCES Opiskelija(opiskelijanumero),\n"
+                + "FOREIGN KEY (tehtävä) REFERENCES Kurssitehtävä(tunnus));"
+                + "INSERT INTO Tehtäväsuoritus (opiskelija, tehtävä, aika)\n"
+                + "VALUES (999999998, 3, '2009-09-05');\n"
+                + "INSERT INTO Tehtäväsuoritus (opiskelija, tehtävä, aika)\n"
+                + "VALUES (999999998, 4, '2015-09-17');\n"
+                + "INSERT INTO Tehtäväsuoritus (opiskelija, tehtävä, aika)\n"
+                + "VALUES (999999997, 0, '2015-09-01');\n"
+                + "INSERT INTO Tehtäväsuoritus (opiskelija, tehtävä, aika)\n"
+                + "VALUES (999999997, 1, '2016-02-05');\n";
+
+        createTable.append(tehtavasuoritus);
+        databaseService.createDatabase("Yliopisto3", createTable.toString());
 
         Category category2 = createCategory("Erilaiset yhteystyypit", "Käydään läpi tietokannan erilaiset yhteystyypit ja tutustutaan eri taulujen sisällön yhdistämiseen");
 
+        createTask("Kahden taulun yhdistäminen - 1", "Tee kysely, joka yhdistää taulut Opiskelija ja Kurssisuoritus opiskelijanumeron perusteella.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto2").get(0),
+                "SELECT * FROM Opiskelija o, Kurssisuoritus k\n"
+                + "WHERE o.opiskelijanumero = k.opiskelija;",
+                category2);
+        createTask("Kahden taulun yhdistäminen - 2", "Tee kysely, joka tulostaa opiskelijan nimen, kurssisuorituksen päivämäärän ja arvosanan.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto2").get(0),
+                "SELECT o.nimi, k.päivämäärä, k.arvosana FROM Opiskelija o, Kurssisuoritus k\n"
+                + "WHERE o.opiskelijanumero = k.opiskelija;",
+                category2);
+        createTask("Useamman taulun yhdistäminen - 1", "Tulosta opiskelijoiden nimet ja heidän suorittamien kurssien nimet. Nimeä opiskelijan nimi-sarake 'opiskelija':ksi ja kurssin nimi 'kurssi':ksi.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto2").get(0),
+                "SELECT DISTINCT o.nimi AS opiskelija, k.nimi AS kurssi FROM Opiskelija o, Kurssi k, Kurssisuoritus ks\n"
+                + "WHERE o.opiskelijanumero = ks.opiskelija\n"
+                + "AND ks.kurssi AND k.kurssitunnus;",
+                category2);
+
+        createTask("Useamman taulun yhdistäminen - 2", "Tulosta Arton MAHDOLLISESTI tehtyjen tehtävien nimet. Huomaa että opiskelijan varmasti tehtyjen selvittäminen ei tässä tietokantatoteutuksessa ole mahdollista. Pohdi miksi näin on.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto2").get(0),
+                "SELECT t.nimi FROM Tehtävä t, Kurssitehtävä kt, Kurssi k, Kurssisuoritus ks, Opiskelija o \n"
+                + "WHERE t.tunnus = kt.tehtävä \n"
+                + "AND kt.kurssi = k.kurssitunnus \n"
+                + "AND k.kurssitunnus = ks.kurssi \n"
+                + "AND ks.opiskelija = o.opiskelijanumero \n"
+                + "AND o.nimi = 'Arto';",
+                category2);
+
+        createTask("Tehdyt tehtävät", "Nyt tietokantaan on lisätty uusi taulu. Hae nyt opiskelijoiden tehdyt tehtävät siten että ensimmäinen sarake on opiskelijan nimi 'opiskelija' ja seuraava sarake on nimeltään 'tehtävä', jossa on tehtävän nimi",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT o.nimi AS opiskelija, t.nimi AS kurssi FROM Tehtäväsuoritus ts, Kurssitehtävä ks, Tehtävä t, Opiskelija o\n"
+                + "WHERE ts.tehtävä = ks.tunnus\n"
+                + "AND ks.tehtävä = t.tunnus\n"
+                + "AND ts.opiskelija = o.opiskelijanumero;",
+                category2);
+
+        createTask("Iidan tehtävät", "Etsi Iidan tekemien tehtävien nimet. Jollet ole jo kokeillut, kokeile käyttää INNER JOIN-kyselyä.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT t.nimi FROM Tehtävä t\n"
+                + "INNER JOIN Kurssitehtävä kt ON t.tunnus = kt.tehtävä\n"
+                + "INNER JOIN Tehtäväsuoritus ts ON kt.tunnus = ts.tehtävä\n"
+                + "INNER JOIN Opiskelija o ON ts.opiskelija = o.opiskelijanumero AND o.nimi = 'Iida';",
+                category2);
+
         course = new Course();
         course.setName("Tietokantojen perusteet - 0000");
-        course.setDescription("Käyttövalmis esimerkkikurssi. Sovellus käyttää SQL:n murretta hsql. Hsql:n syntaksiohjeet löytyvät osoitteesta: http://www.hsqldb.org/doc/guide/ch09.html");
+        course.setDescription("Käyttövalmis esimerkkikurssi. SQL-Tasker käyttää SQL:n murretta hsql. Hsql:n syntaksiohjeet löytyvät osoitteesta: http://www.hsqldb.org/doc/guide/ch09.html");
         course.setCourseCategories(Arrays.asList(category1, category2));
         course = courseRepository.save(course);
 

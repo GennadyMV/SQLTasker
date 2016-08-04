@@ -84,11 +84,15 @@ public class DatabaseService {
             Connection conn = createConnectionToDatabase(name, createTable);
             conn.close();
 
+            System.out.println(name + " table-schema is valid");
+            
             databaseRepository.save(db);
+            
+            System.out.println(name + " created");
 
             return true;
         } catch (Exception e) {
-
+            System.out.println(e.toString());
         }
         return false;
     }
@@ -173,7 +177,9 @@ public class DatabaseService {
             table.setRows(listQueryRows(resultSet, table.getColumns()));
             queryResult.put("Response", table);
         } catch (Exception e) {
-            queryResult.put(e.toString(), null);
+            table.setColumns(Arrays.asList("Error"));
+            table.setRows(Arrays.asList(Arrays.asList(e.toString())));
+            queryResult.put("Response", table);
         } finally {
             if (connection != null) {
                 try {
@@ -242,7 +248,7 @@ public class DatabaseService {
         int numberOfColumns = metaData.getColumnCount();
 
         for (int i = 1; i < numberOfColumns + 1; i++) {
-            String columnName = metaData.getColumnName(i);
+            String columnName = metaData.getColumnLabel(i);
             columns.add(columnName);
         }
 

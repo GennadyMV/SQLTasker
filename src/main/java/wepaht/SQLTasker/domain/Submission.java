@@ -3,6 +3,7 @@ package wepaht.SQLTasker.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -23,6 +24,7 @@ public class Submission extends AbstractPersistable<Long> {
     @ManyToOne
     private Course course;
     
+    @Lob
     private String query;
     private Boolean points;
     private final LocalDateTime created;
