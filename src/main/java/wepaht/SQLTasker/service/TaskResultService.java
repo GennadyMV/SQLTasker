@@ -97,8 +97,8 @@ public class TaskResultService {
      *
      * @param task task to query from
      * @param query query to evaluate
-     * @return Index 0 contains Boolean was query correct. Index 1 contains
-     * List<String> feedback-messages on which tests failed.
+     * @param messages error messages are added to this list.
+     * @return Returns submitted query's result.
      */
     public Boolean evaluateSubmittedQueryResultWithFeedback(Task task, String query, List<String> messages) {
         Boolean isCorrect;
@@ -232,6 +232,7 @@ public class TaskResultService {
                 StringBuilder sb = new StringBuilder("Query should have table ");
                 sb.append(tableName);
                 messages.add(sb.toString());
+                break;
             }
         }
 
@@ -258,7 +259,8 @@ public class TaskResultService {
         for (int j = 0; j < correctRows.get(i).size() && isCorrect == true; j++) {
             if (!correctRows.get(i).get(j).equals(queryRows.get(i).get(j))) {
                 messages.add("Query table " + tableName + " row " + (i + 1) + " is incorrect.");
-                isCorrect = false;                
+                isCorrect = false;
+                break;
             }
         }
         return isCorrect;

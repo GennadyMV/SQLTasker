@@ -104,12 +104,13 @@ public class DevProfile {
         //Ensimmäinen kategoria
         StringBuilder createTable = new StringBuilder();
         String opiskelija = "CREATE TABLE Opiskelija \n"
-                + "(opiskelijanumero VARCHAR(9) PRIMARY KEY, nimi VARCHAR(255), syntymävuosi INTEGER(4), pääaine VARCHAR(255));\n"
+                + "(opiskelijanumero VARCHAR(9) NOT NULL PRIMARY KEY, nimi VARCHAR(255) NOT NULL, syntymävuosi INTEGER(4), pääaine VARCHAR(255), UNIQUE (opiskelijanumero));\n"
                 + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999999', 'Matti', 1731, 'Tietojenkäsittelytiede');\n"
                 + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999995', 'Eero', 1989, 'Tietojenkäsittelytiede');\n"
                 + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999998', 'Kasper', 1992, 'Matematiikka');\n"
                 + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999997', 'Iida', 1993, 'Kauppatieteet');\n"
                 + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999996', 'Leo', 1994, 'Tietojenkäsittelytiede');\n"
+                + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999993', 'Vampyyri', 1403, 'Matematiikka');\n"
                 + "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('999999994', 'Arto', 1981l, 'Tietojenkäsittelytiede');\n";
         String kurssisuoritus1 = "CREATE TABLE Kurssisuoritus\n"
                 + "(opiskelijanumero VARCHAR,\n"
@@ -163,6 +164,8 @@ public class DevProfile {
                 + "INSERT INTO Kurssi\n"
                 + "(kurssitunnus, nimi, kuvaus)\n"
                 + "VALUES ('581325', 'Ohjelmoinnin perusteet', 'Kurssilla perehdytään nykyaikaisen ohjelmoinnin perusideoihin sekä algoritmien laatimiseen.');\n"
+                + "INSERT INTO Kurssi\n"
+                + "VALUES ('582102', 'Johdatus tietojenkäsittelytieteeseen', 'Opintojaksolla tutustutaan tietojenkäsittelyn keskeisiin osa-alueisiin, menetelmiin ja ammattietiikkaan.');\n"
                 + "INSERT INTO Kurssi\n"
                 + "(kurssitunnus, nimi, kuvaus)\n"
                 + "VALUES ('582103', 'Ohjelmoinnin jatkokurssi', 'Kurssilla perehdytään olio-ohjelmoinnin perustekniikoihin.');\n";
@@ -289,15 +292,100 @@ public class DevProfile {
                 + "INNER JOIN Opiskelija o ON ts.opiskelija = o.opiskelijanumero AND o.nimi = 'Iida';",
                 category2);
 
+        createTask("Virheellinen opiskelija", "Tietokantaan on lisätty ylimääräinen opiskelija nimeltään Vampyyri. Poista merkintä tietokannasta.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "DELETE FROM Opiskelija WHERE nimi = 'Vampyyri';",
+                category2);
+
+        createTask("Opiskelijan lisääminen", "Lisää itsesi tietokannan opiskelija-tauluun.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('123456789', 'Matti', 1993, 'Tietojenkäsittelytiede');",
+                category2);
+
+        Category category3 = createCategory("Ali- ja yhteenvetokyselyt", "Useamman tietokantataulun yhdistelyn jälkeen on aika rajata hakutuloksia erilaisilla ehdoilla.");
+
+        createTask("Laiskat opiskelijat", "Hae tietokannasta opiskelijoiden opiskelijanumero ja nimi, joilla ei ole yhtäkään kurssisuoritusta.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT opiskelijanumero, nimi FROM Opiskelija o\n"
+                + "LEFT JOIN Kurssisuoritus k\n"
+                + "ON o.opiskelijanumero = k.opiskelija\n"
+                + "WHERE k.kurssi IS null",
+                category3);
+
+        createTask("Kursseja", "Listaa kurssit, joilla ei ole yhtäkään tehtäviä",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT * FROM Kurssi k\n"
+                + "WHERE k.kurssitunnus\n"
+                + "NOT IN (SELECT kurssi FROM Kurssisuoritus);",
+                category3);
+
+        createTask("Tehdyt ja tekemättömät kurssit", "Kasper haluaa nähdä tekemiensä "
+                + "kurssien arvosanan, ja kurssit joita hän ei ole vielä suorittanut. "
+                + "Suorita kysely niin että ensimmäisessä sarakkeessa on kurssin tunnus, "
+                + "ja toisessa kurssisuorituksen mahdollinen arvosana.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT k.kurssitunnus, ks.arvosana FROM Kurssi k\n"
+                + "LEFT JOIN Kurssisuoritus ks ON k.kurssitunnus = ks.kurssi \n"
+                + "AND ks.opiskelija IN (SELECT o.opiskelijanumero \n"
+                + "    FROM Opiskelija o \n"
+                + "    WHERE o.nimi = 'Kasper');",
+                category3);
+
+        createTask("Yhteenvetokyselyt - 1", "Listaa opiskelijoiden pääaineet ja niitä opiskelevien lukumäärät.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT pääaine, COUNT(*) AS lukumäärä\n"
+                + "    FROM Opiskelija GROUP BY pääaine;",
+                category3);
+
+        createTask("Yhteenvetokyselyt - 2", "Laske kurssisuoritustaulussa olevat "
+                + "kurssisuoritukset kurssitunnuksen perusteella. Nimeä sarakkeet "
+                + "uudelleen nimillä \"kurssi\" ja \"suorituksia\".",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT k.nimi AS kurssi, COUNT(ks.kurssi) AS suorituksia FROM Kurssi k LEFT JOIN Kurssisuoritus ks\n"
+                + "ON k.kurssitunnus = ks.kurssi GROUP BY k.nimi",
+                category3);
+
+        createTask("Opiskelijoiden keskiarvot", "Suorita kysely joka antaa vastaukseksi opiskelijan opiskelijanumeron ja hänen kurssisuoritusten keskiarvon. Nimeä sarakkeet uudelleen nimillä \"opiskelija\" ja \"keskiarvo\"",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT o.opiskelijanumero opiskelija, AVG(ks.arvosana) keskiarvo \n"
+                + "FROM Opiskelija o\n"
+                + "LEFT JOIN Kurssisuoritus ks ON ks.opiskelija = o.opiskelijanumero\n"
+                + "GROUP BY o.opiskelijanumero;",
+                category3);
+
+        createTask("Kurssien keskiarvot", "Laske nyt kurssien keskiarvot. Anna sarakkeille nimet \"kurssi\" ja \"keskiarvo\" Järjestä vastaustaulu kurssin arvosanan mukaan laskevaan järjestykseen.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "SELECT k.nimi kurssi, AVG(ks.arvosana) keskiarvo FROM Kurssi k\n"
+                + "INNER JOIN Kurssisuoritus ks ON ks.kurssi = k.kurssitunnus\n"
+                + "GROUP BY k.nimi\n"
+                + "ORDER BY keskiarvo DESC;",
+                category3);
+
+        databaseService.createDatabase("Hiekkalaatikko", "");
+        Category category4 = createCategory("Tietokannan luominen ja muokkaaminen", "Harjoitellaan tietokannan luomista ja muokkaamista. Huomaa että SQL-tasker palauttaa tietokantaa muokatessa kyseisen tietokannan sisällön.");
+
+        createTask("Tietokantataulun luominen", "Luo uusi tietokantataulu Kirjahylly "
+                + "sarakkeilla id, nimi, kirjailija, julkaisuvuosi ja sivumäärä. "
+                + "Lisää kirjahyllyyn kaksi kirjaa.",
+                databaseRepository.findByNameAndDeletedFalse("Hiekkalaatikko").get(0),
+                "CREATE TABLE Kirjahylly(id INTEGER, nimi VARCHAR, kirjailija VARCHAR, julkaisuvuosi INTEGER(4), sivumäärä INTEGER);\n"
+                + "INSERT INTO Kirjahylly (id, nimi, kirjailija, julkaisuvuosi, sivumäärä) VALUES (0, 'Machine learning', 'Peter Flach', 2015, 342);"
+                + "INSERT INTO Kirjahylly (id, nimi, kirjailija, julkaisuvuosi, sivumäärä) VALUES (1, 'Readme', 'Matti Meikeläinen', 2016, 15);",
+                category4);
+
         course = new Course();
         course.setName("Tietokantojen perusteet - 0000");
         course.setDescription("Käyttövalmis esimerkkikurssi. SQL-Tasker käyttää SQL:n murretta hsql. Hsql:n syntaksiohjeet löytyvät osoitteesta: http://www.hsqldb.org/doc/guide/ch09.html");
-        course.setCourseCategories(Arrays.asList(category1, category2));
+        course.setCourseCategories(Arrays.asList(category1, category2, category3, category4));
         course = courseRepository.save(course);
 
         details = new CategoryDetail(course, category1, null, null);
         detailRepository.save(details);
         details = new CategoryDetail(course, category2, null, null);
+        detailRepository.save(details);
+        details = new CategoryDetail(course, category3, null, null);
+        detailRepository.save(details);
+        details = new CategoryDetail(course, category4, null, null);
         detailRepository.save(details);
     }
 
