@@ -207,6 +207,7 @@ public class TaskResultService {
             if (correctRowCount != queryRowCount) {
                 isCorrect = false;
                 rowCountError(tableName, correctRowCount, queryRowCount, messages);
+                break;
             }
         }
 

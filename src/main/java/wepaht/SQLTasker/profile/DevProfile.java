@@ -247,6 +247,7 @@ public class DevProfile {
         createTable.append(tehtavasuoritus);
         databaseService.createDatabase("Yliopisto3", createTable.toString());
 
+        //Kolmas kategoria
         Category category2 = createCategory("Erilaiset yhteystyypit", "Käydään läpi tietokannan erilaiset yhteystyypit ja tutustutaan eri taulujen sisällön yhdistämiseen");
 
         createTask("Kahden taulun yhdistäminen - 1", "Tee kysely, joka yhdistää taulut Opiskelija ja Kurssisuoritus opiskelijanumeron perusteella.",
@@ -302,6 +303,7 @@ public class DevProfile {
                 "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('123456789', 'Matti', 1993, 'Tietojenkäsittelytiede');",
                 category2);
 
+        //Neljäs kategoria
         Category category3 = createCategory("Ali- ja yhteenvetokyselyt", "Useamman tietokantataulun yhdistelyn jälkeen on aika rajata hakutuloksia erilaisilla ehdoilla.");
 
         createTask("Laiskat opiskelijat", "Hae tietokannasta opiskelijoiden opiskelijanumero ja nimi, joilla ei ole yhtäkään kurssisuoritusta.",
@@ -362,7 +364,15 @@ public class DevProfile {
                 category3);
 
         databaseService.createDatabase("Hiekkalaatikko", "");
+        //Viides kategoria
         Category category4 = createCategory("Tietokannan luominen ja muokkaaminen", "Harjoitellaan tietokannan luomista ja muokkaamista. Huomaa että SQL-tasker palauttaa tietokantaa muokatessa kyseisen tietokannan sisällön.");
+
+        createTask("Tietokantatauluun lisääminen", "Lisää itsesi opiskelijoiden listaan. Sen lisäksi merkitse itsellesi kurssisuoritus ja tehtäväsuoritus.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "INSERT INTO Opiskelija (opiskelijanumero, nimi, syntymävuosi, pääaine) VALUES ('123456789', 'Matti', 2016, 'Käpistely');\n"
+                + "INSERT INTO Kurssisuoritus (arvosana, opiskelija, kurssi) VALUES (5, '123456789', '581325');\n"
+                + "INSERT INTO Tehtäväsuoritus (opiskelija, tehtävä) VALUES ('123456789', 2);",
+                category4);
 
         createTask("Tietokantataulun luominen", "Luo uusi tietokantataulu Kirjahylly "
                 + "sarakkeilla id, nimi, kirjailija, julkaisuvuosi ja sivumäärä. "
@@ -371,6 +381,15 @@ public class DevProfile {
                 "CREATE TABLE Kirjahylly(id INTEGER, nimi VARCHAR, kirjailija VARCHAR, julkaisuvuosi INTEGER(4), sivumäärä INTEGER);\n"
                 + "INSERT INTO Kirjahylly (id, nimi, kirjailija, julkaisuvuosi, sivumäärä) VALUES (0, 'Machine learning', 'Peter Flach', 2015, 342);"
                 + "INSERT INTO Kirjahylly (id, nimi, kirjailija, julkaisuvuosi, sivumäärä) VALUES (1, 'Readme', 'Matti Meikeläinen', 2016, 15);",
+                category4);
+
+        createTask("Tietokantataulun muokkaaminen", "Tietokannan opiskelija-taulun "
+                + "nimi-sarakkeen lisäksi halutaan lisätä erikseen \"sukunimi\"-sarake. "
+                + "Asian selkeyttämiseksi nimeä sarake \"nimi\" uudelleen nimellä \"etunimi\". "
+                + "Suorita kyselyt.",
+                databaseRepository.findByNameAndDeletedFalse("Yliopisto3").get(0),
+                "ALTER TABLE Opiskelija ADD COLUMN sukunimi VARCHAR(255);\n"
+                + "ALTER TABLE Opiskelija ALTER COLUMN nimi RENAME TO etunimi;",
                 category4);
 
         course = new Course();
