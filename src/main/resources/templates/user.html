@@ -43,6 +43,12 @@ and open the template in the editor.
                                 <p class="list-group-item-text" th:text="${token.token}"></p>
                             </div>
                         </div>
+                        <div id="adminTools" th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile') and role== 'ADMIN'}">
+                            <form id="createTemplate" role="form" method="POST" th:action="@{/admin/coursetemplate}"></form>
+                            <button class="list-group-item" form="createTemplate" onclick="return confirmScript('Are you ABSOLUTELY sure you want to create new template course?')">
+                                Create course template
+                            </button>
+                        </div>
 
                         <div id="myCourses" th:include="fragments/essentials :: courses"></div>
                     </div>

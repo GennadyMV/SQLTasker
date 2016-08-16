@@ -53,7 +53,7 @@ public class CategoryService {
     }
     
     @Transactional
-    public void setCategoryTotask(Category category, Task task) {
+    public void setCategoryToTask(Category category, Task task) {
         List<Task> taskList = category.getTaskList();
         if (!taskList.contains(task)) {
             taskList.add(task);
@@ -115,14 +115,14 @@ public class CategoryService {
 
     public void setTaskToCategoriesIds(Task task, List<Long> categoryIds) {
         categoryIds.stream().forEach((id) -> {
-            setCategoryToTask(id, task);
+            CategoryService.this.setCategoryToTask(id, task);
         });
 
     }
     
     public void setTaskToCategories(Task task, List<Category> categories) {
         categories.stream().forEach((cat) -> {
-            setCategoryTotask(cat, task);
+            setCategoryToTask(cat, task);
         });
     }
 

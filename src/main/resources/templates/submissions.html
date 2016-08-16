@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>TODO supply a title</title>
+        <title>Submissions</title>
         <link th:include="fragments/bootstrap :: bootstrap"/>
     </head>
     <body>
@@ -31,8 +31,8 @@
                             <td><a th:href="@{/tasks/{id} (id = ${sub.task.id})}"><p th:text="${sub.task.name}"></p></a></td>
                             <td><a th:href="@{/categories/{id} (id = ${sub.category.id})}"><p th:text="${sub.category.name}"></p></a></td>
                             <td><a th:if="${sub.course}" th:href="@{/courses/{id} (id = ${sub.course.id})}"><p th:text="${sub.course.name}"></p></a></td>
-                            <td><pre th:text="${sub.query}"></pre></td>
-                            <td><span th:class="((${sub.points})? 'btn btn-success' : 'btn btn-danger')" th:text="((${sub.points})? 'YES': 'NO')"></span></td>
+                            <td><p th:text="${sub.query}"></p></td>
+                            <td><span th:class="((${sub.points})? 'label label-success' : 'label label-danger')" th:text="((${sub.points})? 'YES': 'NO')"></span></td>
                             <td><p th:text="${sub.created}"></p></td>
                         </tr>
                     </tbody>
