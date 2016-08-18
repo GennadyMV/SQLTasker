@@ -9,6 +9,7 @@ import java.util.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -26,8 +27,8 @@ public class Task extends AbstractPersistable<Long> implements Owned {
     @NotNull
     private String name;
     private String description;
-
-    @NotNull
+    
+    @Lob
     private String solution;
 
     @ManyToOne

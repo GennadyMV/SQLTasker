@@ -17,19 +17,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login**", "/", "/register", "/logout", "/export/**", "/static/**", "/bootstrap-3.3.6-dist/**").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and().logout().logoutSuccessUrl("/").clearAuthentication(true).permitAll();
 
         http.csrf().ignoringAntMatchers("/export/**");
-
-//        http.formLogin()
-//                .loginProcessingUrl("/login")
-//                .defaultSuccessUrl("/categories")
-//                .permitAll();
-        http.logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .permitAll()
-                .invalidateHttpSession(true);
     }
 
     

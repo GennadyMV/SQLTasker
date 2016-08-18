@@ -10,13 +10,13 @@ import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
 import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_SUBMISSIONS;
 import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACCESS;
 import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
-import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
+import static wepaht.SQLTasker.specification.SubmissionSpecification.courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 
 @Service
@@ -71,22 +71,39 @@ public class SubmissionService {
     }
 
     public Boolean createNewSubmissionAndCheckPoints(Task task, String query, Category category, Course course) {
-        Boolean isCorrect;
-
-        if (task.getSolution() != null) {
-            isCorrect = taskResultService.evaluateSubmittedQueryResult(task, query);
-        } else {
-            isCorrect = false;
-        }
+        Boolean isCorrect = false;
 
         if (course != null) {
-            isCorrect = isCourseActive(isCorrect, course);
-        } else {
-            isCorrect = false;
+            isCorrect = isCourseActive(true, course);
+
+            if (task.getSolution() != null) {
+                isCorrect = isCorrect && taskResultService.evaluateSubmittedQueryResult(task, query);
+            } else {
+                isCorrect = false;
+            }
+            if (category != null) {
+                isCorrect = isCategoryActive(isCorrect, course, category);
+            }
         }
 
-        if (category != null) {
-            isCorrect = isCategoryActive(isCorrect, course, category);
+        createNewSubmisson(task, query, isCorrect, category, course);
+
+        return isCorrect;
+    }
+    public Boolean createNewSubmissionAndCheckPointsWithFeedback(Task task, String query, Category category, Course course, List<String> messages) {
+        Boolean isCorrect = false;
+
+        if (course != null) {
+            isCorrect = isCourseActive(true, course);
+
+            if (task.getSolution() != null) {
+                isCorrect = isCorrect && taskResultService.evaluateSubmittedQueryResultWithFeedback(task, query, messages);
+            } else {
+                isCorrect = false;
+            }
+            if (category != null) {
+                isCorrect = isCategoryActive(isCorrect, course, category);
+            }
         }
 
         createNewSubmisson(task, query, isCorrect, category, course);
@@ -95,11 +112,12 @@ public class SubmissionService {
     }
 
     private Boolean isCourseActive(Boolean isCorrect, Course course) {
+        LocalDate now = LocalDate.now();
         if (course.getStarts() != null) {
-            isCorrect = isCorrect && course.getStarts().isBefore(LocalDate.now());
+            isCorrect = isCorrect && (course.getStarts().isBefore(now) || course.getStarts().equals(now));
         }
         if (course.getExpires() != null) {
-            isCorrect = isCorrect && course.getExpires().isAfter(LocalDate.now());
+            isCorrect = isCorrect && (course.getExpires().isAfter(now) || course.getExpires().equals(now));
         }
         return isCorrect;
     }
@@ -123,11 +141,11 @@ public class SubmissionService {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACCESS);
             return REDIRECT_DEFAULT;
         }
-        model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll());
+        model.addAttribute(ATTRIBUTE_SUBMISSIONS, repository.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, null, null, null, null, null)));
 
         return "submissions";
     }
-    
+
     public Long getCoursePoints(TmcAccount account, Course course) {
         return repository.countPointsByAccountAndCourse(account, course);
     }

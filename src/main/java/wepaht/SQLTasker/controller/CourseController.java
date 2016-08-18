@@ -38,9 +38,15 @@ public class CourseController {
         return courseService.courseListing(model);
     }
 
-    @RequestMapping(value = {"/{id}", "/{id}/categories"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/{id}"}, method = RequestMethod.GET)
     public String getCourse(Model model, RedirectAttributes redirAttr, @PathVariable Long id) {
         return courseService.getCourse(model, redirAttr, id);
+    }
+    
+    @RequestMapping(value = {"/{id}/categories"}, method = RequestMethod.GET)
+    public String getCourse(RedirectAttributes redirAttr, @PathVariable Long id) {
+        redirAttr.addAttribute("id", id);
+        return "redirect:/courses/{id}";
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -97,9 +103,16 @@ public class CourseController {
         return courseService.setCategoryDetails(redirectAttributes, wrapper.getCategoryDetailsList(), id);
     }
 
-    @RequestMapping(value = {"/{courseId}/categories/{categoryId}", "/{courseId}/categories/{categoryId}/tasks"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/{courseId}/categories/{categoryId}"}, method = RequestMethod.GET)
     public String getCourseCategory(Model model, RedirectAttributes redirectAttributes, @PathVariable Long courseId, @PathVariable Long categoryId) {
         return courseService.getCourseCategory(model, redirectAttributes, courseId, categoryId);
+    }
+    
+    @RequestMapping(value = {"/{courseId}/categories/{categoryId}/tasks"}, method = RequestMethod.GET)
+    public String getCourseCategory(RedirectAttributes redirectAttributes, @PathVariable Long courseId, @PathVariable Long categoryId) {
+        redirectAttributes.addAttribute("courseId", courseId);
+        redirectAttributes.addAttribute("categoryId", categoryId);
+        return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
     @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}", method = RequestMethod.GET)
@@ -208,7 +221,7 @@ public class CourseController {
     }
     
     @RequestMapping(value = "/{courseId}/categories/{categoryId}", method = RequestMethod.POST)
-    public String postReorderCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long courseId, @RequestParam Long taskId) {
-        return courseService.reorderTasks(redirAttr, courseId, taskId, taskId);
+    public String postReorderCourseCategoryTask(RedirectAttributes redirAttr, @PathVariable Long courseId, @PathVariable Long categoryId, @RequestParam Long taskId) {
+        return courseService.reorderTasks(redirAttr, courseId, categoryId, taskId);
     }
 }

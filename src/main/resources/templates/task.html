@@ -34,22 +34,22 @@ and open the template in the editor.
                 </div>
                 
                 <div class="list-group" th:if="${category}">
-                    <div id="queryForm" class="list-group-item well">
-                        <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
-                            <div class="form-group">
-                                <label for="taskQuery">Perform query to database <a th:text="${database.name}" th:href="@{/databases/{dbId} (dbId=${database.id})}"></a></label>
-                                <textarea name="query" id="taskQuery" placeholder="SHOW TABLES;" class="form-control" th:text="((${query}) ? ${query} : '')"></textarea>
-                            </div>
-
-                            <div class='form-group'>
-                                <input class="btn btn-primary form-control" type="submit"/>
-                            </div>
-                        </form>
-                    </div>
-
                     <div class="list-group-item" th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})">
                         <h4 class="list-group-item-heading">Query</h4>
                     </div>
+                    
+                    <div id="queryForm" class="list-group-item well">
+                        <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
+                            <div class="form-group">
+                                <label for="taskQuery" style="max-width: 300px; display: block; margin-left: auto; margin-right: auto;">Perform query to database <a target="_blank" th:text="${database.name}" th:href="@{/databases/{dbId} (dbId=${database.id})}"></a></label>
+                                <textarea name="query" id="taskQuery" placeholder="SHOW TABLES;" class="form-control" th:text="((${query}) ? ${query} : '')" style="height: 200px; width: 300px; display: block; margin-left: auto; margin-right: auto;"></textarea>
+                            </div>
+
+                            <div class='form-group'>
+                                <input class="btn btn-primary form-control" style="width: 300px; display: block; margin-left: auto; margin-right: auto;" type="submit"/>
+                            </div>
+                        </form>
+                    </div>                   
                 </div>
 
                 <div th:if="${category == null and task.categories != null and not #lists.isEmpty(task.categories)}" class="list-group">
@@ -63,7 +63,7 @@ and open the template in the editor.
 
             <div class="btn-toolbar" th:if="${role != 'STUDENT' or owned == true}">
                 <div class="btn-group" th:if="${course}">
-                    <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/categories/{categoryId}/task/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
+                    <form id="feedback" th:method="GET" th:action="@{/courses/{courseId}/categories/{categoryId}/tasks/{taskId}/feedback (courseId = ${course.id}, categoryId=${category.id}, taskId=${task.id})}"></form>                
                     <button th:class="((${finished})? 'btn btn-default' : 'btn btn-default disabled')" class="btn btn-default" form="feedback" th:text="'Give feedback to ' + ${task.name}"></button>
                 </div>
 

@@ -89,11 +89,11 @@ public class PointService {
     }
     
     @Transactional
-    public Map<Task,Boolean> getCategoryTasksAndIsDone(Course course, Category category) {
-        HashMap<Task, Boolean> tasks = new HashMap<>();
+    public List<List<Object>> getCategoryTasksAndIsDone(Course course, Category category) {
+        List<List<Object>> tasks = new ArrayList<>();
         
         for (Task task : category.getTaskList()) {
-            tasks.put(task, hasUserDoneTaskCorrectly(accountService.getAuthenticatedUser(), course, category, task));
+            tasks.add(Arrays.asList(task, hasUserDoneTaskCorrectly(accountService.getAuthenticatedUser(), course, category, task)));            
         }
         
         return tasks;

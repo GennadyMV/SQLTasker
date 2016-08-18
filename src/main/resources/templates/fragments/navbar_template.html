@@ -48,6 +48,8 @@ and open the template in the editor.
             <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}">
                 <input type="submit" value="Logout"/>
             </form>
+            
+            
 
             <ol class="breadcrumb" th:with="splitted = ${#strings.arraySplit(#httpServletRequest.requestURI, '/')}">                
                 <script type="text/javascript" th:inline="javascript">
