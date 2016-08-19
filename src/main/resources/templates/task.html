@@ -29,7 +29,7 @@ and open the template in the editor.
                 
                 <div class="panel-body">
                     <p th:if="${task.description}" th:text="${task.description}"></p>
-                    <p th:if="${role != 'STUDENT'}" th:text="${'Solution: ' + task.solution}"></p>
+                    <p th:if="${role != 'STUDENT' or expired == true}" >Solution: <pre th:text="${task.solution}"></pre></p>
                     <span th:each="tag : ${task.tags}" class="label label-primary" th:text="${tag.name}"></span>
                 </div>
                 

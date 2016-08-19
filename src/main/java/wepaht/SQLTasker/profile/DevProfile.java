@@ -68,35 +68,6 @@ public class DevProfile {
     @PostConstruct
     public void init() {
 
-        databaseService.createDatabase("persons", "CREATE TABLE Persons"
-                + "(PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255));"
-                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
-                + "VALUES (2, 'Raty', 'Matti', 'Rautalammintie', 'Helsinki');"
-                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
-                + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
-                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
-                + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
-
-        Category category = new Category();
-        category.setName("first week");
-        category.setDescription("easybeasy");
-        category = categoryRepository.save(category);
-
-        for (int i = 0; i < 10; i++) {
-            Task task = randomTask();
-            taskRepository.save(task);
-            categoryService.setCategoryToTask(category.getId(), task);
-        }
-
-        Course course = new Course();
-        course.setName("Test course");
-        course.setDescription("Dis a test");
-        course.setCourseCategories(Arrays.asList(category));
-        course = courseRepository.save(course);
-
-        CategoryDetail details = new CategoryDetail(course, category, LocalDate.MIN, LocalDate.MAX);
-        detailRepository.save(details);
-
         TmcAccount admin = new TmcAccount();
         admin.setUsername("sqldummy");
         admin.setRole(ROLE_ADMIN);
@@ -105,7 +76,7 @@ public class DevProfile {
         userRepository.save(admin);
 //        courseService.createCourse(null, "Test course", null, null, "Dis a test", Arrays.asList(category.getId()));
 
-//        sampleService.initCourse();
+        sampleService.initCourse();
     }
 
     private Category createCategory(String name, String desc) {

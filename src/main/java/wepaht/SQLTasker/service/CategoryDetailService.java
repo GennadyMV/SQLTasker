@@ -94,8 +94,7 @@ public class CategoryDetailService {
     List<CategoryDetail> getActiveCategoryDetailsBycourse(Course course) {
         LocalDate now = LocalDate.now();
         List<CategoryDetail> activeDetails = categoryDetailsRepository.findByCourseOrderByStartsAscExpiresDesc(course).stream()
-                .filter(detail -> (detail.getStarts() == null || detail.getStarts().isBefore(now) || detail.getStarts().equals(now))
-                        && (detail.getExpires() == null || detail.getExpires().isAfter(now) || detail.getExpires().equals(now)))
+                .filter(detail -> (detail.getStarts() == null || detail.getStarts().isBefore(now) || detail.getStarts().equals(now)))
                 .collect(Collectors.toList());
 
         return activeDetails;
@@ -107,11 +106,19 @@ public class CategoryDetailService {
         LocalDate now = LocalDate.now();
         Boolean isActive = course.getDetails().stream()
                 .filter(detail -> detail.getCategory().equals(category))
-                .allMatch(detail -> (detail.getStarts() == null || detail.getStarts().isBefore(now) || detail.getStarts().equals(now))
-                        && (detail.getExpires() == null || detail.getExpires().isAfter(now) || detail.getExpires().equals(now)));
+                .allMatch(detail -> (detail.getStarts() == null || detail.getStarts().isBefore(now) || detail.getStarts().equals(now)));
         // For some reason JPA is not able to compare LocalDates
 //        CategoryDetail detail = categoryDetailsRepository.findActiveDetailByCourseAndCategory(LocalDate.now(), course, category);
 //        Boolean isActive = detail != null;          
         return isActive;
+    }
+
+    Boolean isCategoryExpired(Course course, Category category) {
+        LocalDate now = LocalDate.now();
+        Boolean isExpired = course.getDetails().stream()
+                .filter(detail -> detail.getCategory().equals(category))
+                .allMatch(detail -> (detail.getExpires().isBefore(now)));
+        
+        return isExpired;
     }
 }
