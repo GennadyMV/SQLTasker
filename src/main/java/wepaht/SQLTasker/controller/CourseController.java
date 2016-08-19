@@ -117,6 +117,7 @@ public class CourseController {
         return "redirect:/courses/{courseId}/categories/{categoryId}";
     }
 
+    @Transactional
     @RequestMapping(value = "/{courseId}/categories/{categoryId}/tasks/{taskId}", method = RequestMethod.GET)
     public String getCourseCategoryTask(
             Model model,

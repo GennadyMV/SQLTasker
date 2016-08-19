@@ -410,6 +410,7 @@ public class CourseService {
         return "redirect:/courses/{id}";
     }
 
+    @Transactional
     public String getCourseCategoryTask(Model model, RedirectAttributes redirectAttr, Long courseId, Long categoryId, Long taskId) {
         Course course = repository.findOne(courseId);
         Category category = categoryService.getCategoryById(categoryId);
