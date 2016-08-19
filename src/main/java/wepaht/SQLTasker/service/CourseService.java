@@ -382,6 +382,7 @@ public class CourseService {
         return redirectAddress;
     }
 
+    @Transactional
     public String getCourseCategory(Model model, RedirectAttributes redirectAttributes, Long courseId, Long categoryId) {
         Course course = repository.findOne(courseId);
         Category category = categoryService.getCategoryById(categoryId);
