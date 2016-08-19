@@ -2,23 +2,19 @@ package wepaht.SQLTasker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Task;
-import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.repository.CategoryRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.service.AccountService;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
-import org.aspectj.apache.bcel.classfile.Constant;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import wepaht.SQLTasker.constant.ConstantString;
