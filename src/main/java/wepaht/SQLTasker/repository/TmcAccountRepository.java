@@ -19,4 +19,6 @@ public interface TmcAccountRepository extends JpaRepository<TmcAccount, Long>{
     TmcAccount findByUsernameAndDeletedFalse(String username);
     
     List<TmcAccount> findByAccountRoleAndDeletedFalse(String accountRole);
+
+    public List<TmcAccount> findAllByUsernameContainingAndDeletedFalse(String username);
 }

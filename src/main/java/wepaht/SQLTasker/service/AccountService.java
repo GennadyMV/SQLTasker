@@ -302,4 +302,8 @@ public class AccountService {
 
         return "redirect:/users/{id}";
     }
+
+    List<TmcAccount> getAllAccountsByUsername(String username) {
+        return tmcRepo.findAllByUsernameContainingAndDeletedFalse(username);
+    }
 }

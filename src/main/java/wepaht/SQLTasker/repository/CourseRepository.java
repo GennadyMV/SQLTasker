@@ -32,4 +32,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findByStartsBeforeAndExpiresAfter(@Param("now") LocalDate now);
 
     public List<Course> findByStudentsAndDeletedFalse(TmcAccount student);
+
+    public List<Course> findAllByNameContainingAndDeletedFalse(String course);
 }

@@ -33,4 +33,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             + "JOIN c.taskList task "
             + "WHERE c=:cat")
     Long getTaskCountByCategory(@Param("cat") Category category);
+
+    public List<Category> findAllByNameContainingAndDeletedFalse(String name);
 }

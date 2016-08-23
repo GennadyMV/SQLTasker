@@ -54,6 +54,17 @@ public class Submission extends AbstractPersistable<Long> {
         this.points = points;
         this.created = LocalDateTime.now();
     }
+    
+    public Submission(TmcAccount account, Task task, Category category, Course course, String query, Boolean points, LocalDateTime created) {
+        System.out.println("Setting creation date manually to a submission");
+        this.account = account;
+        this.task = task;
+        this.category = category;
+        this.course = course;
+        this.query = query;
+        this.points = points;
+        this.created = created;
+    }
 
     public TmcAccount getAccount() {
         return account;

@@ -1,6 +1,7 @@
-package wepaht.SQLTasker.domain;
+package wrapper;
 
 import java.util.ArrayList;
+import wepaht.SQLTasker.domain.CategoryDetail;
 
 public class CategoryDetailsWrapper {
     

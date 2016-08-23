@@ -16,7 +16,7 @@ import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_SUCCESSFUL_ACTION
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
-import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
+import wrapper.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
@@ -715,5 +715,9 @@ public class CourseService {
 
     private Boolean isCategoryExpired(Course course, Category category) {
         return categoryDetailsService.isCategoryExpired(course, category);
+    }
+
+    List<Course> getAllCoursesByName(String course) {
+        return repository.findAllByNameContainingAndDeletedFalse(course);
     }
 }

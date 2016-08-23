@@ -436,4 +436,8 @@ public class CategoryService {
         return categoryRepository.getTaskCountByCategory(category).intValue();
     }
 
+    List<Category> getAllCategoriesByName(String name) {
+        return categoryRepository.findAllByNameContainingAndDeletedFalse(name);
+    }
+
 }

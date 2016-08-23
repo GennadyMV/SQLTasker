@@ -117,7 +117,7 @@ public class CategoryDetailService {
         LocalDate now = LocalDate.now();
         Boolean isExpired = course.getDetails().stream()
                 .filter(detail -> detail.getCategory().equals(category))
-                .allMatch(detail -> (detail.getExpires().isBefore(now)));
+                .allMatch(detail -> (detail.getExpires() != null && detail.getExpires().isBefore(now)));
         
         return isExpired;
     }

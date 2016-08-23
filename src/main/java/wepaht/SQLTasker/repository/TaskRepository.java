@@ -30,4 +30,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Long> findAllTaskIds();
 
     public List<Task> findByOwnerAndDeletedFalse(TmcAccount authenticatedUser);
+
+    public List<Task> findAllByNameContainingAndDeletedFalse(String name);
 }
