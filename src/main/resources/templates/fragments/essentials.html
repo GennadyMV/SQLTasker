@@ -58,16 +58,15 @@ and open the template in the editor.
                 </div>
             </a>
         </div>
-        
+
         <div th:fragment="pager (next, previous, page, pageAmount)">
             <ul class="pager">
-                    <li th:if="${previous}" class="previous"><a th:href="@{ {previous} (previous = ${previous})}"><span aria-hidden="true">&larr;</span> Previous</a></li>
-                    <li th:if="${previous == null}" class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Previous</a></li>
-                    <li th:if="${page != null and pageAmount != null}" th:text="${(page + 1) + ' of ' + (pageAmount + 1)}"></li>
-                    <li th:if="${next}" class="next"><a th:href="@{ {next} (next = ${next})}">Next <span aria-hidden="true">&rarr;</span></a></li>
-                    <li th:if="${next == null}" class="next disabled"><a href="#">Next <span aria-hidden="true">&rarr;</span></a></li>
-                </ul>
+                <li th:if="${previous}" class="previous"><a th:href="@{ {previous} (previous = ${previous})}"><span aria-hidden="true">&larr;</span> Previous</a></li>
+                <li th:if="${previous == null}" class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Previous</a></li>
+                <li th:if="${page != null and pageAmount != null}" th:text="${(page + 1) + ' of ' + (pageAmount + 1)}"></li>
+                <li th:if="${next}" class="next"><a th:href="@{ {next} (next = ${next})}">Next <span aria-hidden="true">&rarr;</span></a></li>
+                <li th:if="${next == null}" class="next disabled"><a href="#">Next <span aria-hidden="true">&rarr;</span></a></li>
+            </ul>
         </div>
-
     </body>
 </html>

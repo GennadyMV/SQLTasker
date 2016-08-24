@@ -1,10 +1,16 @@
 package wepaht.SQLTasker.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import static org.springframework.data.jpa.domain.Specifications.where;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,6 +24,9 @@ import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_UNAUTHORIZED_ACCE
 import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
 import static wepaht.SQLTasker.constant.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.TaskFeedbackRepository;
+import wepaht.SQLTasker.specification.TaskFeedbackSpecification;
+import static wepaht.SQLTasker.specification.TaskFeedbackSpecification.searchFeedback;
+import wrapper.TaskFeedbackSearchWrapper;
 
 @Service
 public class TaskFeedbackService {
@@ -40,11 +49,14 @@ public class TaskFeedbackService {
     @Autowired
     PointService pointService;
 
+    @Autowired
+    PageableService pageService;
+
     public String getFeedbackForm(Model model, Long courseId, Long categoryId, Long taskId) {
         Course course = courseService.getCourseById(courseId);
         Category category = categoryService.getCategoryById(categoryId);
         Task task = taskService.getTaskById(taskId);
-        
+
         TaskFeedback feedback = new TaskFeedback();
         feedback.setTask(task);
         feedback.setFeedback(new HashMap<>());
@@ -99,8 +111,43 @@ public class TaskFeedbackService {
             return REDIRECT_DEFAULT;
         }
         model.addAttribute("feedback", listAllFeedback());
-        
+
         return "feedbackList";
+    }
+
+    public Object getNextPage(Long page, Page<TaskFeedback> pages) {
+        return pageService.getNextPage(page, pages);
+    }
+
+    public Object getPreviousPage(Long page, Page<TaskFeedback> pages) {
+        return pageService.getPreviousPage(page);
+    }
+
+    public TaskFeedbackSearchWrapper getWrapper(TaskFeedbackSearchWrapper wrapper) {
+        if (wrapper != null) {
+            return wrapper;
+        }
+        return new TaskFeedbackSearchWrapper();
+    }
+
+    public Page<TaskFeedback> listAllFeedbackPaged(Long page, TaskFeedbackSearchWrapper wrapper) {
+        List<Task> tasks = null;
+        LocalDateTime after = null;
+        LocalDateTime before = null;
+        
+        if (wrapper.getTask() != null && !wrapper.getTask().isEmpty()) {
+            
+            tasks = taskService.getAllTasksContainingName(wrapper.getTask());
+        }
+        if (wrapper.getBefore() != null) {
+            before = wrapper.getBefore().atStartOfDay();
+        }
+        if(wrapper.getAfter() != null) {
+            before = wrapper.getAfter().atStartOfDay();
+        } 
+
+        Pageable pageable = new PageRequest(page.intValue(), 25, Sort.Direction.DESC, "created");
+        return repository.findAll(where(searchFeedback(tasks, after, before)), pageable);
     }
 
 }

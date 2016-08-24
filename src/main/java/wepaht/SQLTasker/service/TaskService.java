@@ -377,7 +377,7 @@ public class TaskService {
         }
     }
 
-    List<Task> getAllTasksByName(String name) {
+    List<Task> getAllTasksContainingName(String name) {
         return taskRepository.findAllByNameContainingAndDeletedFalse(name);
     }
 }

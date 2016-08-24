@@ -2,11 +2,12 @@ package wepaht.SQLTasker.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import wepaht.SQLTasker.domain.TaskFeedback;
 
-public interface TaskFeedbackRepository extends JpaRepository<TaskFeedback, Long> {
+public interface TaskFeedbackRepository extends JpaRepository<TaskFeedback, Long>, JpaSpecificationExecutor<TaskFeedback> {
     
     
     @Override

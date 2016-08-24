@@ -19,24 +19,57 @@ and open the template in the editor.
             </div>
 
             <div class="panel panel-primary" th:if="${feedback}">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th><b>Task</b></th>
-                            <th><b>Feedback attributes</b></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="fb : ${feedback}">
-                            <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
-                            <td th:each="stuff : ${fb.feedback}"><p th:inline="text">[[${stuff.key}]]: [[${stuff.value}]]</p></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>    
+                <div class="panel-heading">
+                    <button class="btn btn-primary" id="toggleHideForm"><b>Search feedback</b></button>    
+
+                    <form id="searchForm" role="form" th:method="GET" th:action="@{/feedback/{page} (page = ${currentPage})}" th:object="${wrapper}" class="well form-inline" style="display: block; display: none; margin-left: auto; margin-right: auto;">
+                        <div class="form-group" style="color: #000000">
+                            <label for="byTask">Task</label>
+                            <input id="byTask" type="text" th:field="*{task}" class="form-control"/>
+                        </div>
+
+                        <div class="form-group" style="color: #000000">
+                            <label for="byAfter">After</label>
+                            <input id="byAfter" type="date" th:field="*{after}" class="form-control"/>
+                        </div>
+
+                        <div class="form-group" style="color: #000000">
+                            <label for="byBefore">Before</label>
+                            <input id="byBefore" type="date" th:field="*{before}"/>
+                        </div>
+
+                        <div class="form-group inner-addon">
+                            <i class="glyphicon glyphicon-search" style="color: #000000"></i>
+                            <input value="  " type="submit" class="form-control" />
+                        </div>
+                </form>
+            </div>
+
+            <div class="panel-body" th:include="fragments/essentials :: pager (next = ${((nextPage != null)? '/feedback/' + nextPage : null)}, previous = ${((prevPage != null)? '/feedback/' + prevPage : null)}, page = ${currentPage}, pageAmount = ${pageCount})"></div>
+
+            <table class="panel-body table table-striped">
+                <thead>
+                    <tr>
+                        <th><b>Task</b></th>
+                        <th><b>Created</b></th>
+                        <th><b>Feedback attributes</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="fb : ${feedback}">
+                        <td><p th:if="${fb.task}" th:text="${fb.task.name}"></p></td>
+                        <td><p th:text="${fb.created}"></p></td>
+                        <td th:each="stuff : ${fb.feedback}"><p th:inline="text">[[${stuff.key}]]: [[${stuff.value}]]</p></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>    
         </div>
 
 
-        <div id="fragmentsBottom" th:include="fragments/footer_template :: footer"></div>
+        <div id="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/scripts :: togglehide (elementId = 'searchForm', buttonId = 'toggleHideForm')"></div>
+        </div>
     </body>
 </html>

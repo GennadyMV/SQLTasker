@@ -1,5 +1,6 @@
 package wepaht.SQLTasker.domain;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -16,10 +17,17 @@ public class TaskFeedback extends AbstractPersistable<Long>{
     @ElementCollection
     private Map<String, String> feedback;
     
+    private final LocalDateTime created;
+    
     private boolean deleted;
     
-    public TaskFeedback() {    
+    public TaskFeedback() {   
+        created = LocalDateTime.now();
         deleted = false;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
     }
 
     public Task getTask() {
