@@ -19,7 +19,9 @@ and open the template in the editor.
             </div>
 
             <div class="panel panel-primary" th:if="${feedback}">
-                <table class="table table-striped">
+                <div class="panel-body" th:include="fragments/essentials :: pager (next = ${((nextPage != null)? '/feedback/' + nextPage : null)}, previous = ${((prevPage != null)? '/feedback/' + prevPage : null)}, page = ${currentPage}, pageAmount = ${pageCount})"></div>
+                
+                <table class="panel-body table table-striped">
                     <thead>
                         <tr>
                             <th><b>Task</b></th>

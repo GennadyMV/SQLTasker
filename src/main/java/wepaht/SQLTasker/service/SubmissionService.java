@@ -50,6 +50,9 @@ public class SubmissionService {
 
     @Autowired
     private CourseService courseService;
+    
+    @Autowired
+    private PageableService pageService;
 
     public void createNewSubmisson(Task task, String query, Boolean correct, Category category, Course course) {
         repository.save(new Submission(accountService.getAuthenticatedUser(), task, category, course, query, correct));
@@ -248,17 +251,11 @@ public class SubmissionService {
     }
 
     public Integer getPreviousPage(Long page) {
-        if (page > 0) {
-            return page.intValue() - 1;
-        }
-        return null;
+        return pageService.getPreviousPage(page);
     }
 
     public Integer getNextPage(Long page, Page<Submission> pages) {
-        if (page.intValue() < pages.getTotalPages()) {
-            return page.intValue() + 1;
-        }
-        return null;
+        return pageService.getNextPage(page, pages);
     }
 
     public Page<Submission> getSubmissions(SubmissionSearchWrapper wrapper, Long page) {

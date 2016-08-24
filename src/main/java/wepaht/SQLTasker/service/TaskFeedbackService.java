@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -39,6 +43,9 @@ public class TaskFeedbackService {
 
     @Autowired
     PointService pointService;
+    
+    @Autowired
+    PageableService pageService;
 
     public String getFeedbackForm(Model model, Long courseId, Long categoryId, Long taskId) {
         Course course = courseService.getCourseById(courseId);
@@ -101,6 +108,19 @@ public class TaskFeedbackService {
         model.addAttribute("feedback", listAllFeedback());
         
         return "feedbackList";
+    }
+
+    public Page<TaskFeedback> listAllFeedbackPaged(Long page) {
+        Pageable pageable = new PageRequest(page.intValue(), 3, Sort.Direction.DESC, "created");
+        return repository.findAll(pageable);
+    }
+
+    public Object getNextPage(Long page, Page<TaskFeedback> pages) {
+        return pageService.getNextPage(page, pages);
+    }
+
+    public Object getPreviousPage(Long page, Page<TaskFeedback> pages) {
+        return pageService.getPreviousPage(page);
     }
 
 }
