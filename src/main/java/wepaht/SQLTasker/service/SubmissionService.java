@@ -4,6 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import static org.springframework.data.jpa.domain.Specifications.where;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,13 +41,13 @@ public class SubmissionService {
 
     @Autowired
     private TaskResultService taskResultService;
-    
+
     @Autowired
     private TaskService taskService;
-    
+
     @Autowired
     private CategoryService catService;
-    
+
     @Autowired
     private CourseService courseService;
 
@@ -102,6 +107,7 @@ public class SubmissionService {
 
         return isCorrect;
     }
+
     public Boolean createNewSubmissionAndCheckPointsWithFeedback(Task task, String query, Category category, Course course, List<String> messages) {
         Boolean isCorrect = false;
 
@@ -167,9 +173,8 @@ public class SubmissionService {
         List<Task> tasks = null;
         List<Category> categories = null;
         List<Course> courses = null;
-        
-        
-        if(user != null && !user.isEmpty()) {
+
+        if (user != null && !user.isEmpty()) {
             account = accountService.getAllAccountsByUsername(user);
         }
         if (task != null && !task.isEmpty()) {
@@ -181,7 +186,38 @@ public class SubmissionService {
         if (course != null && !course.isEmpty()) {
             courses = courseService.getAllCoursesByName(course);
         }
-        
+
+        LocalDateTime afterTime = null;
+        if (after != null) {
+            afterTime = after.atStartOfDay();
+        }
+        LocalDateTime beforeTime = null;
+        if (before != null) {
+            beforeTime = before.atStartOfDay();
+        }
+
+        return repository.findAll(searchSubmissions(courses, categories, tasks, account, awarded, afterTime, beforeTime));
+    }
+
+    public Page<Submission> getSubmissionsPaged(String user, String task, String category, String course, LocalDate after, LocalDate before, Boolean awarded, Long page) {
+        List<TmcAccount> account = null;
+        List<Task> tasks = null;
+        List<Category> categories = null;
+        List<Course> courses = null;
+
+        if (user != null && !user.isEmpty()) {
+            account = accountService.getAllAccountsByUsername(user);
+        }
+        if (task != null && !task.isEmpty()) {
+            tasks = taskService.getAllTasksByName(task);
+        }
+        if (category != null && !category.isEmpty()) {
+            categories = catService.getAllCategoriesByName(category);
+        }
+        if (course != null && !course.isEmpty()) {
+            courses = courseService.getAllCoursesByName(course);
+        }
+
         LocalDateTime afterTime = null;
         if (after != null) {
             afterTime = after.atStartOfDay();
@@ -191,10 +227,12 @@ public class SubmissionService {
             beforeTime = before.atStartOfDay();
         }
         
-        return repository.findAll(searchSubmissions(courses, categories, tasks, account, awarded, afterTime, beforeTime));
+        Pageable pageable = new PageRequest(page.intValue(), 25, Sort.Direction.DESC, "created");
+
+        return repository.findAll(where(searchSubmissions(courses, categories, tasks, account, awarded, afterTime, beforeTime)), pageable);
     }
-    
-    public List<Submission> getSubmissions (SubmissionSearchWrapper wrapper) {
+
+    public List<Submission> getSubmissions(SubmissionSearchWrapper wrapper) {
         Boolean awarded = null;
         if (wrapper.getAwarded() != null) {
             awarded = wrapper.awardedToBoolean();
@@ -207,5 +245,29 @@ public class SubmissionService {
             return new SubmissionSearchWrapper();
         }
         return searchWrapper;
+    }
+
+    public Integer getPreviousPage(Long page) {
+        if (page > 0) {
+            return page.intValue() - 1;
+        }
+        return null;
+    }
+
+    public Integer getNextPage(Long page, Page<Submission> pages) {
+        if (page.intValue() < pages.getTotalPages()) {
+            return page.intValue() + 1;
+        }
+        return null;
+    }
+
+    public Page<Submission> getSubmissions(SubmissionSearchWrapper wrapper, Long page) {
+
+        Boolean awarded = null;
+        if (wrapper.getAwarded() != null) {
+            awarded = wrapper.awardedToBoolean();
+        }
+        
+        return getSubmissionsPaged(wrapper.getUser(), wrapper.getTask(), wrapper.getCategory(), wrapper.getCourse(), wrapper.getAfter(), wrapper.getBefore(), awarded, page);
     }
 }

@@ -57,8 +57,10 @@
                         </div>
                     </form>
                 </div>
+                
+                <div class="panel-body" th:include="fragments/essentials :: pager (next = ${((nextPage != null)? '/submissions/' + nextPage : null)}, previous = ${((prevPage != null)? '/submissions/' + prevPage : null)}, page = ${currentPage}, pageAmount = ${pageCount})"></div>
 
-                <table class="table table-bordered table-striped">
+                <table class="panel-body table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>User</th>
