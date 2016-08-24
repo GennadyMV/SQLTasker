@@ -1,6 +1,7 @@
 package repository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
@@ -27,7 +28,7 @@ import wepaht.SQLTasker.repository.DatabaseRepository;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.repository.TaskRepository;
 import wepaht.SQLTasker.repository.TmcAccountRepository;
-import static wepaht.SQLTasker.specification.SubmissionSpecification.courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven;
+import static wepaht.SQLTasker.specification.SubmissionSpecification.searchSubmissions;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = Application.class)
@@ -123,12 +124,12 @@ public class SubmissionRepositoryTest {
     @Test
     @Transactional
     public void canFindByCourseTest() {
-        int sizeBefore = subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(courseTest, null, null, null, null, null, null)).size();
+        int sizeBefore = subRepo.findAll(searchSubmissions(Arrays.asList(courseTest), null, null, null, null, null, null)).size();
         
         subRepo.save(new Submission(userTest, taskTest, catTest, courseTest, queryTest, Boolean.TRUE));
         subRepo.save(new Submission(userTest, taskTest, catTest, courseTest2, queryTest, Boolean.TRUE));
         
-        List<Submission> subs = subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(courseTest, null, null, null, null, null, null));        
+        List<Submission> subs = subRepo.findAll(searchSubmissions(Arrays.asList(courseTest), null, null, null, null, null, null));        
 
         assertEquals(sizeBefore + 1, subs.size());
     }
@@ -136,30 +137,44 @@ public class SubmissionRepositoryTest {
     @Test
     @Transactional
     public void canFindByCategoryTest() {
-        int sizeBefore = subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, catTest, null, null, null, null, null)).size();
+        int sizeBefore = subRepo.findAll(searchSubmissions(null, Arrays.asList(catTest), null, null, null, null, null)).size();
         subRepo.save(new Submission(userTest, taskTest, catTest, courseTest, queryTest, Boolean.TRUE));
         subRepo.save(new Submission(userTest, taskTest, catTest2, courseTest, queryTest, Boolean.TRUE));
         
-        assertEquals(sizeBefore + 1, subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, catTest, null, null, null, null, null)).size());
+        assertEquals(sizeBefore + 1, subRepo.findAll(searchSubmissions(null, Arrays.asList(catTest), null, null, null, null, null)).size());
     }
     
     @Test
     @Transactional
     public void canFindByTaskTest() {
-        int sizeBefore = subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, taskTest, null, null, null, null)).size();
+        int sizeBefore = subRepo.findAll(searchSubmissions(null, null, Arrays.asList(taskTest), null, null, null, null)).size();
         subRepo.save(new Submission(userTest, taskTest, catTest, courseTest, queryTest, Boolean.TRUE));
         subRepo.save(new Submission(userTest, taskTest2, catTest, courseTest, queryTest, Boolean.TRUE));
         
-        assertEquals(sizeBefore + 1, subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, taskTest, null, null, null, null)).size());
+        assertEquals(sizeBefore + 1, subRepo.findAll(searchSubmissions(null, null, Arrays.asList(taskTest), null, null, null, null)).size());
     }
 
     @Test
     @Transactional
     public void canFindByUserTest() {
-        int sizeBefore = subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, null, userTest, null, null, null)).size();
+        int sizeBefore = subRepo.findAll(searchSubmissions(null, null, null, Arrays.asList(userTest), null, null, null)).size();
         subRepo.save(new Submission(userTest, taskTest, catTest, courseTest, queryTest, Boolean.TRUE));
         subRepo.save(new Submission(userTest2, taskTest, catTest, courseTest, queryTest, Boolean.TRUE));
 
-        assertEquals(sizeBefore + 1, subRepo.findAll(courseAndCategoryAndTaskAndAccountAndCorrectEqualsIfGiven(null, null, null, userTest, null, null, null)).size());
+        assertEquals(sizeBefore + 1, subRepo.findAll(searchSubmissions(null, null, null, Arrays.asList(userTest), null, null, null)).size());
+    }
+    
+    @Test
+    @Transactional
+    public void canFindByBeforeTest() {
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+        long sizeBefore = subRepo.count(searchSubmissions(null, null, null, null, null, null, LocalDateTime.now()));
+        
+        subRepo.save(new Submission(userTest, taskTest, catTest, courseTest, queryTest, Boolean.TRUE, yesterday));
+        subRepo.save(new Submission(userTest, taskTest, catTest, courseTest, queryTest, Boolean.TRUE, tomorrow));
+        
+        
+        assertEquals(1, Long.compare(subRepo.count(searchSubmissions(null, null, null, null, null, null, LocalDateTime.now())), sizeBefore));
     }
 }

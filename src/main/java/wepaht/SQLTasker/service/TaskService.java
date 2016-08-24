@@ -376,4 +376,8 @@ public class TaskService {
             redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION + ": task " + task.getName() + " deleted");
         }
     }
+
+    List<Task> getAllTasksByName(String name) {
+        return taskRepository.findAllByNameContainingAndDeletedFalse(name);
+    }
 }

@@ -16,7 +16,7 @@ import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_SUCCESSFUL_ACTION
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
-import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
+import wrapper.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
@@ -436,6 +436,7 @@ public class CourseService {
             model.addAttribute("next", categoryService.getNextTask(category, task));
             model.addAttribute("prev", categoryService.getPreviousTask(category, task));
             model.addAttribute("finished", pointService.hasUserDoneTaskCorrectly(accountService.getAuthenticatedUser(), course, category, task));
+            model.addAttribute("expired", isCategoryExpired(course, category));
         }
 
         return "task";
@@ -467,7 +468,9 @@ public class CourseService {
                 redirectAttr.addFlashAttribute("messages", messagesAndQueryResult.get(0));
             }
             if ((Boolean) messagesAndQueryResult.get(2)) {
-                if (redirectAttr != null) redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
+                if (redirectAttr != null) {
+                    redirectAttr.addFlashAttribute("tables", messagesAndQueryResult.get(1));
+                }
                 redirectAddress = redirectAddress + "/feedback";
             }
         } else {
@@ -687,7 +690,7 @@ public class CourseService {
             }
         }
     }
-    
+
     @Transactional
     public String reorderTasks(RedirectAttributes redirectAttributes,
             Long courseId,
@@ -696,18 +699,25 @@ public class CourseService {
         Account user = accountService.getAuthenticatedUser();
         Category category = categoryService.getCategoryById(categoryId);
         Task task = taskService.getTaskById(taskId);
-        
-        
+
         if (user.getRole().equals(ROLE_STUDENT) && (category.getOwner() == null || !category.getOwner().equals(user))) {
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_UNAUTHORIZED_ACTION);
         } else {
             categoryService.setCategoryTaskFurther(category, task);
             redirectAttributes.addFlashAttribute(ATTRIBUTE_MESSAGES, MESSAGE_SUCCESSFUL_ACTION);
         }
-        
+
         redirectAttributes.addAttribute("categoryId", categoryId);
         redirectAttributes.addAttribute("courseId", courseId);
 
         return "redirect:/courses/{courseId}/categories/{categoryId}";
+    }
+
+    private Boolean isCategoryExpired(Course course, Category category) {
+        return categoryDetailsService.isCategoryExpired(course, category);
+    }
+
+    List<Course> getAllCoursesByName(String course) {
+        return repository.findAllByNameContainingAndDeletedFalse(course);
     }
 }

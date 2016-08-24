@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wepaht.SQLTasker.domain.CategoryDetailsWrapper;
+import wrapper.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TaskFeedback;
 import wepaht.SQLTasker.service.CourseService;
