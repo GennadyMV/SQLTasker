@@ -18,7 +18,7 @@
                         <button class="list-group-item active" id="toggleHideForm"><b>Search submissions</b></button>    
                     </label>
 
-                    <form id="searchForm" role="form" th:method="GET" th:action="@{/submissions}" th:object="${wrapper}" class="well form-inline" style="display: block; display: none; margin-left: auto; margin-right: auto;">
+                    <form id="searchForm" role="form" th:method="GET" th:action="@{/submissions/{page} (page = ${currentPage})}" th:object="${wrapper}" class="well form-inline" style="display: block; display: none; margin-left: auto; margin-right: auto;">
                         <div class="form-group">
                             <label for="byUser" style="color: #000000">Username</label>
                             <input th:field="*{user}" id="byUser" type="text" class="form-control" style="color: #000000"/>
