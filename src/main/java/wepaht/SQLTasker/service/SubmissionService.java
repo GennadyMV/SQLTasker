@@ -181,7 +181,7 @@ public class SubmissionService {
             account = accountService.getAllAccountsByUsername(user);
         }
         if (task != null && !task.isEmpty()) {
-            tasks = taskService.getAllTasksByName(task);
+            tasks = taskService.getAllTasksContainingName(task);
         }
         if (category != null && !category.isEmpty()) {
             categories = catService.getAllCategoriesByName(category);
@@ -212,7 +212,7 @@ public class SubmissionService {
             account = accountService.getAllAccountsByUsername(user);
         }
         if (task != null && !task.isEmpty()) {
-            tasks = taskService.getAllTasksByName(task);
+            tasks = taskService.getAllTasksContainingName(task);
         }
         if (category != null && !category.isEmpty()) {
             categories = catService.getAllCategoriesByName(category);
