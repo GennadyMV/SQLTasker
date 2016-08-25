@@ -44,6 +44,13 @@ public class DatabaseController {
         return "database";
     }
     
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
+    public String getEditDatabase(Model model, RedirectAttributes redirAttr, @PathVariable Long id, @ModelAttribute Database database) {
+        
+        
+        return "databaseForm";
+    }
+    
     @RequestMapping(method = RequestMethod.POST)
     public String createDatabase(RedirectAttributes redirectAttributes, @ModelAttribute Database database) {
         if (databaseService.createDatabase(database.getName(), database.getDatabaseSchema())) {
