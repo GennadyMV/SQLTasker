@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
 @Entity
-public class AuthenticationToken extends AbstractPersistable<Long>{
+public class CustomExportToken extends AbstractPersistable<Long>{
 
     @Column(unique = true)
     private String token;

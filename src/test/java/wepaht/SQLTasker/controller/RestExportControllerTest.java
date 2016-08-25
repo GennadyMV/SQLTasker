@@ -17,9 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.SQLTasker.Application;
-import wepaht.SQLTasker.domain.AuthenticationToken;
+import wepaht.SQLTasker.domain.CustomExportToken;
 import wepaht.SQLTasker.domain.LocalAccount;
-import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
+import wepaht.SQLTasker.repository.CustomExportTokenRepository;
 import wepaht.SQLTasker.repository.PastQueryRepository;
 import wepaht.SQLTasker.repository.LocalAccountRepository;
 import wepaht.SQLTasker.service.PastQueryService;
@@ -62,7 +62,7 @@ public class RestExportControllerTest {
     TmcAccountRepository accountRepo;
 
     @Autowired
-    AuthenticationTokenRepository tokenRepository;
+    CustomExportTokenRepository tokenRepository;
 
     @Autowired
     PastQueryService pastQueryService;
@@ -184,7 +184,7 @@ public class RestExportControllerTest {
         submissionRepository.save(new Submission(stud2, task1, null, null, "SELECT 1;", Boolean.TRUE));
 
         tokenRepository.deleteAll();
-        AuthenticationToken token = new AuthenticationToken();
+        CustomExportToken token = new CustomExportToken();
         token.setToken("");
         token.setUser(user);
         token = tokenRepository.save(token);

@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.SQLTasker.domain.Account;
-import wepaht.SQLTasker.domain.AuthenticationToken;
+import wepaht.SQLTasker.domain.CustomExportToken;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Owned;
 import wepaht.SQLTasker.domain.TmcAccount;
 import static wepaht.SQLTasker.constant.ConstantString.*;
-import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
+import wepaht.SQLTasker.repository.CustomExportTokenRepository;
 import wepaht.SQLTasker.repository.TmcAccountRepository;
 
 @Service
@@ -27,7 +27,7 @@ public class AccountService {
     private TmcAccountRepository tmcRepo;
 
     @Autowired
-    private AuthenticationTokenRepository tokenRepository;
+    private CustomExportTokenRepository tokenRepository;
 
     @Autowired
     private PointService pointService;
@@ -72,10 +72,10 @@ public class AccountService {
 
     public void createToken() {
         TmcAccount user = getAuthenticatedUser();
-        AuthenticationToken token = tokenRepository.findByUser(user);
+        CustomExportToken token = tokenRepository.findByUser(user);
 
         if (token == null) {
-            token = new AuthenticationToken();
+            token = new CustomExportToken();
             token.setUser(user);
             token.setToken("");
             tokenRepository.save(token);
@@ -85,7 +85,7 @@ public class AccountService {
         }
     }
 
-    public AuthenticationToken getToken() {
+    public CustomExportToken getToken() {
         TmcAccount user = getAuthenticatedUser();
         if (user.getRole().equals("TEACHER") || user.getRole().equals("ADMIN")) {
             return tokenRepository.findByUser(user);

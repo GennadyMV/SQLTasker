@@ -2,13 +2,16 @@ package wepaht.SQLTasker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import wepaht.SQLTasker.domain.AuthenticationToken;
+import wepaht.SQLTasker.domain.CustomExportToken;
 import wepaht.SQLTasker.domain.PointHolder;
-import wepaht.SQLTasker.repository.AuthenticationTokenRepository;
+import wepaht.SQLTasker.repository.CustomExportTokenRepository;
 import wepaht.SQLTasker.service.PointService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("export")
@@ -18,7 +21,16 @@ public class RestExportController {
     PointService pointService;
 
     @Autowired
-    AuthenticationTokenRepository tokenRepository;
+    CustomExportTokenRepository tokenRepository;
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity hello(@RequestParam String exportToken) {
+        if (isValidToken(exportToken)) {
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        
+        return new ResponseEntity(HttpStatus.FORBIDDEN);
+    }
 
     @RequestMapping(value = "/points", method = RequestMethod.POST)
     public List<PointHolder> getAllPoints(@RequestParam String exportToken) {
@@ -35,16 +47,16 @@ public class RestExportController {
     public PointHolder getPointsByUsername(@PathVariable String username, @RequestParam String exportToken) {
         PointHolder points = new PointHolder(null, null);
         if (isValidToken(exportToken)) {
-            points = new PointHolder(username, pointService.getPointsByUsername(username).longValue());            
+            points = new PointHolder(username, pointService.getPointsByUsername(username).longValue());
         }
 
         return points;
     }
 
     private boolean isValidToken(String token) {
-        AuthenticationToken foundToken = tokenRepository.findByToken(token);
+        CustomExportToken foundToken = tokenRepository.findByToken(token);
 
-        if ((token != null || foundToken != null) && !foundToken.getUser().getRole().equals("STUDENT")) {
+        if (foundToken != null && !foundToken.getUser().getRole().equals("STUDENT")) {
             return true;
         }
         return false;
