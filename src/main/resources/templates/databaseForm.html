@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="${'Edit database ' + database.name}">Database name</title>
+        <link th:include="fragments/bootstrap :: bootstrap"/>
+    </head>
+    <body>
+        <div id="fragmentsTop">
+            <div th:include="fragments/navbar_template :: navbar "></div>
+            <div th:include="fragments/messages_template :: messages"></div>
+        </div>
+
+        <div id="stuffs">
+
+            <div class="page-header">
+                <h1 th:text="${'Edit database ' + database.name}"></h1>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading" th:if="${database.owner != null and role != 'STUDENT'}">
+                    <b th:text="${'Owner: ' + database.owner.username}"></b>
+                </div>
+
+                <form role="form" id="createForm" method="POST" th:action="@{/databases/{id} (id = ${id})}" th:object="${database}" class="panel-body well">
+
+                    <div class="form-group">
+                        <label for="dbName" >Name <b th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red"></b></label>
+                        <input id="dbName" class="form-control" th:field="*{name}" type="text"/>
+                        
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dbSchema">Create-tables</label>
+                        <textarea id="dbSchema" class="form-control" th:field="*{databaseSchema}">
+                        </textarea>
+                    </div>
+
+                    <input class="btn btn-primary form-control" type="submit" value="Submit"/>
+                </form>
+            </div>
+        </div>
+
+
+        <div id="fragmentsBottom">
+            <div th:include="fragments/footer_template :: footer"></div>
+            <div th:include="fragments/scripts :: confirmScript"></div>
+        </div>        
+    </body>
+</html>

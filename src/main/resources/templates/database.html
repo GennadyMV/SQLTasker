@@ -35,10 +35,13 @@ and open the template in the editor.
                 </div>
             </div>
             
-            <div class="btn-group">
-                <form th:if="${owned or role != 'STUDENT'}" th:action="@{/databases/{id} (id=${database.id})}" th:method="DELETE" id="deleteDb">
-                    <input type="submit" th:class="((${role != 'STUDENT' or owned})? 'btn btn-danger' : 'btn btn-danger disabled')" value="Delete database" onclick="return confirmScript('Are you ABSOLUTELY sure you want to delete the database? Please make sure the database is not user by any tasks.');"/>
+            <div class="btn-group" th:if="${role != 'STUDENT' or owned}">
+                <form th:action="@{/databases/{id} (id=${database.id})}" th:method="DELETE" id="deleteDb">                    
                 </form>
+                <form th:action="@{/databases/{id}/edit (id=${database.id})}" th:method="GET" id="editDb">                    
+                </form>
+                <button form="deleteDb" th:class="((${role != 'STUDENT' or owned})? 'btn btn-danger' : 'btn btn-danger disabled')" onclick="return confirmScript('Are you ABSOLUTELY sure you want to delete the database? Please make sure the database is not user by any tasks.');">Delete database</button>
+                <button form="editDb" th:class="((${role != 'STUDENT' or owned})? 'btn btn-warning' : 'btn btn-warning disabled')" onclick="return confirmScript('Are you sure you want to edit the database?');">Edit database</button>
             </div>
         </div>
 

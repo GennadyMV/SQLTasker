@@ -85,9 +85,9 @@ public class DatabaseService {
             conn.close();
 
             System.out.println(name + " table-schema is valid");
-            
+
             databaseRepository.save(db);
-            
+
             System.out.println(name + " created");
 
             return true;
@@ -340,7 +340,7 @@ public class DatabaseService {
     public Database getDatabase(Long id) {
         return databaseRepository.findOne(id);
     }
-    
+
     public Database getDatabaseByName(String name) {
         return databaseRepository.findByNameAndDeletedFalse(name).get(0);
     }
@@ -376,5 +376,35 @@ public class DatabaseService {
 
     public List<Database> getAllDatabases() {
         return databaseRepository.findAll();
+    }
+
+    @Transactional
+    public List<String> editDatabaseWithFeedback(Database database, Long id) {
+        List<String> messages = new ArrayList<>();
+        if (editDatabase(database, id, messages)) {
+            messages.add("Database successfully edited");
+            return messages;
+        }
+        messages.add("Database edit failed");
+        return messages;
+    }
+
+    @Transactional
+    private boolean editDatabase(Database newDb, Long oldId, List<String> messages) {
+        try {
+            Connection conn = createConnectionToDatabase(newDb.getName(), newDb.getDatabaseSchema());
+            conn.close();
+
+            System.out.println(newDb.getName() + " table-schema is valid");
+            
+            Database oldDb = databaseRepository.findOne(oldId);
+            oldDb.setName(newDb.getName());
+            oldDb.setDatabaseSchema(newDb.getDatabaseSchema());
+            return true;
+        } catch (Exception e) {
+            messages.add(e.toString());
+        }
+
+        return false;
     }
 }

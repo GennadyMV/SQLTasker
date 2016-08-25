@@ -13,6 +13,11 @@ import wepaht.SQLTasker.service.AccountService;
 
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import wepaht.SQLTasker.constant.ConstantString;
+import static wepaht.SQLTasker.constant.ConstantString.ATTRIBUTE_MESSAGES;
 
 @Controller
 @RequestMapping("databases")
@@ -44,9 +49,37 @@ public class DatabaseController {
         return "database";
     }
     
+    @Transactional
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public String postEditDatabase(RedirectAttributes redirAttr, Model model, @PathVariable Long id, @ModelAttribute @Valid Database database, BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            model.addAttribute(ATTRIBUTE_MESSAGES, result.getErrorCount() + " field errors");
+            model.addAttribute("id", id);
+            return "databaseForm";
+        }
+        
+        redirAttr.addAttribute("id", id);
+        if ((userService.isUserStudent() && !userService.isOwned(database)) ||database == null) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, ConstantString.MESSAGE_UNAUTHORIZED_ACCESS);        
+            return "redirect:/databases/{id}";
+        }
+        
+        redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, databaseService.editDatabaseWithFeedback(database, id));
+        
+        return "redirect:/databases/{id}";
+    }
+    
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getEditDatabase(Model model, RedirectAttributes redirAttr, @PathVariable Long id, @ModelAttribute Database database) {
+        database = databaseService.getDatabase(id);
+        if ((userService.isUserStudent() && !userService.isOwned(database)) ||database == null) {
+            redirAttr.addFlashAttribute(ATTRIBUTE_MESSAGES, ConstantString.MESSAGE_UNAUTHORIZED_ACCESS);
+            redirAttr.addAttribute("id", id);
+            return "redirect:/databases/{id}";
+        }
         
+        model.addAttribute("id", id);
+        model.addAttribute("database", database);
         
         return "databaseForm";
     }
