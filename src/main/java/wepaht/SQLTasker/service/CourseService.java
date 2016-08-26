@@ -16,7 +16,7 @@ import static wepaht.SQLTasker.constant.ConstantString.MESSAGE_SUCCESSFUL_ACTION
 import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
-import wrapper.CategoryDetailsWrapper;
+import wepaht.SQLTasker.wrapper.CategoryDetailsWrapper;
 import wepaht.SQLTasker.domain.Course;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;

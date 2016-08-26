@@ -2,43 +2,47 @@ package wepaht.SQLTasker.controller;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import wepaht.SQLTasker.Application;
 import static wepaht.SQLTasker.constant.ConstantString.ROLE_ADMIN;
 import wepaht.SQLTasker.domain.CustomExportToken;
 import wepaht.SQLTasker.domain.TmcAccount;
-import wepaht.SQLTasker.repository.CustomExportTokenRepository;
+import wepaht.SQLTasker.service.RestExportService;
 
-@RunWith(value = SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class RestExportControllerMockedTest {
+    
+    @Mock
+    RestExportService restService;
+    
+    @InjectMocks
+    RestExportController controller;
     
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
@@ -62,19 +66,15 @@ public class RestExportControllerMockedTest {
                 this.mappingJackson2HttpMessageConverter);
     }
     
-    @Mock
-    CustomExportTokenRepository tokenRepoMock;
     
-    @InjectMocks
-    RestExportController exportController;
     
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+ 
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
         mockUser = mock(TmcAccount.class);
-        
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
         
         exportToken = new CustomExportToken();
         exportToken.setToken("");
@@ -82,8 +82,17 @@ public class RestExportControllerMockedTest {
     }
     
     @Test
-    public void statusIsForbiddenWithoutToken() throws Exception {
-        when(tokenRepoMock.findByToken(any())).thenReturn(null);
+    public void statusIsOkWithTokenToken() throws Exception {
+        when(restService.getTokenByToken(exportToken.getToken())).thenReturn(exportToken);
+        when(mockUser.getRole()).thenReturn(ROLE_ADMIN);
+        
+        mockMvc.perform(get(API_URI).param("exportToken", exportToken.getToken()))
+                .andExpect(status().isOk());
+    }
+    
+    @Test
+    public void statusIsForbiddenWithoutTokenToken() throws Exception {
+        when(restService.getTokenByToken(any())).thenReturn(null);
         when(mockUser.getRole()).thenReturn(ROLE_ADMIN);
         
         mockMvc.perform(get(API_URI).param("exportToken", ""))
@@ -91,10 +100,29 @@ public class RestExportControllerMockedTest {
     }
     
     @Test
-    public void statusIsOkWithToken() throws Exception { 
-        when(tokenRepoMock.findByToken(any())).thenReturn(exportToken);
+    public void retrievePointsByCourseTest() throws Exception {
+        String courseName = "kurssiOnKiva";
+        String student1 = "0123456789";
+        String student2 = "0987654321";
+        int points1 = 9001;
+        int points2 = 42;
+        
+        HashMap<String, Integer> points = new HashMap<>();
+        points.put(student1, points1);
+        points.put(student2, points2);
+        Map<String, Map<String, Integer>> testResponse = new HashMap<>();
+        testResponse.put(courseName, points);
+        
+        when(restService.getTokenByToken(exportToken.getToken())).thenReturn(exportToken);
+//        when(restService.getCoursePoints(courseName)).thenReturn(testResponse);
         when(mockUser.getRole()).thenReturn(ROLE_ADMIN);
         
-        mockMvc.perform(get(API_URI).param("exportToken", exportToken.getToken())).andExpect(status().isOk()).andReturn();
+        
+        MvcResult result = mockMvc.perform(get(API_URI + "/courses/" + courseName + "/points").param("exportToken", exportToken.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$." + courseName, is(testResponse)))
+                .andReturn();      
     }
+        
 }

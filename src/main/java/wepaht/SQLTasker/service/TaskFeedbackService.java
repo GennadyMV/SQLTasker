@@ -24,7 +24,7 @@ import static wepaht.SQLTasker.constant.ConstantString.REDIRECT_DEFAULT;
 import static wepaht.SQLTasker.constant.ConstantString.ROLE_STUDENT;
 import wepaht.SQLTasker.repository.TaskFeedbackRepository;
 import static wepaht.SQLTasker.specification.TaskFeedbackSpecification.searchFeedback;
-import wrapper.TaskFeedbackSearchWrapper;
+import wepaht.SQLTasker.wrapper.TaskFeedbackSearchWrapper;
 
 @Service
 public class TaskFeedbackService {

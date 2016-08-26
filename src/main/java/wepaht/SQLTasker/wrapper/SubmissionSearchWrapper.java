@@ -1,4 +1,4 @@
-package wrapper;
+package wepaht.SQLTasker.wrapper;
 
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;

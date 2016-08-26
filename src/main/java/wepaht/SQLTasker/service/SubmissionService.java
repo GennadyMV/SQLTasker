@@ -2,7 +2,9 @@ package wepaht.SQLTasker.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +27,7 @@ import wepaht.SQLTasker.domain.TmcAccount;
 import static wepaht.SQLTasker.specification.SubmissionSpecification.searchSubmissions;
 import wepaht.SQLTasker.repository.SubmissionRepository;
 import wepaht.SQLTasker.specification.SubmissionSpecification;
-import wrapper.SubmissionSearchWrapper;
+import wepaht.SQLTasker.wrapper.SubmissionSearchWrapper;
 
 @Service
 public class SubmissionService {
@@ -266,5 +268,9 @@ public class SubmissionService {
         }
         
         return getSubmissionsPaged(wrapper.getUser(), wrapper.getTask(), wrapper.getCategory(), wrapper.getCourse(), wrapper.getAfter(), wrapper.getBefore(), awarded, page);
+    }
+    
+    public List<?> getCoursePoints(Course course) {
+        return repository.getCoursePointsGroupByAccount(course);
     }
 }

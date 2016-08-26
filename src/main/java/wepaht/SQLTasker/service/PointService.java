@@ -9,7 +9,7 @@ import wepaht.SQLTasker.domain.LocalAccount;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.CategoryDetail;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.domain.PointHolder;
+import wepaht.SQLTasker.wrapper.PointHolder;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
 import wepaht.SQLTasker.repository.TaskRepository;
@@ -65,7 +65,7 @@ public class PointService {
         return submissionService.exportAllPoints();
     }
 
-    public int getCoursePoints(Course course) {
+    public int getUserCoursePoints(Course course) {
         TmcAccount account = accountService.getAuthenticatedUser();
         return submissionService.getAccountCoursePoints(account, course);
     }
@@ -126,5 +126,16 @@ public class PointService {
         });
         
         return coursesAndProgress;
+    }
+    
+    public Map<String, List<?>> getCoursePointsByName(String courseName) {
+        List<Course> courses = courseService.getCoursesByName(courseName);
+        Map<String, List<?>> pointsByCourse = new HashMap<>();
+        
+        courses.stream().forEach((course) -> {
+            pointsByCourse.put(course.getName(), submissionService.getCoursePoints(course));
+        });
+        
+        return pointsByCourse;
     }
 }

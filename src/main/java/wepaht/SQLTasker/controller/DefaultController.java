@@ -27,7 +27,7 @@ import wepaht.SQLTasker.service.AccountService;
 import wepaht.SQLTasker.service.CourseService;
 import wepaht.SQLTasker.service.SampleCourseService;
 import wepaht.SQLTasker.service.SubmissionService;
-import wrapper.SubmissionSearchWrapper;
+import wepaht.SQLTasker.wrapper.SubmissionSearchWrapper;
 
 @Controller
 public class DefaultController {

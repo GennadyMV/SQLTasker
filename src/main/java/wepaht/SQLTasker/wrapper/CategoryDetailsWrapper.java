@@ -1,4 +1,4 @@
-package wrapper;
+package wepaht.SQLTasker.wrapper;
 
 import java.util.ArrayList;
 import wepaht.SQLTasker.domain.CategoryDetail;

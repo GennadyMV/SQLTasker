@@ -7,7 +7,7 @@ import wepaht.SQLTasker.domain.PastQuery;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import wepaht.SQLTasker.domain.PointHolder;
+import wepaht.SQLTasker.wrapper.PointHolder;
 import wepaht.SQLTasker.domain.Task;
 
 @RestResource(exported = false)
@@ -37,7 +37,7 @@ public interface PastQueryRepository extends JpaRepository<PastQuery, Long>{
     @Query("SELECT p.task.name, p.awarded FROM PastQuery p WHERE :username=username")
     List<?> getExercisesAndAwardedByUsername(@Param("username")String username);
     
-    @Query("SELECT new wepaht.SQLTasker.domain.PointHolder(q.username, COUNT(q)) FROM PastQuery q WHERE q.awarded=true AND q.correct=true GROUP BY q.username")
+    @Query("SELECT new wepaht.SQLTasker.wrapper.PointHolder(q.username, COUNT(q)) FROM PastQuery q WHERE q.awarded=true AND q.correct=true GROUP BY q.username")
     List<PointHolder> exportAllPoints();
 }
 

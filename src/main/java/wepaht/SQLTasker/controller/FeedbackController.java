@@ -17,7 +17,7 @@ import wepaht.SQLTasker.domain.Account;
 import wepaht.SQLTasker.domain.TaskFeedback;
 import wepaht.SQLTasker.service.AccountService;
 import wepaht.SQLTasker.service.TaskFeedbackService;
-import wrapper.TaskFeedbackSearchWrapper;
+import wepaht.SQLTasker.wrapper.TaskFeedbackSearchWrapper;
 
 @Controller
 @RequestMapping("/feedback")

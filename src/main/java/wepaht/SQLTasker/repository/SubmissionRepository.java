@@ -1,13 +1,15 @@
 package wepaht.SQLTasker.repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import wepaht.SQLTasker.domain.Category;
 import wepaht.SQLTasker.domain.Course;
-import wepaht.SQLTasker.domain.PointHolder;
+import wepaht.SQLTasker.wrapper.PointHolder;
 import wepaht.SQLTasker.domain.Submission;
 import wepaht.SQLTasker.domain.Task;
 import wepaht.SQLTasker.domain.TmcAccount;
@@ -23,7 +25,7 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long>, J
     @Query("SELECT account.username, COUNT(*) AS points FROM Submission WHERE points=true GROUP BY account")
     List<?> getAllPoints();
     
-    @Query("SELECT new wepaht.SQLTasker.domain.PointHolder(s.account.username, COUNT(s)) FROM Submission s WHERE points=true GROUP BY s.account")
+    @Query("SELECT new wepaht.SQLTasker.wrapper.PointHolder(s.account.username, COUNT(s)) FROM Submission s WHERE points=true GROUP BY s.account")
     List<PointHolder> exportAllPoints();
     
     @Query("SELECT COUNT(*) FROM Submission WHERE :account=account AND :course=course AND points=true")
@@ -50,4 +52,12 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long>, J
             + "AND sub.category.deleted=false "
             + "GROUP By sub.task, sub.category")
     Long countPointsByAccountAndCourse(@Param("account") TmcAccount account, @Param("course") Course course);
+    
+    @Query("SELECT sub.account.username AS user, COUNT(DISTINCT sub.task) AS points FROM Submission sub "
+            + "WHERE sub.course = :course "
+            + "AND sub.points = true "
+            + "AND sub.task.deleted=false "
+            + "AND sub.category.deleted=false "
+            + "GROUP BY sub.account")
+    List<?> getCoursePointsGroupByAccount(@Param("course") Course course);
 }

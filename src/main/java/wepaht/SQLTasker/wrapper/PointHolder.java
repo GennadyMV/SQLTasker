@@ -1,4 +1,4 @@
-package wepaht.SQLTasker.domain;
+package wepaht.SQLTasker.wrapper;
 
 /**
  * Simple class for rest-controller to hold user and points
