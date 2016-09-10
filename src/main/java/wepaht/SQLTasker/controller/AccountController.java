@@ -14,6 +14,7 @@ import wepaht.SQLTasker.service.AccountService;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import wepaht.SQLTasker.domain.Account;

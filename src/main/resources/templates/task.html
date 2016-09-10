@@ -11,7 +11,7 @@ and open the template in the editor.
     </head>
     <body>
         <div id="fragmentsTop" th:include="fragments/essentials :: fragmentsTop"></div>        
-        
+
         <div id="stuffz">
             <div class="page-header">                
                 <h1 th:inline="text">
@@ -26,18 +26,18 @@ and open the template in the editor.
                 <div class="panel-heading" th:if="${role != 'STUDENT' and task.owner != null}" >
                     <p class="panel-title" th:text="${'Owner: ' + task.owner.username}">Owner</p>
                 </div>
-                
+
                 <div class="panel-body">
                     <p th:if="${task.description}" th:text="${task.description}"></p>
                     <p th:if="${role != 'STUDENT' or expired == true}" >Solution: <pre th:text="${task.solution}"></pre></p>
                     <span th:each="tag : ${task.tags}" class="label label-primary" th:text="${tag.name}"></span>
                 </div>
-                
+
                 <div class="list-group" th:if="${category}">
                     <div class="list-group-item" th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})">
                         <h4 class="list-group-item-heading">Query</h4>
                     </div>
-                    
+
                     <div id="queryForm" class="list-group-item well">
                         <form th:method="POST" role="form" th:action="@{__${#httpServletRequest.requestURI}__/query}">
                             <div class="form-group">

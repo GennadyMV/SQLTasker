@@ -19,6 +19,7 @@ import wepaht.SQLTasker.domain.TmcAccount;
 import static wepaht.SQLTasker.constant.ConstantString.*;
 import wepaht.SQLTasker.repository.CustomExportTokenRepository;
 import wepaht.SQLTasker.repository.TmcAccountRepository;
+import org.springframework.security.core.Authentication;
 
 @Service
 public class AccountService {
@@ -61,6 +62,7 @@ public class AccountService {
             user.setUsername(auth.getPrincipal().toString());
             user.setRole("STUDENT");
             user = tmcRepo.save((TmcAccount) user);
+            
         }
 
         return user;
