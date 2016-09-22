@@ -1,30 +1,31 @@
 package wepaht.SQLTasker.domain;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 public class Submission extends AbstractPersistable<Long> {
-    
+
     @NotNull
     @ManyToOne
     private TmcAccount account;
-    
+
     @ManyToOne
     private Task task;
-    
+
     @ManyToOne
     private Category category;
-    
+
     @ManyToOne
     private Course course;
-    
+
     @Lob
+    @Type(type = "text")
     private String query;
     private Boolean points;
     private final LocalDateTime created;
@@ -40,11 +41,11 @@ public class Submission extends AbstractPersistable<Long> {
     public LocalDateTime getCreated() {
         return created;
     }
-    
+
     public Submission() {
         this.created = LocalDateTime.now();
     }
-    
+
     public Submission(TmcAccount account, Task task, Category category, Course course, String query, Boolean points) {
         this.account = account;
         this.task = task;
@@ -54,7 +55,7 @@ public class Submission extends AbstractPersistable<Long> {
         this.points = points;
         this.created = LocalDateTime.now();
     }
-    
+
     public Submission(TmcAccount account, Task task, Category category, Course course, String query, Boolean points, LocalDateTime created) {
         System.out.println("Setting creation date manually to a submission");
         this.account = account;
